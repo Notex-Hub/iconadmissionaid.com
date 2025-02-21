@@ -10,8 +10,6 @@ const HowItWorks = () => {
 
             <div className="max-w-7xl mx-auto flex my-8 gap-20 items-center md:flex-row flex-col">
 
-
-
                 <div className=" flex flex-col justify-center items-center">
                 <p className=" text-purple-600"><ImProfile className="h-12 w-12"/></p>
                 <h2 className="text-xl  my-1 font-semibold">Create Your Profile</h2>
