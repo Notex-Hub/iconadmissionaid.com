@@ -49,7 +49,7 @@ const Navbar = () => {
     setIsModalOpen(false);
   };
   return (
-    <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
+    <header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto">
       <Link className="flex items-center justify-center gap-1" to="#">
         <p className='text-2xl'><LuBrainCircuit/></p>
         <span className="font-bold text-lg">NeoMatch</span>
