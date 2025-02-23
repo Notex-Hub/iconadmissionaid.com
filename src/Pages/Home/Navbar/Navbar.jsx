@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import {  Link } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
+import useUser from '../../../Hooks/useUser';
+import { toast } from 'react-toastify';
+import { axiosPublic } from '../../../Hooks/usePublic';
+import Profile from './Profile';
 
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const { profile, isLoading, isError, refetch } = useUser();
-  // console.log(profile);
+ 
 
   const [formData, setFormData] = useState({
     name: '',
@@ -85,6 +89,7 @@ const Navbar = () => {
     }
   
     setIsModalOpen(false);
+    refetch();
   };
   
   // Handle sign-up logic
@@ -112,6 +117,7 @@ const Navbar = () => {
       console.log('Signed up and logged in user:', user);
   
       setIsModalOpen(false);
+      refetch();
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Sign-up failed!';
       toast.error(errorMessage);
@@ -150,7 +156,7 @@ const Navbar = () => {
         {menuOpen && (
           <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
             <li>
-              <Link to="#">Home</Link>
+              <Link to="/">Home</Link>
             </li>
             <li>
               <Link to="#">Find Jobs</Link>
@@ -177,14 +183,18 @@ const Navbar = () => {
       </div>
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Home</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="/">Home</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Find Jobs</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Skill Matching</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Mock Interview</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Career Insights</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Contact</Link>
         {/* Sign Up Modal */}
-        <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button>
+       {
+        profile && profile.name ? <Profile /> : <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button> 
+
+       }
+
     
       
 

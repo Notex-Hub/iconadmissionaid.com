@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Avatar, Button, Grid, Typography, Divider, Chip, IconButton, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { CameraAlt, CloudUpload, Add, Delete, Save } from '@mui/icons-material';
+import useUser from '../../Hooks/useUser';
 
 const ProfilePage = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -8,6 +9,12 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [skills, setSkills] = useState(["JavaScript", "React", "Node.js"]);
   const [newSkill, setNewSkill] = useState("");
+
+
+  const { profile, isLoading, isError, refetch } = useUser();
+  console.log(profile);
+
+
   const [experienceList, setExperienceList] = useState([
     { title: "Frontend Developer", company: "Tech Co", duration: "2 years" }
   ]);
@@ -85,7 +92,7 @@ const ProfilePage = () => {
           <Grid item xs={12} md={9}>
             <div className="flex justify-between items-start mb-4">
               <Typography variant="h4" className="font-bold text-gray-800">
-                Md. Hakash
+                {profile?.name}
               </Typography>
               <Button
                 variant="contained"
@@ -102,7 +109,7 @@ const ProfilePage = () => {
               <TextField
                 label="Email"
                 variant="outlined"
-                value="dev.mhakash@gmail.com"
+                value={profile?.email}
                 disabled
                 size="small"
               />
