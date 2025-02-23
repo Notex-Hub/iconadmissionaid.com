@@ -1,14 +1,21 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
 
-
 const Navbar = () => {
-
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(false); // New state to toggle between Sign Up and Login
+
+  // Menu toggle logic
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -27,15 +34,6 @@ const Navbar = () => {
     };
   }, [menuOpen]);
 
-  //  Sign Up Modal 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false); // New state to toggle between Sign Up and Login
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -43,62 +41,76 @@ const Navbar = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // Handle login logic
+  const handleLogin = (e) => {
     e.preventDefault();
-    console.log(isLogin ? 'Logging in with:' : 'Signing up with:', formData);
+    console.log('Logging in with:', formData);
     setIsModalOpen(false);
+    // Call your login API here and store the JWT token
   };
+
+  // Handle sign-up logic
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    console.log('Signing up with:', formData);
+    setIsModalOpen(false);
+    // Call your sign-up API here
+  };
+
   return (
     <header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto">
       <Link className="flex items-center justify-center gap-1" to="#">
-        <p className='text-2xl'><LuBrainCircuit/></p>
+        <p className='text-2xl'><LuBrainCircuit /></p>
         <span className="font-bold text-lg">NeoMatch</span>
       </Link>
       <div className="lg:hidden " ref={menuRef}>
-      <button
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="btn btn-ghost btn-circle"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="btn btn-ghost btn-circle"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16m-7 6h7"
-          />
-        </svg>
-      </button>
-      {menuOpen && (
-        <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
-          <li>
-            <Link to="#">Home</Link>
-          </li>
-          <li>
-            <Link to="#">Find Jobs</Link>
-          </li>
-          <li>
-            <Link to="#">Skill Matching</Link>
-          </li>
-          <li>
-            <Link to="#">Mock Interview</Link>
-          </li>
-        
-          <li>
-            <Link to="#">Career Insights</Link>
-          </li>
-          <li>
-            <Link to="#">Contact</Link>
-          </li>
-          <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button>
-        </ul>
-      )}
-    </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16m-7 6h7"
+            />
+          </svg>
+        </button>
+        {menuOpen && (
+          <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
+            <li>
+              <Link to="#">Home</Link>
+            </li>
+            <li>
+              <Link to="#">Find Jobs</Link>
+            </li>
+            <li>
+              <Link to="#">Skill Matching</Link>
+            </li>
+            <li>
+              <Link to="#">Mock Interview</Link>
+            </li>
+            <li>
+              <Link to="#">Career Insights</Link>
+            </li>
+            <li>
+              <Link to="#">Contact</Link>
+            </li>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>
+              {isLogin ? 'Login' : 'Sign Up'}
+            </button>
+          </ul>
+        )}
+      </div>
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Home</Link>
@@ -107,16 +119,17 @@ const Navbar = () => {
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Mock Interview</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Career Insights</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Contact</Link>
-        {/* Sign Up Modal */}
-        <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button>
-    
-      
-
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>
+          {isLogin ? 'Login' : 'Sign Up'}
+        </button>
         <button className="btn btn-ghost btn-circle">
           <BellIcon className="h-5 w-5" />
           <span className="sr-only">Notifications</span>
         </button>
       </nav>
+
       {/* Sign Up and Login Form */}
       {isModalOpen && (
         <div className="modal modal-open">
@@ -129,9 +142,11 @@ const Navbar = () => {
             </button>
             <h2 className="text-2xl font-bold text-center mb-4">
               {isLogin ? 'Login' : 'Sign Up'}
-           
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form
+              onSubmit={isLogin ? handleLogin : handleSignUp}
+              className="space-y-4"
+            >
               {!isLogin && (
                 <input
                   type="text"
@@ -161,7 +176,10 @@ const Navbar = () => {
                 className="input input-bordered w-full"
                 required
               />
-              <button type="submit" className="text-white px-2 py-2 rounded-md bg-black hover:cursor-pointer w-full">
+              <button
+                type="submit"
+                className="text-white px-2 py-2 rounded-md bg-black hover:cursor-pointer w-full"
+              >
                 {isLogin ? 'Login' : 'Sign Up'}
               </button>
             </form>
@@ -175,34 +193,9 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      )}  
+      )}
     </header>
   );
 };
 
 export default Navbar;
-
-
- {/* <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-            <div className="w-8 rounded-full">
-              <img src="/placeholder-avatar.jpg" alt="User" />
-            </div>
-          </label>
-          <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-56">
-            <li className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
-                <p className="text-xs leading-none text-gray-500">john.doe@example.com</p>
-              </div>
-            </li>
-            <li><hr className="my-1" /></li>
-            <li>
-              <a onClick={() => console.log('Opening dashboard UI')}>Dashboard</a>
-            </li>
-            <li><Link to="/profile">Profile</Link></li>
-            <li><Link to="/settings">Settings</Link></li>
-            <li><hr className="my-1" /></li>
-            <li><Link to="/logout">Log out</Link></li>
-          </ul>
-        </div> */}
