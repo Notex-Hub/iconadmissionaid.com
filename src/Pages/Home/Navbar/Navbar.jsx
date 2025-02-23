@@ -2,9 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {  Link } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
-import { axiosPublic } from '../../../Hooks/usePublic';
-import { toast } from 'react-toastify';
-import useUser from '../../../Hooks/useUser';
 
 
 const Navbar = () => {
@@ -186,11 +183,11 @@ const Navbar = () => {
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Mock Interview</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Career Insights</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Contact</Link>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>
-          {isLogin ? 'Login' : 'Sign Up'}
-        </button>
+        {/* Sign Up Modal */}
+        <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button>
+    
+      
+
         <button className="btn btn-ghost btn-circle">
           <BellIcon className="h-5 w-5" />
           <span className="sr-only">Notifications</span>
