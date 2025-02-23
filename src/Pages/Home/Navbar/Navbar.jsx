@@ -2,6 +2,7 @@ import  { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
+import { CgProfile } from "react-icons/cg";
 
 
 const Navbar = () => {
@@ -112,10 +113,11 @@ const Navbar = () => {
     
       
 
-        <button className="btn btn-ghost btn-circle">
-          <BellIcon className="h-5 w-5" />
-          <span className="sr-only">Notifications</span>
-        </button>
+        <Link to={"/profile"} className="btn btn-ghost btn-circle">
+          <CgProfile  className="h-6 w-6" />
+          {/* <BellIcon className="h-5 w-5" /> */}
+          <span className="sr-only">Profile</span>
+        </Link>
       </nav>
       {/* Sign Up and Login Form */}
       {isModalOpen && (
