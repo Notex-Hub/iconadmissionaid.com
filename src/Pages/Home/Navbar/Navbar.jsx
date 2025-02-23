@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {  Link } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
+import { axiosPublic } from '../../../Hooks/usePublic';
+import { toast } from 'react-toastify';
+import useUser from '../../../Hooks/useUser';
+
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { profile, isLoading, isError, refetch } = useUser();
+  // console.log(profile);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -42,21 +48,82 @@ const Navbar = () => {
   };
 
   // Handle login logic
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log('Logging in with:', formData);
-    setIsModalOpen(false);
-    // Call your login API here and store the JWT token
-  };
 
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const email = formData.email;
+    const password = formData.password;
+    const data = { email, password };
+ 
+  
+    try {
+      const response = await axiosPublic.post('/auth/login', data);
+  
+      // Log the response to check the structure
+      console.log('Login response:', response);
+  
+      // Check if response.data and response.data.data are defined
+      if (response.data && response.data.data) {
+        const { token, user } = response.data.data;
+  
+        if (token && user) {
+          localStorage.setItem('token', token);
+  
+          // Using toast instead of alert
+          toast.success(`Welcome, ${user.email}! 🎉`);
+          console.log('Logged in user:', user);
+        } else {
+          toast.error('User data is missing in the response.');
+          console.error('Response missing user data:', response);
+        }
+      } else {
+        toast.error('Invalid response structure');
+        console.error('Unexpected response structure:', response);
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Login failed!';
+      toast.error(errorMessage);
+      console.error('Login error:', err);
+    }
+  
+    setIsModalOpen(false);
+  };
+  
   // Handle sign-up logic
-  const handleSignUp = (e) => {
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    console.log('Signing up with:', formData);
-    setIsModalOpen(false);
-    // Call your sign-up API here
+    const email = formData.email;
+    const name = formData.name;
+    const password = formData.password;
+    const role = 'user';
+    const isBlocked = false;
+    const data = { email, password, name, role, isBlocked };
+  
+    try {
+      // Send sign-up data to your API
+      const response = await axiosPublic.post('/auth/register', data);
+      const { token, user, message } = response.data;
+  
+      // Store JWT token for auto-login
+      localStorage.setItem('token', token);
+  
+      // Success toast
+      toast.success(message || `Welcome, ${user.email}! 🎉 You are now logged in.`);
+  
+      console.log('Signed up and logged in user:', user);
+  
+      setIsModalOpen(false);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Sign-up failed!';
+      toast.error(errorMessage);
+      console.error('Sign-up error:', err);
+    }
   };
 
+
+  
   return (
     <header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto">
       <Link className="flex items-center justify-center gap-1" to="#">

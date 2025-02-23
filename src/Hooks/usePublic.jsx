@@ -1,8 +1,10 @@
 import axios from "axios";
 
 export const axiosPublic = axios.create({
-  baseURL:'http://localhost:3000/api'
-  // baseURL: "http://localhost:5000/",
+    baseURL: 'http://localhost:3000/api', // Set base URL
+    headers: {
+      'Content-Type': 'application/json',
+    },
 });
 const usePublic = () => {
   return axiosPublic;
