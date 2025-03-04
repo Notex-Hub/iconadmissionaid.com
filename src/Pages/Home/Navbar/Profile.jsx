@@ -1,9 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link,  } from "react-router-dom";
 import { FaRegUserCircle } from "react-icons/fa";
 
 
 
-const Profile = () => {
+
+const Profile = ({logout}) => {
+
+ 
+
     return (
         <div>
             <div className="dropdown dropdown-end">
@@ -26,7 +30,7 @@ const Profile = () => {
             <li><Link to="/profile">Profile</Link></li>
             <li><Link to="/settings">Settings</Link></li>
             <li><hr className="my-1" /></li>
-            <li><Link to="/logout">Log out</Link></li>
+            <li><Link onClick={logout}>Log out</Link></li>
           </ul>
         </div>
         </div>

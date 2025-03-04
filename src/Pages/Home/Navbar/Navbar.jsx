@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {  Link } from 'react-router-dom';
+import {  Link, useNavigate } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
 import { LuBrainCircuit } from "react-icons/lu";
 import useUser from '../../../Hooks/useUser';
@@ -12,6 +12,8 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const { profile, isLoading, isError, refetch } = useUser();
+  
+  const navigate = useNavigate(); 
  
 
   const [formData, setFormData] = useState({
@@ -125,13 +127,21 @@ const Navbar = () => {
     }
   };
 
+  
+    const logout = () => {
+      localStorage.removeItem("token"); 
+      navigate("/"); 
+      refetch();
+      window.location.reload();
+    };
+  
 
   
   return (
     <header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto">
       <Link className="flex items-center justify-center gap-1" to="#">
-        <p className='text-2xl'><LuBrainCircuit /></p>
-        <span className="font-bold text-lg">NeoMatch</span>
+
+        <span className="font-bold text-lg">UniHub</span>
       </Link>
       <div className="lg:hidden " ref={menuRef}>
         <button
@@ -159,19 +169,19 @@ const Navbar = () => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="#">Find Jobs</Link>
+              <Link to="#">Cafeteria</Link>
             </li>
             <li>
-              <Link to="#">Skill Matching</Link>
+              <Link to="#">Bus Schedule              </Link>
             </li>
             <li>
-              <Link to="#">Mock Interview</Link>
+              <Link to="#">Class Schedule</Link>
             </li>
             <li>
-              <Link to="#">Career Insights</Link>
+              <Link to="#">Events & Clubs</Link>
             </li>
             <li>
-              <Link to="#">Contact</Link>
+              <Link to="#">Campus Map         </Link>
             </li>
             <button
               onClick={() => setIsModalOpen(true)}
@@ -184,14 +194,14 @@ const Navbar = () => {
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/">Home</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Find Jobs</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Skill Matching</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Mock Interview</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Career Insights</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Contact</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Cafeteria</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Bus Schedule  </Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Class Schedule</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Campus Map  </Link>
         {/* Sign Up Modal */}
        {
-        profile && profile.name ? <Profile /> : <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button> 
+        profile && profile.name ? <Profile logout={logout} /> : <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button> 
 
        }
 

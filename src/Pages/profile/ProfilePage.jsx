@@ -18,9 +18,12 @@ const ProfilePage = () => {
   const [experienceList, setExperienceList] = useState([
     { title: "Frontend Developer", company: "Tech Co", duration: "2 years" }
   ]);
+
+
   const [educationList, setEducationList] = useState([
     { degree: "BSc in CSE", institution: "XYZ University", year: 2022 }
   ]);
+
   const [preferences, setPreferences] = useState({
     remote_work: true,
     location: "Dhaka",
@@ -59,6 +62,13 @@ const ProfilePage = () => {
     updatedEducation[index][field] = value;
     setEducationList(updatedEducation);
   };
+
+
+  const handleUpdateJobSeeker =() =>{
+
+  }
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -106,8 +116,9 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 mb-4">
+          
               <TextField
-                label="Email"
+          
                 variant="outlined"
                 value={profile?.email}
                 disabled
@@ -151,10 +162,11 @@ const ProfilePage = () => {
 
         <Divider className="!my-8" />
 
-        
+        <h1 className='my-2 font-semibold'>This is your Job Seeker Profile Section</h1>
         <Grid container spacing={6}>
       
           <Grid item xs={12} md={6}>
+         
             <Section title="Skills">
               <div className="flex flex-wrap gap-2 mb-4">
                 {skills.map((skill, index) => (
