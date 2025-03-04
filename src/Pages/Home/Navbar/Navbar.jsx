@@ -165,9 +165,7 @@ const Navbar = () => {
         </button>
         {menuOpen && (
           <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
+          
             <li>
               <Link to="#">Cafeteria</Link>
             </li>
@@ -193,7 +191,7 @@ const Navbar = () => {
       </div>
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="/">Home</Link>
+     
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Cafeteria</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Class Schedule</Link>
