@@ -3,11 +3,12 @@ import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import StudentRegisterModal from "./StudentRegisterModal";
 
-const RegisterModal = ({ isOpen, onClose }) => {
+const RegisterModal = ({ isOpen, onClose,setIsRegisterOpen }) => {
   const [formData, setFormData] = useState({
     role: "student",
   
   });
+ 
 
   // Handle Input Change
   const handleChange = (e) => {
@@ -56,7 +57,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
           {/* Student-Specific Fields */}
           {formData.role === "student" && (
             <div className="max-w-7xl mx-auto ">
-             <StudentRegisterModal isOpen={isOpen} onClose={onClose}/>
+             <StudentRegisterModal isOpen={isOpen} setIsRegisterOpen={setIsRegisterOpen} />
             </div>
           )}
 

@@ -1,8 +1,12 @@
 import  { useState } from 'react';
 import { TextField, Button, Grid, Box, Typography, FormControlLabel, Checkbox } from '@mui/material';
+import { toast } from 'react-toastify';
+import { axiosPublic } from '../../Hooks/usePublic';
 
-const StudentRegisterModal = () => {
+// eslint-disable-next-line react/prop-types
+const StudentRegisterModal = ({ setIsRegisterOpen }) => {
   const [formData, setFormData] = useState({
+    role:'student', 
     student_id: '',
     name: '',
     gmail: '',
@@ -81,13 +85,47 @@ const StudentRegisterModal = () => {
       }
     }
   };
+
+
   
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData); 
+  
+    // Ensure current_gpa is a number
+    if (formData.academic_info && formData.academic_info.current_gpa) {
+      formData.academic_info.current_gpa = parseFloat(formData.academic_info.current_gpa);
+    }
+  
+    if (formData.name === '') {
+      toast.warning('Name is required');
+    } else if (formData.gmail === '') {
+      toast.warning('Email is required');
+    } else if (formData.password === '' || formData.password.length < 6) {
+      toast.warning('Password must be at least 6 characters');
+    } else if (formData.contact === '') {
+      toast.warning('Contact number is required');
+    }
+  
+    axiosPublic.post('/user/create-student', formData)
+      .then((response) => {
+        const user = response.data.data[0];
+        console.log(user);
+        toast.success('Please Login');
+        setIsRegisterOpen(false); // Close the modal after successful registration
+      })
+      .catch(err => {
+        if (err.response && err.response.data && err.response.data.error) {
+          const errorMessages = err.response.data.error.details.map(detail => detail.message);
+          errorMessages.forEach(msg => toast.error(msg)); // Show all validation errors
+        } else {
+          toast.error('Something went wrong. Please try again.');
+        }
+        console.error(err);
+      });
   };
-
+  
+  
   return (
     <Box sx={{ padding: 3, maxHeight: '80vh', overflowY: 'auto' }}>
       <Typography variant="h4" gutterBottom>
@@ -128,15 +166,15 @@ const StudentRegisterModal = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Contact"
+              label="Password"
               variant="outlined"
               fullWidth
-              name="contact"
-              value={formData.contact}
+              name="password"
+              value={formData.password}
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} >
             <TextField
               label="Address"
               variant="outlined"
@@ -146,6 +184,18 @@ const StudentRegisterModal = () => {
               onChange={handleChange}
             />
           </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Contact"
+              variant="outlined"
+              fullWidth
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+            />
+          </Grid>
+        
 
           {/* Program and Semester */}
           <Grid item xs={12} sm={6}>
@@ -281,7 +331,7 @@ const StudentRegisterModal = () => {
 
           {/* Submit Button */}
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" type="submit" fullWidth>
+            <Button variant="contained" color="primary" type="submit"  fullWidth>
               Submit
             </Button>
           </Grid>

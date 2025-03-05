@@ -7,6 +7,8 @@ import BusSchedule from "../Pages/Student/Bus/Bus/BusSchedule";
 import ClassSchedule from "../Pages/Student/Class/Class/ClassSchedule";
 import Login from "../Components/Login/Login";
 import CantenStaff from "../Pages/CantenStaff/CantenStaff/CantenStaff";
+import StudentPrivate from "../Private/StudentPrivate";
+import Unauthorized from "../Components/Unauthorized/Unauthorized";
 
 
 
@@ -23,7 +25,7 @@ export const router = createBrowserRouter([
         },
             {
                 path:'/student-dashboard',
-                element:<Home/>
+                element:<StudentPrivate><Home/></StudentPrivate>
             },
        
          {
@@ -38,6 +40,9 @@ export const router = createBrowserRouter([
             },{
                 path:'/cantenstaff',
                 element:<CantenStaff/>
+            },{
+                path:'/unauthorized',
+                element:<Unauthorized/>
             }
           
         ]
@@ -51,5 +56,5 @@ export const router = createBrowserRouter([
                 element:<h1>Admin Dashboard</h1>
             }
         ]
-    }
+    },
 ])
