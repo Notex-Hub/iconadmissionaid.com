@@ -1,42 +1,21 @@
-import { useEffect, useState } from "react";
+
 import { FaBus } from "react-icons/fa6";
 import OvierViewData from "../OverviewData/OvierViewData";
 import TodayData from "../TodayData/TodayData";
 import Upcoming from "../Upcoming/Upcoming";
+import RealTimeDate from "../../../Components/RealTimeDate";
+import { useState } from "react";
 
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [currentDate, setCurrentDate] = useState("");
 
-  useEffect(() => {
-    const updateDateTime = () => {
-      const date = new Date();
-      const formattedDate = date.toLocaleString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      });
-      setCurrentDate(formattedDate);
-    };
-
-    // Update date and time every second
-    const interval = setInterval(updateDateTime, 1000);
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="space-y-4 p-4 container mx-auto">
       <div className="flex justify-between items-center md:flex-row flex-col">
       <h1 className="text-2xl  font-semibold mt-5">Student Dashboard</h1>
-      <p>{currentDate}</p>
+      <RealTimeDate/>
       </div>
 
       <div className="flex space-x-4 border-b">

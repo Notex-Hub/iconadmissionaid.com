@@ -49,11 +49,11 @@ const Upcoming = () => {
     ];
   
     return (
-      <div className="space-y-6 p-4  mx-auto">
-        <div className="rounded-xl p-6 shadow-lg bg-white">
-          <h2 className="text-2xl font-bold text-gray-800">Upcoming Events</h2>
+      <div className="space-y-4  mx-auto">
+        <div className="">
+          <h2 className="text-xl font-bold text-gray-800">Upcoming Events</h2>
           <p className="text-sm text-gray-500">Events happening in the next 7 days</p>
-          <div className="mt-4 space-y-6">
+          <div className="mt-4 space-y-4">
             {eventsData.map((day, index) => (
               <div key={index}>
                 <h3 className="font-semibold text-lg text-gray-700">{day.date}</h3>

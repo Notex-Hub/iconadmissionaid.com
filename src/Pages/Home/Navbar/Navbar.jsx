@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import {  Link, useNavigate } from 'react-router-dom';
 import { BellIcon } from 'lucide-react';
-import { LuBrainCircuit } from "react-icons/lu";
-import useUser from '../../../Hooks/useUser';
 import { toast } from 'react-toastify';
-import { axiosPublic } from '../../../Hooks/usePublic';
-import Profile from './Profile';
 
+import Profile from './Profile';
+const  profile = {
+ name:'ripon'
+}
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const { profile, isLoading, isError, refetch } = useUser();
   
   const navigate = useNavigate(); 
  
@@ -192,7 +191,8 @@ const Navbar = () => {
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
      
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Cafeteria</Link>
+        <Link to='/' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
+        <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Class Schedule</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>

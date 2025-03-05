@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
-import ProfilePage from "../Pages/profile/ProfilePage";
 import DashboardLayout from "../Layout/DashboardLayout";
+import Home from "../Pages/Home/Home/Home";
+import CafeteriaMenu from "../Pages/Cafeteria/Cafeteria/CafeteriaMenu";
 
 
 
@@ -11,11 +12,15 @@ export const router = createBrowserRouter([
         path:"/",
         element:<MainLayout/>,
         children:[
-       
             {
-                path:"/profile",
-                element:<ProfilePage/>
+                path:'/',
+                element:<Home/>
             },
+       
+         {
+                path:'/cafeteria',
+                element:<CafeteriaMenu/>
+            }
           
         ]
     },
