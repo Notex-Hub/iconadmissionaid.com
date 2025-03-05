@@ -1,17 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
+import StudentRegisterModal from "./StudentRegisterModal";
 
 const RegisterModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     role: "student",
-    fullName: "",
-    email: "",
-    password: "",
-    program: "",
-    yearOfStudy: "",
-    department: "",
-    employeeId: "",
+  
   });
 
   // Handle Input Change
@@ -19,12 +14,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Form Submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Registration Data:", formData);
-    alert(`Successfully registered as ${formData.role}`);
-  };
+
 
   return (
     <div
@@ -33,7 +23,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       } duration-300`}
     >
       <div
-        className={`bg-white p-6 rounded-lg shadow-lg w-96 transform transition-transform ${
+        className={`bg-white p-6 rounded-lg shadow-lg  transform transition-transform ${
           isOpen ? "scale-100" : "scale-90"
         } duration-300`}
       >
@@ -46,15 +36,15 @@ const RegisterModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Registration Form */}
-        <form className="mt-4" onSubmit={handleSubmit}>
+        <div className="mt-4">
           {/* Role Selection */}
-          <div className="mb-4">
+          <div className="mb-4 px-5">
             <label className="block text-sm font-medium text-gray-700">Select Role</label>
             <select
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 px-3 py-2 border-none bg-gray-100  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="student">Student</option>
               <option value="faculty">Faculty</option>
@@ -62,70 +52,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
             </select>
           </div>
 
-          {/* Common Fields */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your name"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-
+        
           {/* Student-Specific Fields */}
           {formData.role === "student" && (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Program</label>
-                <input
-                  type="text"
-                  name="program"
-                  value={formData.program}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your program (e.g., Computer Science)"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Year of Study</label>
-                <input
-                  type="number"
-                  name="yearOfStudy"
-                  value={formData.yearOfStudy}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter year of study (e.g., 2)"
-                />
-              </div>
-            </>
+            <div className="max-w-7xl mx-auto ">
+             <StudentRegisterModal isOpen={isOpen} onClose={onClose}/>
+            </div>
           )}
 
           {/* Faculty-Specific Fields */}
@@ -173,14 +105,8 @@ const RegisterModal = ({ isOpen, onClose }) => {
             </>
           )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
-          >
-            Register
-          </button>
-        </form>
+       
+        </div>
       </div>
     </div>
   );

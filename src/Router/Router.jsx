@@ -6,6 +6,7 @@ import Home from "../Pages/Student/Home/Home/Home";
 import BusSchedule from "../Pages/Student/Bus/Bus/BusSchedule";
 import ClassSchedule from "../Pages/Student/Class/Class/ClassSchedule";
 import Login from "../Components/Login/Login";
+import CantenStaff from "../Pages/CantenStaff/CantenStaff/CantenStaff";
 
 
 
@@ -34,6 +35,9 @@ export const router = createBrowserRouter([
             },{
                 path:'/classSchedule',
                 element:<ClassSchedule/>
+            },{
+                path:'/cantenstaff',
+                element:<CantenStaff/>
             }
           
         ]
