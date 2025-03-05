@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaBus } from "react-icons/fa6";
 import OvierViewData from "../OverviewData/OvierViewData";
 import TodayData from "../TodayData/TodayData";
+import Upcoming from "../Upcoming/Upcoming";
 
 
 export default function Home() {
@@ -95,13 +96,7 @@ export default function Home() {
         )}
         {activeTab === "upcoming" && (
           <div className="space-y-4">
-            <div className="p-4 border rounded-lg shadow-sm bg-white">
-              <h3 className="text-sm font-medium text-gray-700">Upcoming Events</h3>
-              <ul className="mt-2 space-y-2 text-sm text-gray-600">
-                <li>Career Fair - Tomorrow</li>
-                <li>Movie Night - Friday</li>
-              </ul>
-            </div>
+          <Upcoming/>
           </div>
         )}
       </div>
