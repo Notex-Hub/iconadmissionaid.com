@@ -195,7 +195,7 @@ const Navbar = () => {
         <Link to='/' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
         <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/busSchedule">Bus Schedule  </Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Class Schedule</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="/classSchedule">Class Schedule</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Campus Map  </Link>
         {/* Sign Up Modal */}

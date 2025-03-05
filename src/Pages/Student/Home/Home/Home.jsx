@@ -3,8 +3,9 @@ import { FaBus } from "react-icons/fa6";
 import OvierViewData from "../OverviewData/OvierViewData";
 import TodayData from "../TodayData/TodayData";
 import Upcoming from "../Upcoming/Upcoming";
-import RealTimeDate from "../../../Components/RealTimeDate";
 import { useState } from "react";
+import RealTimeDate from "../../../../Components/RealTimeDate";
+import Navbar from "../Navbar/Navbar"
 
 
 export default function Home() {
@@ -12,7 +13,9 @@ export default function Home() {
 
 
   return (
-    <div className="space-y-4 p-4 container mx-auto">
+    <div>
+      <Navbar/>
+      <div className="space-y-4 p-4 container mx-auto">
       <div className="flex justify-between items-center md:flex-row flex-col">
       <h1 className="text-2xl  font-semibold mt-5">Student Dashboard</h1>
       <RealTimeDate/>
@@ -79,6 +82,7 @@ export default function Home() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

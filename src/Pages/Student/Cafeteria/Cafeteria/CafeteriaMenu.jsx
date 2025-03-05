@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { toast } from "react-toastify";
-import RealTimeDate from "../../../Components/RealTimeDate";
+import RealTimeDate from "../../../../Components/RealTimeDate";
+import Navbar from "../../Home/Navbar/Navbar"
 
 const CafeteriaMenu = () => {
   const [orderItems, setOrderItems] = useState([]);
@@ -43,7 +44,9 @@ const CafeteriaMenu = () => {
   };
 
   return (
-    <div className="container  mx-auto p-6">
+  <div>
+    <Navbar />
+      <div className="container  mx-auto p-6">
       {/* Header */}
 
     <div className="flex flex-col md:flex-row md:justify-between items-center  gap-2">
@@ -113,6 +116,7 @@ const CafeteriaMenu = () => {
       </div>
    </div>
     </div>
+  </div>
   );
 };
 

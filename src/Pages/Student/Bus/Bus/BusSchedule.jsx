@@ -2,7 +2,9 @@ import { Bus } from 'lucide-react';
 import { useState } from 'react';
 import {  MapPin, Bell, AlertTriangle } from 'react-feather';
 import Schedule from '../Schedule/Schedule';
-import RealTimeDate from '../../../Components/RealTimeDate';
+import RealTimeDate from '../../../../Components/RealTimeDate';
+import Navbar from "../../Home/Navbar/Navbar"
+
 
 const BusSchedule = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,7 +63,9 @@ const BusSchedule = () => {
   };
 
   return (
-    <div className="space-y-4 container mx-auto my-4 p-4">
+ <div>
+  <Navbar />
+     <div className="space-y-4 container mx-auto my-4 p-4">
       <div className="flex items-center justify-between flex-col md:flex-row ">
         <h2 className="text-xl font-bold tracking-tight">Bus Schedule</h2>
         <div className="flex items-center space-x-2">
@@ -200,6 +204,7 @@ const BusSchedule = () => {
 
       <Schedule/>
     </div>
+ </div>
   );
 };
 

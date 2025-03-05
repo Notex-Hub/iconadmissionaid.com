@@ -1,9 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
 import DashboardLayout from "../Layout/DashboardLayout";
-import Home from "../Pages/Home/Home/Home";
-import CafeteriaMenu from "../Pages/Cafeteria/Cafeteria/CafeteriaMenu";
-import BusSchedule from "../Pages/Bus/Bus/BusSchedule";
+import CafeteriaMenu from "../Pages/Student/Cafeteria/Cafeteria/CafeteriaMenu";
+import Home from "../Pages/Student/Home/Home/Home";
+import BusSchedule from "../Pages/Student/Bus/Bus/BusSchedule";
+import ClassSchedule from "../Pages/Student/Class/Class/ClassSchedule";
+
+
 
 
 
@@ -24,6 +27,9 @@ export const router = createBrowserRouter([
             },{
                 path:'/busSchedule',
                 element:<BusSchedule/>
+            },{
+                path:'/classSchedule',
+                element:<ClassSchedule/>
             }
           
         ]
