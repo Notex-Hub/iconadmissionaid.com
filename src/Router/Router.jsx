@@ -3,6 +3,7 @@ import MainLayout from "../Layout/MainLayout";
 import DashboardLayout from "../Layout/DashboardLayout";
 import Home from "../Pages/Home/Home/Home";
 import CafeteriaMenu from "../Pages/Cafeteria/Cafeteria/CafeteriaMenu";
+import BusSchedule from "../Pages/Bus/Bus/BusSchedule";
 
 
 
@@ -20,6 +21,9 @@ export const router = createBrowserRouter([
          {
                 path:'/cafeteria',
                 element:<CafeteriaMenu/>
+            },{
+                path:'/busSchedule',
+                element:<BusSchedule/>
             }
           
         ]

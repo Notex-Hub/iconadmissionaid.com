@@ -137,7 +137,8 @@ const Navbar = () => {
 
   
   return (
-    <header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto">
+<div className='shadow w-full'>
+<header className="px-4 lg:px-6 h-16 flex items-center justify-between container mx-auto ">
       <Link className="flex items-center justify-center gap-1" to="#">
 
         <span className="font-bold text-lg">UniHub</span>
@@ -193,7 +194,7 @@ const Navbar = () => {
      
         <Link to='/' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
         <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Bus Schedule  </Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="/busSchedule">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Class Schedule</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Campus Map  </Link>
@@ -277,6 +278,7 @@ const Navbar = () => {
         </div>
       )}
     </header>
+</div>
   );
 };
 
