@@ -1,4 +1,5 @@
 import  { useState } from "react";
+import useBus from "../../../../Hooks/useBus";
 
 const busRoutes = [
   {
@@ -47,7 +48,10 @@ const busRoutes = [
 ];
 
 const Schedule = () => {
-  const [activeTab, setActiveTab] = useState("route-a");
+  const [ bus ] = useBus();
+  const busData=bus?.data;
+  const delaydBus = busData?.filter( d => d.status === 'Delayed');
+  const [activeTab, setActiveTab] = useState("R512");
 
   return (
     <div className="my-5 mx-auto">
@@ -59,39 +63,39 @@ const Schedule = () => {
         <div className="p-4">
           <div className="tabs">
             <div className="w-96 flex  bg-gray-100  overflow-hidden px-5  py-1 rounded-md">
-              {busRoutes.map((route) => (
+              {busData?.map((route) => (
                 <button
                   key={route.id}
-                  className={`tab-trigger w-full py-2 text-sm font-medium ${activeTab === route.id ? 'bg-white text-black font-semibold px-2  rounded-lg' : 'text-gray-600 cursor-pointer'}`}
-                  onClick={() => setActiveTab(route.id)}
+                  className={`tab-trigger w-full py-2 text-sm font-medium ${activeTab === route.route_id ? 'bg-white text-black font-semibold px-2  rounded-lg' : 'text-gray-600 cursor-pointer'}`}
+                  onClick={() => setActiveTab(route.route_id)}
                 >
-                  {route.name}
+                  {route.route_id}
                 </button>
               ))}
             </div>
-            {busRoutes.map((route) => (
-              <div key={route.id} className={`tab-content ${activeTab === route.id ? "block" : "hidden"}`}>
+            {busData?.map((route) => (
+              <div key={route._id} className={`tab-content ${activeTab === route.route_id ? "block" : "hidden"}`}>
                 <div className="overflow-x-auto mt-4">
                   <table className="min-w-full border-collapse">
                     <thead>
                       <tr className="border-b">
                         <th className="text-left p-2 font-medium">Stop</th>
-                        {route.stops[0].times.map((time, i) => (
+                        {route.stops.map((time, i) => (
                           <th key={i} className="text-center p-2 font-medium">
-                            {time}
+                            {time?.arrival_time}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {route.stops.map((stop, index) => (
+                      {route?.stops?.map((stop, index) => (
                         <tr key={index} className="border-b">
-                          <td className="p-2 font-medium">{stop.name}</td>
-                          {stop.times.map((time, i) => (
-                            <td key={i} className="text-center p-2">
-                              {time}
+                          <td className="p-2 font-medium">{stop.stop_name}</td>
+                         
+                            <td  className="text-center p-2">
+                              {stop?.departure_time}
                             </td>
-                          ))}
+                   
                         </tr>
                       ))}
                     </tbody>

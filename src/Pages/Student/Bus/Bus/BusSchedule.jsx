@@ -1,61 +1,23 @@
-import { Bus } from 'lucide-react';
+import { Bus, Watch } from 'lucide-react';
 import { useState } from 'react';
 import {  MapPin, Bell, AlertTriangle } from 'react-feather';
 import Schedule from '../Schedule/Schedule';
 import RealTimeDate from '../../../../Components/RealTimeDate';
 import Navbar from "../../Home/Navbar/Navbar"
+import useBus from '../../../../Hooks/useBus';
 
 
 const BusSchedule = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState(false);
-  const [activeTab, setActiveTab] = useState('routes'); // Track active tab
+  const [activeTab, setActiveTab] = useState('routes'); 
+  const [ bus ] = useBus();
+  const busData=bus?.data;
+  const delaydBus = busData?.filter( d => d.status === 'Delayed');
 
-  const busRoutes = [
-    {
-      id: "route-a",
-      name: "Route A",
-      description: "Main Campus → North Campus",
-      stops: [
-        { name: "Main Campus", times: ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"] },
-        { name: "Library", times: ["8:05 AM", "10:05 AM", "12:05 PM", "2:05 PM", "4:05 PM", "6:05 PM"] },
-        { name: "Science Building", times: ["8:10 AM", "10:10 AM", "12:10 PM", "2:10 PM", "4:10 PM", "6:10 PM"] },
-        { name: "North Campus", times: ["8:15 AM", "10:15 AM", "12:15 PM", "2:15 PM", "4:15 PM", "6:15 PM"] },
-      ],
-      status: "on-time",
-      nextBus: "10:00 AM",
-    },
-    {
-      id: "route-b",
-      name: "Route B",
-      description: "Main Campus → Downtown",
-      stops: [
-        { name: "Main Campus", times: ["7:30 AM", "9:30 AM", "11:30 AM", "1:30 PM", "3:30 PM", "5:30 PM"] },
-        { name: "Student Center", times: ["7:35 AM", "9:35 AM", "11:35 AM", "1:35 PM", "3:35 PM", "5:35 PM"] },
-        { name: "Downtown Station", times: ["7:45 AM", "9:45 AM", "11:45 AM", "1:45 PM", "3:45 PM", "5:45 PM"] },
-        { name: "City Hall", times: ["7:50 AM", "9:50 AM", "11:50 AM", "1:50 PM", "3:50 PM", "5:50 PM"] },
-      ],
-      status: "delayed",
-      delay: "10 minutes",
-      nextBus: "9:40 AM",
-    },
-    {
-      id: "route-c",
-      name: "Route C",
-      description: "Main Campus → Residence Halls",
-      stops: [
-        { name: "Main Campus", times: ["8:15 AM", "10:15 AM", "12:15 PM", "2:15 PM", "4:15 PM", "6:15 PM"] },
-        { name: "Dining Hall", times: ["8:18 AM", "10:18 AM", "12:18 PM", "2:18 PM", "4:18 PM", "6:18 PM"] },
-        { name: "Residence Hall A", times: ["8:22 AM", "10:22 AM", "12:22 PM", "2:22 PM", "4:22 PM", "6:22 PM"] },
-      ],
-      status: "on-time",
-      nextBus: "10:15 AM",
-    },
-  ];
-
-  const filteredRoutes = busRoutes.filter(route =>
-    route.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    route.stops.some(stop => stop.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredRoutes = busData?.filter(route =>
+    route.route_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    route.stops.some(stop => stop.stop_name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const subscribeToAlerts = (routeName) => {
@@ -96,12 +58,15 @@ const BusSchedule = () => {
           </div>
         </div>
 
-        {busRoutes.some(route => route.status === "delayed") && (
+        {busData?.some(route => route.status === "Delayed") && (
           <div className="alert alert-destructive p-4 flex items-center space-x-2 bg-red-500 text-white rounded-md">
             <AlertTriangle className="h-4 w-4" />
             <div>
               <div className="font-semibold">Service Disruption</div>
-              <div>Route B is currently delayed by 10 minutes due to traffic.</div>
+              {
+                delaydBus?.map(delay => <div key={delay._id}> {delay?.route_name} is currently delayed by 10 minutes due to traffic.</div> )
+              }
+             
             </div>
           </div>
         )}
@@ -130,27 +95,38 @@ const BusSchedule = () => {
 
           <div className={`tab-content ${activeTab === 'routes' ? 'block' : 'hidden'}`}>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filteredRoutes.map((route) => (
+              {filteredRoutes?.map((route) => (
                 <div key={route.id} className="card p-4 bg-white shadow-lg rounded-lg space-y-4">
                   <div className="flex justify-between">
                     <div className="flex items-center">
                       <Bus className="mr-2 h-5 w-5" />
-                      <span className="font-semibold">{route.name}</span>
+                      <span className="font-semibold">{route.route_name}</span>
                     </div>
-                    <span className={`badge ${route.status === "on-time" ? "badge-outline" : "badge-destructive"}`}>
-                      {route.status === "on-time" ? "On Time" : `Delayed (${route.delay})`}
+                    <span className={`badge ${route.status === "On Time" ? "border border-gray-300 text-green-500" : "badge-destructive text-red-500"}`}>
+                      {route.status === "On Time" ? "On Time" : `${route?.status}`}
                     </span>
                   </div>
                   <div>{route.description}</div>
                   <div className="text-sm text-muted-foreground">
-                    <div>Next Departure: {route.nextBus}</div>
+                  <div className="mt-2">
+                      <div className="font-medium">Next Departure Time:</div>
+                      <div className="mt-2 space-y-2">
+                        {route.stops.map((stop, index) => (
+                          <div key={index} className="flex items-center">
+                            <Watch className="mr-2 h-4 w-4 text-muted-foreground" />
+                            {stop.departure_time}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                   
                     <div className="mt-2">
                       <div className="font-medium">Stops:</div>
                       <div className="mt-2 space-y-2">
                         {route.stops.map((stop, index) => (
                           <div key={index} className="flex items-center">
                             <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                            {stop.name}
+                            {stop.stop_name}
                           </div>
                         ))}
                       </div>
@@ -188,11 +164,11 @@ const BusSchedule = () => {
             {/* Alerts */}
             <div className="card p-4 bg-white shadow-lg rounded-lg space-y-4">
               <div className="font-semibold mb-2">Recent Service Alerts</div>
-              {busRoutes.map((route) => route.status === "delayed" && (
+              {busData?.map((route) => route.status === "Delayed" && (
                 <div key={route.id} className="alert alert-destructive p-4 bg-red-500 text-white rounded-md">
                   <AlertTriangle className="h-4 w-4" />
-                  <div className="font-semibold">Delay on {route.name}</div>
-                  <div>{route.name} is delayed by {route.delay} due to traffic.</div>
+                  <div className="font-semibold">Delay on {route.route_name}</div>
+                  <div>{route.route_name} is delayed by {route.status} due to traffic.</div>
                 </div>
               ))}
             </div>

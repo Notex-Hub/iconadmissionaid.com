@@ -1,6 +1,12 @@
+/* eslint-disable react/no-unescaped-entities */
+import useBus from "../../../../Hooks/useBus";
 
 
 const TodayData = () => {
+  const [ bus ] = useBus();
+  const busData=bus?.data;
+
+
   const scheduleItems = [
     { time: "10:00 AM - 11:30 AM", title: "CS 101", location: "Room 302", type: "class" },
     { time: "12:00 PM - 1:00 PM", title: "Lunch Break", location: "Main Cafeteria", type: "break" },
@@ -26,11 +32,6 @@ const TodayData = () => {
     ]}
   ];
 
-  const busSchedule = [
-    { route: "Route A (Main Campus → North Campus)", times: ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"] },
-    { route: "Route B (Main Campus → Downtown)", times: ["7:30 AM", "9:30 AM", "11:30 AM", "1:30 PM", "3:30 PM", "5:30 PM"] },
-    { route: "Route C (Main Campus → Residence Halls)", times: ["8:15 AM", "10:15 AM", "12:15 PM", "2:15 PM", "4:15 PM", "6:15 PM"] }
-  ];
 
   return (
     <div className="space-y-4">
@@ -95,12 +96,26 @@ const TodayData = () => {
             <p className="text-sm text-gray-500">Today's bus departures</p>
           </div>
           <div className="card-content space-y-4">
-            {busSchedule.map((route, index) => (
+            {busData?.map((route, index) => (
               <div key={index}>
-                <h4 className="font-medium">{route.route}</h4>
+
+                <div className="flex ">
+                <h4 className="font-medium mr-2">Route:{route.route_id} -</h4>
+                {route?.stops?.map((place, idx) => (
+                    <div key={idx} className="flex">
+   <div  className="">{place?.stop_name},</div>
+                    </div>
+     
+                  ))}
+                </div>
+             
                 <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
-                  {route.times.map((time, idx) => (
-                    <div key={idx} className="rounded-md bg-gray-200 px-2 py-1 text-center">{time}</div>
+                  {route?.stops?.map((time, idx) => (
+                    <div key={idx} className="">
+                                     <div  className="rounded-md bg-gray-200 px-2 py-1 text-center">{time?.arrival_time}</div>
+                                     <div  className="rounded-md bg-gray-200 px-2 py-1 text-center mt-2">{time?.departure_time}</div>
+                    </div>
+     
                   ))}
                 </div>
               </div>
