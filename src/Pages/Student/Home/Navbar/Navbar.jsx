@@ -4,26 +4,16 @@ import { BellIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 import Profile from './Profile';
-const  profile = {
- name:'ripon'
-}
+import useProfile from '../../../../Hooks/useProfile';
+
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { profile,refetch } = useProfile();
   const menuRef = useRef(null);
   
   const navigate = useNavigate(); 
- 
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false); // New state to toggle between Sign Up and Login
-
-  // Menu toggle logic
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -42,96 +32,12 @@ const Navbar = () => {
     };
   }, [menuOpen]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Handle login logic
-
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const email = formData.email;
-    const password = formData.password;
-    const data = { email, password };
- 
-  
-    try {
-      const response = await axiosPublic.post('/auth/login', data);
-  
-      // Log the response to check the structure
-      console.log('Login response:', response);
-  
-      // Check if response.data and response.data.data are defined
-      if (response.data && response.data.data) {
-        const { token, user } = response.data.data;
-  
-        if (token && user) {
-          localStorage.setItem('token', token);
-  
-          // Using toast instead of alert
-          toast.success(`Welcome, ${user.email}! 🎉`);
-          console.log('Logged in user:', user);
-        } else {
-          toast.error('User data is missing in the response.');
-          console.error('Response missing user data:', response);
-        }
-      } else {
-        toast.error('Invalid response structure');
-        console.error('Unexpected response structure:', response);
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed!';
-      toast.error(errorMessage);
-      console.error('Login error:', err);
-    }
-  
-    setIsModalOpen(false);
-    refetch();
-  };
-  
-  // Handle sign-up logic
-
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    const email = formData.email;
-    const name = formData.name;
-    const password = formData.password;
-    const role = 'user';
-    const isBlocked = false;
-    const data = { email, password, name, role, isBlocked };
-  
-    try {
-      // Send sign-up data to your API
-      const response = await axiosPublic.post('/auth/register', data);
-      const { token, user, message } = response.data;
-  
-      // Store JWT token for auto-login
-      localStorage.setItem('token', token);
-  
-      // Success toast
-      toast.success(message || `Welcome, ${user.email}! 🎉 You are now logged in.`);
-  
-      console.log('Signed up and logged in user:', user);
-  
-      setIsModalOpen(false);
-      refetch();
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Sign-up failed!';
-      toast.error(errorMessage);
-      console.error('Sign-up error:', err);
-    }
-  };
-
-  
     const logout = () => {
       localStorage.removeItem("token"); 
       navigate("/"); 
       refetch();
       window.location.reload();
+      toast.success('Logout Success')
     };
   
 
@@ -213,70 +119,7 @@ const Navbar = () => {
         </button>
       </nav>
 
-      {/* Sign Up and Login Form */}
-      {isModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box relative transition-all duration-500 ease-in-out">
-            <button
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-              onClick={() => setIsModalOpen(false)}
-            >
-              ✖
-            </button>
-            <h2 className="text-2xl font-bold text-center mb-4">
-              {isLogin ? 'Login' : 'Sign Up'}
-            </h2>
-            <form
-              onSubmit={isLogin ? handleLogin : handleSignUp}
-              className="space-y-4"
-            >
-              {!isLogin && (
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input input-bordered w-full"
-                  required
-                />
-              )}
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="input input-bordered w-full"
-                required
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input input-bordered w-full"
-                required
-              />
-              <button
-                type="submit"
-                className="text-white px-2 py-2 rounded-md bg-black hover:cursor-pointer w-full"
-              >
-                {isLogin ? 'Login' : 'Sign Up'}
-              </button>
-            </form>
-            <div className="modal-action">
-              <button
-                className="text-sm hover:underline hover:cursor-pointer"
-                onClick={() => setIsLogin(!isLogin)} // Toggle between Login and Sign Up
-              >
-                {isLogin ? 'Create an account' : 'Already have an account? Login'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+   
     </header>
 </div>
   );

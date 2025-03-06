@@ -2,28 +2,6 @@ import { BookOpenIcon, ClockIcon } from "lucide-react";
 import useAllClasses from "../../../../../Hooks/useAllClasses";
 
 
-const scheduleData = {
-  monday: [
-    { time: "10:00 AM - 11:30 AM", course: "CS 101", location: "Room 302", professor: "Dr. Smith" },
-    { time: "2:00 PM - 3:30 PM", course: "MATH 201", location: "Room 156", professor: "Dr. Johnson" },
-  ],
-  tuesday: [
-    { time: "9:30 AM - 11:00 AM", course: "ENG 110", location: "Room 405", professor: "Prof. Williams" },
-    { time: "1:00 PM - 2:30 PM", course: "PHYS 101", location: "Room 220", professor: "Dr. Brown" },
-  ],
-  wednesday: [
-    { time: "10:00 AM - 11:30 AM", course: "CS 101", location: "Room 302", professor: "Dr. Smith" },
-    { time: "3:30 PM - 5:00 PM", course: "CHEM 101", location: "Room 180", professor: "Dr. Davis" },
-  ],
-  thursday: [
-    { time: "9:30 AM - 11:00 AM", course: "ENG 110", location: "Room 405", professor: "Prof. Williams" },
-    { time: "2:00 PM - 3:30 PM", course: "MATH 201", location: "Room 156", professor: "Dr. Johnson" },
-  ],
-  friday: [
-    { time: "1:00 PM - 2:30 PM", course: "PHYS 101", location: "Room 220", professor: "Dr. Brown" },
-  ],
-};
-
 const WeeklySchedule = () => {
   const [ classes ] = useAllClasses();
   const classData=classes?.data;

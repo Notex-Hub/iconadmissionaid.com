@@ -1,11 +1,13 @@
 import { Link,  } from "react-router-dom";
 import { FaRegUserCircle } from "react-icons/fa";
+import useProfile from "../../../../Hooks/useProfile";
 
 
 
 
+// eslint-disable-next-line react/prop-types
 const Profile = ({logout}) => {
-
+  const { profile } = useProfile();
  
 
     return (
@@ -19,8 +21,8 @@ const Profile = ({logout}) => {
           <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-56">
             <li className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
-                <p className="text-xs leading-none text-gray-500">john.doe@example.com</p>
+                <p className="text-sm font-medium leading-none">{profile?.name}</p>
+                <p className="text-xs leading-none text-gray-500">{profile?.gmail}</p>
               </div>
             </li>
             <li><hr className="my-1" /></li>
