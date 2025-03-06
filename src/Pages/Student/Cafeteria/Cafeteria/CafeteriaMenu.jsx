@@ -3,45 +3,90 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import RealTimeDate from "../../../../Components/RealTimeDate";
 import Navbar from "../../Home/Navbar/Navbar"
+import useMeals from "../../../../Hooks/useMeals";
+import { FaTrash } from "react-icons/fa6";
+import { axiosPublic } from "../../../../Hooks/usePublic";
+import useProfile from "../../../../Hooks/useProfile";
 
 const CafeteriaMenu = () => {
+  const { profile } = useProfile();
+  // console.log(profile)
+  const [ meals ] = useMeals();
+  const mealsData=meals?.data;
   const [orderItems, setOrderItems] = useState([]);
+  const removeItem = (indexToRemove) => {
+    setOrderItems(orderItems.filter((_, index) => index !== indexToRemove));
+  };
+  console.log(orderItems)
+
+
   const [activeTab, setActiveTab] = useState("breakfast"); // State to track selected tab
 
   const addToOrder = (item) => {
     setOrderItems([...orderItems, item]);
-    toast.success(`${item.name} has been added to your order.`);
+ 
   };
+
+  // Filter Meals
+  const breakFast = mealsData
+  ?.flatMap(dayData => dayData?.meals) 
+  ?.filter(meal => meal?.type === "breakfast"); 
+
+  // Filter Meals
+  const lunch = mealsData
+  ?.flatMap(dayData => dayData?.meals) 
+  ?.filter(meal => meal?.type === "lunch"); 
+
+  // Filter Meals
+  const dinner = mealsData
+  ?.flatMap(dayData => dayData?.meals) 
+  ?.filter(meal => meal?.type === "dinner"); 
+
+
+
+
+
 
   const placeOrder = () => {
     if (orderItems.length === 0) {
       toast.error("Please add items before placing an order.");
       return;
+    } 
+
+    const totalPrice = orderItems.reduce((total, meal) => total + meal.price, 0);
+
+    const data = {
+        user:profile?._id,
+        selected_meals:orderItems,
+        total_price:totalPrice,
+        status:"Pending"
+        
+
+
     }
-    toast.success("Your order has been placed and will be ready for pickup in 15 minutes.");
-    setOrderItems([]); // Clear order after placing
+    console.log(data)
+
+
+      axiosPublic.post('/preOrder/craete-preOrder', data).then(response => 
+        console.log(response),
+        toast.success("Your order has been placed and will be ready for pickup in 15 minutes.")
+      ).catch(err=> {
+        console.log(err)
+      })
+ 
+
+
+
+
+
+  
+    setOrderItems([]); 
   };
 
-  const mealData = {
-    breakfast: [
-      { id: 1, name: "Pancakes with Maple Syrup", price: 5.99, description: "Fluffy pancakes served with maple syrup and butter" },
-      { id: 2, name: "Egg & Cheese Sandwich", price: 4.5, description: "Scrambled eggs and cheddar cheese on a toasted English muffin" },
-      { id: 3, name: "Fruit Bowl", price: 3.99, description: "Fresh seasonal fruits" },
-      { id: 4, name: "Yogurt Parfait", price: 4.25, description: "Greek yogurt with granola and berries" },
-    ],
-    lunch: [
-      { id: 5, name: "Pasta Bar", price: 8.99, description: "Build your own pasta with choice of sauce and toppings" },
-      { id: 6, name: "Grilled Chicken Sandwich", price: 7.5, description: "Grilled chicken breast with lettuce, tomato, and mayo on a brioche bun" },
-      { id: 7, name: "Vegetarian Wrap", price: 6.99, description: "Hummus, roasted vegetables, and feta cheese in a whole wheat wrap" },
-      { id: 8, name: "Caesar Salad", price: 6.5, description: "Romaine lettuce, croutons, parmesan cheese, and Caesar dressing" },
-    ],
-    dinner: [
-      { id: 9, name: "Stir Fry Station", price: 9.99, description: "Custom stir fry with choice of protein, vegetables, and sauce" },
-      { id: 10, name: "Pizza", price: 6.5, description: "Cheese or pepperoni pizza slice" },
-      { id: 11, name: "Salad Bar", price: 5.99, description: "Build your own salad with fresh vegetables and toppings" },
-      { id: 12, name: "Grilled Salmon", price: 11.99, description: "Grilled salmon with roasted vegetables and rice" },
-    ],
-  };
+
+
+
+
 
   return (
   <div>
@@ -71,14 +116,16 @@ const CafeteriaMenu = () => {
       </div>
 
    <div className="flex lg:flex-row flex-col ">
-       {/* Menu Items for Selected Tab */}
-       <div className="grid md:grid-cols-2 gap-5 grid-cols-1">
-        {mealData[activeTab].map((item) => (
-          <div key={item.id} className="p-4 border rounded-lg flex justify-between items-center mb-3">
+
+    {
+      activeTab === 'breakfast' && (
+        <div className="grid md:grid-cols-2 gap-5 grid-cols-1">
+        {breakFast?.map((item, i) => (
+          <div key={i} className="p-4 border rounded-lg flex justify-between items-center mb-3">
             <div>
-              <h4 className="font-semibold">{item.name}</h4>
-              <p className="text-sm text-gray-500">{item.description}</p>
-              <p className="text-sm font-semibold mt-1">${item.price.toFixed(2)}</p>
+              <h4 className="font-semibold">{item?.name}</h4>
+              <p className="text-sm text-gray-500">{item?.category}</p>
+              <p className="text-sm font-semibold mt-1">${item?.price.toFixed(2)}</p>
             </div>
             <button
               onClick={() => addToOrder(item)}
@@ -89,32 +136,97 @@ const CafeteriaMenu = () => {
           </div>
         ))}
       </div>
+      )
+    }
+
+    {
+      activeTab === 'lunch' && (
+        <div className="grid md:grid-cols-2 gap-5 grid-cols-1">
+        {lunch?.map((item, i) => (
+          <div key={i} className="p-4 border rounded-lg flex justify-between items-center mb-3">
+            <div>
+              <h4 className="font-semibold">{item?.name}</h4>
+              <p className="text-sm text-gray-500">{item?.category}</p>
+              <p className="text-sm font-semibold mt-1">${item?.price.toFixed(2)}</p>
+            </div>
+            <button
+              onClick={() => addToOrder(item)}
+              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+            >
+              Add
+            </button>
+          </div>
+        ))}
+      </div>
+      )
+    }
+
+    {
+      activeTab === 'dinner' && (
+        <div className="grid md:grid-cols-2 gap-5 grid-cols-1">
+        {dinner?.map((item, i) => (
+          <div key={i} className="p-4 border rounded-lg flex justify-between items-center mb-3">
+            <div>
+              <h4 className="font-semibold">{item?.name}</h4>
+              <p className="text-sm text-gray-500">{item?.category}</p>
+              <p className="text-sm font-semibold mt-1">${item?.price.toFixed(2)}</p>
+            </div>
+            <button
+              onClick={() => addToOrder(item)}
+              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+            >
+              Add
+            </button>
+          </div>
+        ))}
+      </div>
+      )
+    }
+
+
+ 
+    
+
+
 
       {/* Order Summary */}
-      <div className=" p-4 border rounded-lg grow lg:ml-5">
-        <h3 className="text-xl font-semibold mb-3">Your Order</h3>
-        {orderItems.length > 0 ? (
-          <ul className="space-y-2">
-            {orderItems.map((item, index) => (
-              <li key={index} className="flex justify-between">
-                <span>{item.name}</span>
+      <div className="p-4 rounded-lg grow lg:ml-5">
+      <h3 className="text-xl font-semibold mb-3">Your Order</h3>
+      {orderItems.length > 0 ? (
+        <ul className="space-y-2">
+          {orderItems.map((item, index) => (
+            <li key={index} className="flex justify-between items-center">
+              <span>{item.name}</span>
+              <div className="flex items-center space-x-2">
                 <span className="font-semibold">${item.price.toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">Your order is empty.</p>
-        )}
+                <button
+                  onClick={() => removeItem(index)}
+                  className="text-red-500 hover:text-red-700 cursor-pointer"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">Your order is empty.</p>
+      )}
 
-        {/* Place Order Button */}
-        <button
-          onClick={placeOrder}
-          className="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Place Order
-        </button>
-      </div>
+      {/* Place Order Button */}
+      <button
+        onClick={placeOrder}
+        className="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        disabled={orderItems.length === 0}
+      >
+        Place Order
+      </button>
+    </div>
+
    </div>
+
+
+
     </div>
   </div>
   );
