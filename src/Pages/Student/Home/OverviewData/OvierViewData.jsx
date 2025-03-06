@@ -1,15 +1,12 @@
 
 import { Compass, MapPin } from "react-feather"; // Assuming you're using react-feather for the icons
+import useAllClasses from "../../../../Hooks/useAllClasses";
 
 const OvierViewData = () => {
-  const schedule = [
-    { day: "Monday", classes: ["CS 101 (10:00 AM)", "MATH 201 (2:00 PM)"] },
-    { day: "Tuesday", classes: ["ENG 110 (9:30 AM)", "PHYS 101 (1:00 PM)"] },
-    { day: "Wednesday", classes: ["CS 101 (10:00 AM)", "CHEM 101 (3:30 PM)"] },
-    { day: "Thursday", classes: ["ENG 110 (9:30 AM)", "MATH 201 (2:00 PM)"] },
-    { day: "Friday", classes: ["PHYS 101 (1:00 PM)"] },
-  ];
+  const [ classes ] = useAllClasses();
+  const classData=classes?.data;
 
+// console.log(classData)
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
       {/* Weekly Schedule Card */}
@@ -19,15 +16,17 @@ const OvierViewData = () => {
         </div>
         <div className="card-body">
           <div className="space-y-4">
-            {schedule.map((item, index) => (
+            {classData?.map((item, index) => (
               <div key={index} className="flex items-start space-x-4">
-                <div className="w-24 font-semibold text-gray-700">{item.day}</div>
+                <div className="w-24 font-semibold text-gray-700">{item?.day}</div>
                 <div className="flex-1 space-y-2">
-                  {item.classes.map((cls, i) => (
-                    <div key={i} className="bg-gray-100 p-2 rounded-lg shadow-sm text-sm text-gray-800">
-                      {cls}
+                
+                    <div  className="bg-gray-100 p-2 rounded-lg shadow-sm text-sm text-gray-800">
+                  <p>  Class Time:  {item?.time}</p>
+                  <p className="my-1">Course Id: {item?.courseId?.course_code}</p>
+                  <p className="my-1">Department: {item?.courseId?.department}</p>
                     </div>
-                  ))}
+            
                 </div>
               </div>
             ))}

@@ -1,37 +1,40 @@
 /* eslint-disable react/no-unescaped-entities */
+import moment from "moment";
+import useAllClasses from "../../../../Hooks/useAllClasses";
 import useBus from "../../../../Hooks/useBus";
+import useMeals from "../../../../Hooks/useMeals";
+import { useEffect, useState } from "react";
 
 
 const TodayData = () => {
+   const [todaysMeals, setTodaysMeals] = useState(null);
   const [ bus ] = useBus();
+  const [ classes ] = useAllClasses();
+  const [ meals, refetch ] = useMeals();
+  const mealsData=meals?.data;
   const busData=bus?.data;
+  const classData=classes?.data;
+    const today = moment().format("dddd"); // Current day (e.g., "Monday")
+  
+      // Filter only today's classes
+      const todayClasses = classData?.filter(cls => cls.day === today);
 
+// console.log(todayClasses)
 
-  const scheduleItems = [
-    { time: "10:00 AM - 11:30 AM", title: "CS 101", location: "Room 302", type: "class" },
-    { time: "12:00 PM - 1:00 PM", title: "Lunch Break", location: "Main Cafeteria", type: "break" },
-    { time: "2:00 PM - 3:30 PM", title: "MATH 201", location: "Room 156", type: "class" },
-    { time: "4:00 PM - 5:00 PM", title: "Study Group", location: "Library", type: "meeting" },
-  ];
+  // Today Meals
+  useEffect(() => {
+    const today = moment().format("dddd"); // Example: "Monday"
 
-  const meals = [
-    { meal: "Breakfast", time: "7:00 AM - 10:00 AM", items: [
-      { name: "Pancakes with Maple Syrup", price: "$5.99" },
-      { name: "Egg & Cheese Sandwich", price: "$4.50" },
-      { name: "Fruit Bowl", price: "$3.99" }
-    ]},
-    { meal: "Lunch", time: "11:00 AM - 2:00 PM", items: [
-      { name: "Pasta Bar", price: "$8.99" },
-      { name: "Grilled Chicken Sandwich", price: "$7.50" },
-      { name: "Vegetarian Wrap", price: "$6.99" }
-    ]},
-    { meal: "Dinner", time: "5:00 PM - 8:00 PM", items: [
-      { name: "Stir Fry Station", price: "$9.99" },
-      { name: "Pizza", price: "$6.50" },
-      { name: "Salad Bar", price: "$5.99" }
-    ]}
-  ];
+    const todayMealData = mealsData?.find((meal) => meal.day === today);
 
+    if (todayMealData) {
+      setTodaysMeals(todayMealData.meals);
+    } else {
+      setTodaysMeals([]);
+    }
+  }, [mealsData]);
+
+ 
 
   return (
     <div className="space-y-4">
@@ -42,12 +45,12 @@ const TodayData = () => {
           <p className="text-sm text-gray-500">Your classes and events for today</p>
         </div>
         <div className="card-content space-y-4">
-          {scheduleItems.map((item, index) => (
-            <div key={index} className="flex items-center">
-              <div className="w-[120px] text-sm font-medium">{item.time}</div>
+          {todayClasses?.map((item, index) => (
+            <div key={index} className="flex items-center gap-4">
+              <div className="w-[120px] text-sm font-medium">{item?.time}</div>
               <div className="flex-1">
-                <div className="font-medium">{item.title}</div>
-                <div className="text-sm text-gray-500">{item.location}</div>
+                <div className="font-medium">{item?.courseId?.course_name}</div>
+                <div className="text-sm text-gray-500">{item?.room}</div>
               </div>
               <div
                 className={`rounded-full px-2 py-1 text-xs ${
@@ -58,7 +61,7 @@ const TodayData = () => {
                     : "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
                 }`}
               >
-                {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                {/* {item.type.charAt(0).toUpperCase() + item.type.slice(1)} */}
               </div>
             </div>
           ))}
@@ -73,16 +76,21 @@ const TodayData = () => {
             <p className="text-sm text-gray-500">Menu items available today</p>
           </div>
           <div className="card-content space-y-4">
-            {meals.map((meal, index) => (
+            {todaysMeals?.map((meal, index) => (
               <div key={index}>
-                <h4 className="font-medium">{meal.meal} ({meal.time})</h4>
+                <h4 className="font-medium uppercase">{meal?.type} ({meal?.category}) </h4>
                 <ul className="mt-2 space-y-2 text-sm">
-                  {meal.items.map((item, idx) => (
-                    <li key={idx} className="flex justify-between">
-                      <span>{item.name}</span>
-                      <span className="text-gray-500">{item.price}</span>
+               
+                    <li  className="flex justify-between">
+                      <p>{meal?.name}</p>
+                      <p className="flex flex-col text-green-600"> <span>Calories:{meal?.calories}g</span> 
+                      <span>Protein:{meal?.protein}</span> 
+                      <span>Fat:{meal?.fat}</span>
+                      <span>Carbs:{meal?.carbs}</span>
+                      </p>
+                      <span className=" text-black font-semibold">$ {meal?.price}</span>
                     </li>
-                  ))}
+                
                 </ul>
               </div>
             ))}

@@ -128,8 +128,6 @@ const [nextBus, setNextBus] = useState(null);
 
   // Next Class
 
-
-
   useEffect(() => {
     const today = moment().format("dddd"); // Current day (e.g., "Monday")
     const currentTime = moment(); // Current time
@@ -160,7 +158,7 @@ const [nextBus, setNextBus] = useState(null);
 
 
 
-console.log(nextClass)
+
 
 
 
