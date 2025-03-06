@@ -17,7 +17,6 @@ const CafeteriaMenu = () => {
   const removeItem = (indexToRemove) => {
     setOrderItems(orderItems.filter((_, index) => index !== indexToRemove));
   };
-  console.log(orderItems)
 
 
   const [activeTab, setActiveTab] = useState("breakfast"); // State to track selected tab
@@ -64,11 +63,10 @@ const CafeteriaMenu = () => {
 
 
     }
-    console.log(data)
 
 
+      // eslint-disable-next-line no-unused-vars
       axiosPublic.post('/preOrder/craete-preOrder', data).then(response => 
-        console.log(response),
         toast.success("Your order has been placed and will be ready for pickup in 15 minutes.")
       ).catch(err=> {
         console.log(err)

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Avatar, Button, Grid, Typography, Divider, Chip, IconButton, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { CameraAlt, CloudUpload, Add, Delete, Save } from '@mui/icons-material';
-import useUser from '../../Hooks/useUser';
+import useUser from '../../../../Hooks/useUser';
 
 const ProfilePage = () => {
   const [profileImage, setProfileImage] = useState(null);
