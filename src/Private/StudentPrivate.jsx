@@ -6,7 +6,7 @@ import Loader from "../Ui/Loader";
 const StudentPrivate = ({ children }) => {
     const { profile, isLoading } = useProfile();
     const location = useLocation();
-    console.log(profile)
+    // console.log(profile);
 
     // Show loader while user data is loading
     if (isLoading) {

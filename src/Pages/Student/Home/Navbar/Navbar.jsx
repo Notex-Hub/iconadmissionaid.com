@@ -192,7 +192,7 @@ const Navbar = () => {
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
      
-        <Link to='/' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
+        <Link to='/student-dashboard' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
         <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/busSchedule">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/classSchedule">Class Schedule</Link>
