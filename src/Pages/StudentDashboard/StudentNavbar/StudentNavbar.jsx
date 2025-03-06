@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BellIcon } from "lucide-react";
-import Profile from "../../Student/Home/Navbar/Profile";
 import useProfile from "../../../Hooks/useProfile";
 import { toast } from "react-toastify";
+import Profile from "../../Student/Home/Navbar/Profile";
 
 
 
-const FacultyNavbar = () => {
+const StudentNavbar = () => {
+    // eslint-disable-next-line no-unused-vars
     const { profile,refetch } = useProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -127,4 +128,4 @@ const FacultyNavbar = () => {
   );
 };
 
-export default FacultyNavbar;
+export default StudentNavbar;

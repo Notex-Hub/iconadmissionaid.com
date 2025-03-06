@@ -10,6 +10,7 @@ import CantenStaff from "../Pages/CantenStaff/CantenStaff/CantenStaff";
 import StudentPrivate from "../Private/StudentPrivate";
 import Unauthorized from "../Components/Unauthorized/Unauthorized";
 import Faculty from "../Pages/Faculty/Faculty/Faculty";
+import StudentDashboard from "../Pages/StudentDashboard/StudentDashboard/StudentDashboard";
 
 
 
@@ -25,8 +26,8 @@ export const router = createBrowserRouter([
             element:<Login/>
         },
             {
-                path:'/student-dashboard',
-                element:<StudentPrivate><Home/></StudentPrivate>
+                path:'/dashboard',
+                element:<Home/>
             },
        
          {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
             },{
                 path:'/faculty-dashboard',
                 element:<Faculty/>
+            }
+            ,{
+                path:'/student-dashboard',
+                element:<StudentDashboard/>
             }
           
         ]

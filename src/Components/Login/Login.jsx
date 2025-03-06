@@ -49,9 +49,9 @@ const Login = () => {
     
     
             if (user?.role === 'student') {
-                navigate('/student-dashboard')
+                navigate('/dashboard')
               } if (user?.role === 'faculty') {
-                navigate('/faculty-dashboard')
+                navigate('/dashboard')
               }
 
             //   else if (user?.accountType === 'admin') {

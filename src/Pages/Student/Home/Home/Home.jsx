@@ -169,7 +169,7 @@ const [nextBus, setNextBus] = useState(null);
       <Navbar/>
       <div className="space-y-4 p-4 container mx-auto">
       <div className="flex justify-between items-center md:flex-row flex-col">
-      <h1 className="text-2xl  font-semibold mt-5">Student Dashboard</h1>
+      <h1 className="text-2xl  font-semibold mt-5"> Dashboard</h1>
       <RealTimeDate/>
       </div>
 

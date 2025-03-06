@@ -87,29 +87,23 @@ const Navbar = () => {
             <li>
               <Link to="#">Campus Map         </Link>
             </li>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>
-              {isLogin ? 'Login' : 'Sign Up'}
-            </button>
+          <li>
+          <Profile logout={logout} />
+          </li>
           </ul>
         )}
       </div>
 
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
      
-        <Link to='/student-dashboard' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
+        <Link to='/dashboard' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
         <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/busSchedule">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/classSchedule">Class Schedule</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Campus Map  </Link>
         {/* Sign Up Modal */}
-       {
-        profile && profile.name ? <Profile logout={logout} /> : <button  onClick={() => setIsModalOpen(true)} className='text-sm font-medium hover:cursor-pointer px-2 py-1 bg-black text-white rounded-md'>  {isLogin ? 'Login' : 'Sign Up'}</button> 
-
-       }
-
+        <Profile logout={logout} />
     
       
 

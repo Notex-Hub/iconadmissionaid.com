@@ -8,7 +8,15 @@ import useProfile from "../../../../Hooks/useProfile";
 // eslint-disable-next-line react/prop-types
 const Profile = ({logout}) => {
   const { profile } = useProfile();
- 
+  let dashboardRoute = "/dashboard";
+  if (profile?.role === "admin") {
+    dashboardRoute = "/admin-dashboard";
+  } else if (profile?.role === "faculty") {
+    dashboardRoute = "/faculty-dashboard";
+  } else if (profile?.role  === "student") {
+    dashboardRoute = "/student-dashboard";
+  }
+
 
     return (
         <div>
@@ -27,7 +35,7 @@ const Profile = ({logout}) => {
             </li>
             <li><hr className="my-1" /></li>
             <li>
-              <a onClick={() => console.log('Opening dashboard UI')}>Dashboard</a>
+              <Link to={dashboardRoute}><a onClick={() => console.log('Opening dashboard UI')}>Dashboard</a></Link>
             </li>
             <li><Link to="/profile">Profile</Link></li>
             <li><Link to="/settings">Settings</Link></li>
