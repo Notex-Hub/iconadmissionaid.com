@@ -50,18 +50,15 @@ const Login = () => {
     
             if (user?.role === 'student') {
                 navigate('/dashboard')
-              } if (user?.role === 'faculty') {
+              } else if (user?.role === 'faculty') {
+                navigate('/dashboard')
+              }else if (user?.role === 'canteen_staff') {
+                navigate('/dashboard')
+              }else if (user?.role === 'admin') {
                 navigate('/dashboard')
               }
 
-            //   else if (user?.accountType === 'admin') {
-            //     navigate('/admin-dashboard')
-                
-            //   }
-            // //   else if (user?.accountType === 'agent') {
-            //     navigate('/agent-dashboard')
-                
-            //   }
+          
             toast.success(`Welcome, ${user?.name}! 🎉`);
 
             

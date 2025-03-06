@@ -11,6 +11,8 @@ import StudentPrivate from "../Private/StudentPrivate";
 import Unauthorized from "../Components/Unauthorized/Unauthorized";
 import Faculty from "../Pages/Faculty/Faculty/Faculty";
 import StudentDashboard from "../Pages/StudentDashboard/StudentDashboard/StudentDashboard";
+import FacultyPrivate from "../Private/FacultyPrivate";
+import Admin from "../Pages/Admin/Admin/Admin";
 
 
 
@@ -47,23 +49,17 @@ export const router = createBrowserRouter([
                 element:<Unauthorized/>
             },{
                 path:'/faculty-dashboard',
-                element:<Faculty/>
+                element:<FacultyPrivate><Faculty/></FacultyPrivate>
             }
             ,{
                 path:'/student-dashboard',
-                element:<StudentDashboard/>
+                element:<StudentPrivate><StudentDashboard/></StudentPrivate>
+            },{
+                path:'/admin-dashboard',
+                element:<Admin/>
             }
           
         ]
-    },
-    {
-        path:'/admin-dashboard',
-        element:<DashboardLayout/>,
-        children:[
-            {
-                path:'/admin-dashboard',
-                element:<h1>Admin Dashboard</h1>
-            }
-        ]
-    },
+    }
+   
 ])

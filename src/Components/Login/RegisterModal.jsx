@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import StudentRegisterModal from "./StudentRegisterModal";
 import FacultyRegisterModal from "./FacultyRegisterModal";
+import CantenStaffModal from "./CantenStaffModal";
 
 const RegisterModal = ({ isOpen, onClose,setIsRegisterOpen }) => {
   const [formData, setFormData] = useState({
@@ -74,16 +75,8 @@ const RegisterModal = ({ isOpen, onClose,setIsRegisterOpen }) => {
           {/* Canteen Staff Fields */}
           {formData.role === "canteen_staff" && (
             <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Staff ID</label>
-                <input
-                  type="text"
-                  name="employeeId"
-                  value={formData.employeeId}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter staff ID"
-                />
+              <div className="max-w-7xl mx-auto ">
+               <CantenStaffModal setIsRegisterOpen={setIsRegisterOpen}/>
               </div>
             </>
           )}

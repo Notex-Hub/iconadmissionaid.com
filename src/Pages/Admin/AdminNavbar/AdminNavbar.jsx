@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BellIcon } from "lucide-react";
-
+import { toast } from "react-toastify";
+import useProfile from "../../../Hooks/useProfile";
 import Profile from "../../Student/Home/Navbar/Profile";
 
 
 
-const CantenStaffNavbar = () => {
+const AdminNavbar = () => {
+    // eslint-disable-next-line no-unused-vars
+    const { profile,refetch } = useProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,6 +31,17 @@ const CantenStaffNavbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
+
+   const logout = () => {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+        refetch();
+        window.location.reload();
+        toast.success('Logout Success')
+      };
+    
+
+
 
   return (
     <div className="shadow w-full">
@@ -80,34 +95,29 @@ const CantenStaffNavbar = () => {
             to="/dashboard"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Home
+            Dashboard
           </Link>
           <Link
-            to="/cafeteria"
+            to=""
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Cafeteria
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            to="/busSchedule"
-          >
-            Order
+           Courses
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to="#"
+            to=""
           >
-            Events & Clubs
+          Students
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             to="#"
           >
-            Campus Map{" "}
+           Research
           </Link>
+        
 
-          <Profile />
+          <Profile logout={logout} />
           <button className="btn btn-ghost btn-circle">
             <BellIcon className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
@@ -118,4 +128,4 @@ const CantenStaffNavbar = () => {
   );
 };
 
-export default CantenStaffNavbar;
+export default AdminNavbar;

@@ -15,6 +15,8 @@ const Profile = ({logout}) => {
     dashboardRoute = "/faculty-dashboard";
   } else if (profile?.role  === "student") {
     dashboardRoute = "/student-dashboard";
+  } else if (profile?.role  === "canteen_staff") {
+    dashboardRoute = "/cantenstaff";
   }
 
 
