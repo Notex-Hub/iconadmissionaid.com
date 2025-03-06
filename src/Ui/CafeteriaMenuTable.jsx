@@ -1,23 +1,48 @@
-import { useEffect, useRef, useState } from "react";
-import { FaEllipsisV,  FaPlus } from "react-icons/fa";
-import Modal from "./Modal"; // Importing the modal component
-
-const menuItemsData = [
-  { id: "ITEM001", name: "Grilled Chicken Sandwich", category: "Lunch", price: "$5.99", calories: 450, available: true, dietary: ["Protein-rich"] },
-  { id: "ITEM002", name: "Vegetable Stir Fry", category: "Dinner", price: "$6.50", calories: 380, available: true, dietary: ["Vegetarian", "Vegan"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-  { id: "ITEM003", name: "Pancakes with Maple Syrup", category: "Breakfast", price: "$4.25", calories: 520, available: true, dietary: ["Vegetarian"] },
-];
+import { useEffect, useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import useMeals from "../Hooks/useMeals";
+import { axiosPublic } from "../Hooks/usePublic";
+import { toast } from "react-toastify";
+import MealItem from "./MealItam";
+import MealItemModal from "./MealItemModal";
 
 const CafeteriaMenuTable = () => {
-  const [menuItems, setMenuItems] = useState(menuItemsData);
+  const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mealsData, refetch] = useMeals();
+
+  // Get today's meals from API data
+  useEffect(() => {
+    if (mealsData?.data) {
+      // Get current day name
+      const today = new Date().toLocaleString("en-us", { weekday: "long" });
+
+      // Find today's meals in the data
+      const todaysMealData = mealsData.data.find((day) => day.day === today);
+
+      if (todaysMealData && todaysMealData.meals) {
+        // Transform meals data to match our component's format
+        const formattedMeals = todaysMealData.meals.map((meal) => ({
+          id: meal._id,
+          day_id: todaysMealData._id, 
+          _id: meal._id, // Keep original ID for API operations
+          name: meal.name,
+          category: meal.category,
+          price:
+            typeof meal.price === "number"
+              ? `$${meal.price.toFixed(2)}`
+              : meal.price,
+          calories: meal.calories,
+          available: meal.available ?? true,
+          dietary: [meal.category],
+          type: meal.type,
+        }));
+
+        setMenuItems(formattedMeals);
+      }
+    }
+  }, [mealsData]);
 
   // Open modal for adding a new item
   const openAddModal = () => {
@@ -25,137 +50,125 @@ const CafeteriaMenuTable = () => {
     setModalOpen(true);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef(null);
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const handleCloseModal = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      setIsModalOpen(false);  // Close modal if click is outside
-    }
-  };
-
-  // Attach event listener to handle click outside modal
-useEffect(() => {
-    document.addEventListener("mousedown", handleCloseModal);
-    return () => {
-      document.removeEventListener("mousedown", handleCloseModal);
-    };
-  }, []);
   // Open modal for editing an existing item
   const openEditModal = (item) => {
     setSelectedItem(item);
     setModalOpen(true);
   };
 
-  // Handle item addition or update
+  // Handle item deletion
+  const handleDelete = async (item) => {
+    if (!window.confirm(`Are you sure you want to delete ${item.name}?`)) {
+      return;
+    }
+
+    try {
+      // Call API to delete meal
+      await axiosPublic.delete(`/meal/${item._id}`);
+
+      // Update local state
+      setMenuItems(menuItems.filter((i) => i.id !== item.id));
+
+      // Show success message
+      toast.success("Item deleted successfully");
+
+      // Refresh data
+      refetch();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      toast.error(error.response?.data?.message || "Failed to delete item");
+    }
+  };
+
+  // Handle item save (add/edit)
   const handleSave = (item) => {
     if (selectedItem) {
       // Update existing item
-      setMenuItems(menuItems.map((i) => (i.id === item.id ? item : i)));
+      setMenuItems(
+        menuItems.map((i) =>
+          i.id === selectedItem.id ? { ...item, id: selectedItem.id } : i
+        )
+      );
     } else {
       // Add new item
-      setMenuItems([...menuItems, { ...item, id: `ITEM${menuItems.length + 1}` }]);
+      setMenuItems([...menuItems, { ...item, id: `TEMP_${Date.now()}` }]);
     }
+
     setModalOpen(false);
   };
 
+  // Group meals by type (breakfast, lunch, dinner)
+  const groupedMeals = {
+    breakfast: menuItems.filter((item) => item.type === "breakfast"),
+    lunch: menuItems.filter((item) => item.type === "lunch"),
+    dinner: menuItems.filter((item) => item.type === "dinner"),
+  };
+
   return (
-    <div className="w-full p-4">
-      {/* Table Actions */}
+    <div className="w-full p-2">
       <div className="flex items-center justify-between mb-4">
-        <button className="px-3 py-2 text-sm border rounded-md bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2" onClick={openAddModal}>
+        <div className="text-lg font-semibold">
+          Today&apos;s Menu -{" "}
+          {new Date().toLocaleDateString("en-US", { weekday: "long" })}
+        </div>
+        <button
+          className="px-3 py-2 text-sm border rounded-md bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2"
+          onClick={openAddModal}
+        >
           <FaPlus /> Add Item
         </button>
       </div>
 
-      {/* Responsive Table */}
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="w-full min-w-[800px] border-collapse">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700 text-sm">
-              <th className="p-2 text-left">Name</th>
-              <th className="p-2 text-left">Category</th>
-              <th className="p-2 text-left">Price</th>
-              <th className="p-2 text-left">Calories</th>
-              <th className="p-2 text-left">Dietary</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-right">Actions</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            {menuItems.map((item) => (
-              <tr key={item.id} className="border-t hover:bg-gray-100">
-                <td className="p-2 font-medium">{item.name}</td>
-                <td className="p-2">{item.category}</td>
-                <td className="p-2">{item.price}</td>
-                <td className="p-2">{item.calories}</td>
-                <td className="p-2">
-                  {item.dietary.length > 0 ? (
-                    item.dietary.map((diet, index) => (
-                      <span key={index} className="px-2 py-1 text-xs bg-gray-200 rounded-md mr-1">
-                        {diet}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-gray-500">None</span>
-                  )}
-                </td>
-                <td className="p-2">
-                  <span className={`px-2 py-1 text-xs rounded-md ${item.available ? "bg-green-500 text-white" : "bg-gray-300 text-gray-700"}`}>
-                    {item.available ? "Available" : "Unavailable"}
-                  </span>
-                </td>
+      {["breakfast", "lunch", "dinner"].map((mealType) => (
+        <div key={mealType} className="mb-6 relative">
+          <h3 className="text-lg font-medium capitalize mb-3">{mealType}</h3>
 
-                <td className="p-2 text-right relative">
-      <button
-        className="p-1 rounded-md hover:bg-gray-200"
-        onClick={toggleModal}
-      >
-        <FaEllipsisV />
-      </button>
+          <div className="overflow-x-auto border rounded-lg">
+            <table className="w-full min-w-[800px] border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-gray-700 text-sm">
+                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Category</th>
+                  <th className="p-2 text-left">Price</th>
+                  <th className="p-2 text-left">Calories</th>
+                  <th className="p-2 text-left">Dietary</th>
+                  <th className="p-2 text-left">Status</th>
+                  <th className="p-2 text-right">Actions</th>
+                </tr>
+              </thead>
 
-      {isModalOpen && (
-        <div
-          ref={modalRef}
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 mt-2 w-40 bg-white shadow-md rounded-md z-50 transition-all duration-200"
-        >
-          <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-            Available
-          </button>
-          <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-            Unavailable
-          </button>
-          <button className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
-            Delete
-          </button>
+              <tbody>
+                {groupedMeals[mealType].length > 0 ? (
+                  groupedMeals[mealType].map((item) => (
+                    <MealItem
+                      key={item.id}
+                      item={item}
+                      onEdit={openEditModal}
+                      onDelete={handleDelete}
+                      refetchData={refetch}
+                    />
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="p-4 text-center text-gray-500">
+                      No {mealType} items available for today
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
+      ))}
+
+      {modalOpen && (
+        <MealItemModal
+          item={selectedItem}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSave}
+          refetchData={refetch}
+        />
       )}
-    </td>
-    
-    
-            
-              </tr>
-
-
-              
-            ))}
-
-            
-          </tbody>
-
-  
-        </table>
-
-      </div>
-
-      {/* Modal Component */}
-      {modalOpen && <Modal item={selectedItem} onClose={() => setModalOpen(false)} onSave={handleSave} />}
-   
     </div>
   );
 };
