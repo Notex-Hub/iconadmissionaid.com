@@ -9,6 +9,7 @@ import Login from "../Components/Login/Login";
 import CantenStaff from "../Pages/CantenStaff/CantenStaff/CantenStaff";
 import StudentPrivate from "../Private/StudentPrivate";
 import Unauthorized from "../Components/Unauthorized/Unauthorized";
+import Faculty from "../Pages/Faculty/Faculty/Faculty";
 
 
 
@@ -43,6 +44,9 @@ export const router = createBrowserRouter([
             },{
                 path:'/unauthorized',
                 element:<Unauthorized/>
+            },{
+                path:'/faculty-dashboard',
+                element:<Faculty/>
             }
           
         ]

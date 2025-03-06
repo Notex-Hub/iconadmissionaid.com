@@ -112,7 +112,7 @@ const StudentRegisterModal = ({ setIsRegisterOpen }) => {
         const user = response.data.data[0];
         console.log(user);
         toast.success('Please Login');
-        setIsRegisterOpen(false); // Close the modal after successful registration
+        setIsRegisterOpen(false); 
       })
       .catch(err => {
         if (err.response && err.response.data && err.response.data.error) {

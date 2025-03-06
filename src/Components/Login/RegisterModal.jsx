@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import StudentRegisterModal from "./StudentRegisterModal";
+import FacultyRegisterModal from "./FacultyRegisterModal";
 
 const RegisterModal = ({ isOpen, onClose,setIsRegisterOpen }) => {
   const [formData, setFormData] = useState({
@@ -64,27 +65,8 @@ const RegisterModal = ({ isOpen, onClose,setIsRegisterOpen }) => {
           {/* Faculty-Specific Fields */}
           {formData.role === "faculty" && (
             <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Department</label>
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter department (e.g., CSE)"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Employee ID</label>
-                <input
-                  type="text"
-                  name="employeeId"
-                  value={formData.employeeId}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter employee ID"
-                />
+              <div className="max-w-7xl mx-auto ">
+             <FacultyRegisterModal setIsRegisterOpen={setIsRegisterOpen}/>
               </div>
             </>
           )}
