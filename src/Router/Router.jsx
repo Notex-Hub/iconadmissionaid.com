@@ -16,6 +16,7 @@ import Admin from "../Pages/Admin/Admin/Admin";
 import Meals from "../Pages/CantenStaff/Meals/Meals";
 import Order from "../Pages/CantenStaff/Order/Order";
 import MyOrder from "../Pages/StudentDashboard/MyOrder/MyOrder";
+import ProfilePage from "../Pages/Student/Home/profile/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -82,6 +83,10 @@ export const router = createBrowserRouter([
       {
         path: '/my-orders',
         element: <MyOrder />
+      },
+      {
+        path: '/std-profile',
+        element: <ProfilePage />
       }
     ],
   },
