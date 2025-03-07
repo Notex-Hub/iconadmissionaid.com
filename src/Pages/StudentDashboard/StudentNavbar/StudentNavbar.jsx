@@ -5,14 +5,12 @@ import useProfile from "../../../Hooks/useProfile";
 import { toast } from "react-toastify";
 import Profile from "../../Student/Home/Navbar/Profile";
 
-
-
 const StudentNavbar = () => {
-    // eslint-disable-next-line no-unused-vars
-    const { profile,refetch } = useProfile();
+  // eslint-disable-next-line no-unused-vars
+  const { profile, refetch } = useProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,16 +30,13 @@ const StudentNavbar = () => {
     };
   }, [menuOpen]);
 
-   const logout = () => {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
-        refetch();
-        window.location.reload();
-        toast.success('Logout Success')
-      };
-    
-
-
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+    refetch();
+    window.location.reload();
+    toast.success("Logout Success");
+  };
 
   return (
     <div className="shadow w-full">
@@ -72,7 +67,7 @@ const StudentNavbar = () => {
           {menuOpen && (
             <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
               <li>
-                <Link to="#">Cafeteria</Link>
+                <Link to="/cafeteria">Meals</Link>
               </li>
               <li>
                 <Link to="#">Bus Schedule </Link>
@@ -81,7 +76,7 @@ const StudentNavbar = () => {
                 <Link to="#">Class Schedule</Link>
               </li>
               <li>
-                <Link to="#">Events & Clubs</Link>
+                <Link to="/my-orders">My Orders</Link>
               </li>
               <li>
                 <Link to="#">Campus Map </Link>
@@ -98,24 +93,29 @@ const StudentNavbar = () => {
             Dashboard
           </Link>
           <Link
-            to=""
+            to="/my-orders"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-           Courses
+            My Orders
+          </Link>
+          <Link
+            to="/cafeteria"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
+            Cafeteria
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             to=""
           >
-          Students
+            Students
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             to="#"
           >
-           Research
+            Research
           </Link>
-        
 
           <Profile logout={logout} />
           <button className="btn btn-ghost btn-circle">

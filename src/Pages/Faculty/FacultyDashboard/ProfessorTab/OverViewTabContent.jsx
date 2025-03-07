@@ -1,9 +1,50 @@
+import { useEffect, useState } from "react";
+import useAllClasses from "../../../../Hooks/useAllClasses";
+import useCourse from "../../../../Hooks/useCourse";
+import useUsers from "../../../../Hooks/useUsers";
 import { OverView } from "../../../../Ui/OverView";
 import { RecentActivity } from "../../../../Ui/RecentActivity";
 
 
 
 const OverViewTabContent = () => {
+  const [upcomingClass, setUpcomingClass] = useState(null);
+  const [ users ] = useUsers();
+  const [ classes ] = useAllClasses();
+  const [ course ] = useCourse();
+  const userData=users?.data;
+  const classData=classes?.data;
+  const courseData=course?.data;
+  const studentData = userData?.filter( x => x?.role === 'student')
+
+
+  
+// Upcoming Class
+  useEffect(() => {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const currentDay = new Date().toLocaleString('en-us', { weekday: 'long' });
+
+    const sortedClasses = classData?.sort((a, b) => {
+     
+      return daysOfWeek.indexOf(a.day) - daysOfWeek.indexOf(b.day);
+    });
+
+    // Find the next class
+    const nextClass = sortedClasses?.find((classInfo) => {
+      return daysOfWeek.indexOf(classInfo.day) > daysOfWeek.indexOf(currentDay);
+    });
+
+    if (nextClass) {
+      setUpcomingClass(nextClass);
+    } else {
+      setUpcomingClass(null); // If no upcoming class, display none
+    }
+  }, [classData]);
+
+
+
+
+
   return (
     <div className="space-y-4">
       {/* Top Cards */}
@@ -13,7 +54,7 @@ const OverViewTabContent = () => {
             <div className="card-title text-sm font-medium">Courses Teaching</div>
           </div>
           <div className="card-content">
-            <div className="text-2xl font-bold">77</div>
+            <div className="text-2xl font-bold">{courseData?.length}</div>
           </div>
         </div>
 
@@ -22,7 +63,7 @@ const OverViewTabContent = () => {
             <div className="card-title text-sm font-medium">Total Students</div>
           </div>
           <div className="card-content">
-            <div className="text-2xl font-bold">66</div>
+            <div className="text-2xl font-bold">{studentData?.length}</div>
           </div>
         </div>
 
@@ -30,9 +71,12 @@ const OverViewTabContent = () => {
           <div className="card-header flex items-center justify-between pb-2">
             <div className="card-title text-sm font-medium">Upcoming Classes</div>
           </div>
+         {
+          upcomingClass === null ? <p>No Upcoming Class</p> :
           <div className="card-content">
-            <div className="text-2xl font-bold">44</div>
-          </div>
+          <div className="text-2xl font-bold">{upcomingClass?.length}</div>
+        </div>
+         }
         </div>
 
         <div className="card">
@@ -40,7 +84,7 @@ const OverViewTabContent = () => {
             <div className="card-title text-sm font-medium">Research Projects</div>
           </div>
           <div className="card-content">
-            <div className="text-2xl font-bold">400</div>
+            <div className="text-2xl font-bold">4</div>
           </div>
         </div>
       </div>
