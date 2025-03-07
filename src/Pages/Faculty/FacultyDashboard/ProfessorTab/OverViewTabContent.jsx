@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useAllClasses from "../../../../Hooks/useAllClasses";
 import useCourse from "../../../../Hooks/useCourse";
 import useUsers from "../../../../Hooks/useUsers";
 import { OverView } from "../../../../Ui/OverView";
 import { RecentActivity } from "../../../../Ui/RecentActivity";
+import useDashboardOverview from "../../../../Hooks/useAdmindashboard";
 
 
 
@@ -16,6 +17,10 @@ const OverViewTabContent = () => {
   const classData=classes?.data;
   const courseData=course?.data;
   const studentData = userData?.filter( x => x?.role === 'student')
+  const [data]=useDashboardOverview()
+
+
+  const overData = useMemo(()=>data?.data?data?.data:[],[data])
 
 
   
@@ -105,7 +110,9 @@ const OverViewTabContent = () => {
             <div className="card-title my-2">Recent Activity</div>
           </div>
           <div className="card-content">
-            <RecentActivity />
+          <RecentActivity 
+            activities={overData?.recentactivity}
+            />
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import AdminCourses from '../AdminOverView/AdminCourses';
 import AdminUsers from '../AdminOverView/AdminUsers';
 import AdminCampus from '../AdminOverView/AdminCampus';
 import AdminEvents from '../AdminOverView/AdminEvents';
+import { CourseContent } from '../../Faculty/FacultyDashboard/ProfessorTab/CourseContent/CourseContent';
 
 
 
@@ -55,7 +56,7 @@ const AdminTab = () => {
           <AdminOverview/>
           </div>}
         {activeTab === 'courses' && <div>
-          <AdminCourses/>
+        <CourseContent/>
           </div>}
         {activeTab === 'users' && <div>
           <AdminUsers/>

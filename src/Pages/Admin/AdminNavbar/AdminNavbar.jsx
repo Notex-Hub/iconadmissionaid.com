@@ -72,7 +72,7 @@ const AdminNavbar = () => {
           {menuOpen && (
             <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
               <li>
-                <Link to="#">Cafeteria</Link>
+                <Link to="#">Home</Link>
               </li>
               <li>
                 <Link to="#">Bus Schedule </Link>
@@ -95,23 +95,23 @@ const AdminNavbar = () => {
             to="/dashboard"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Dashboard
+            Home
           </Link>
           <Link
-            to=""
+            to="/courses"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
            Courses
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to=""
+            to="/students"
           >
           Students
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to="#"
+            to="/research"
           >
            Research
           </Link>

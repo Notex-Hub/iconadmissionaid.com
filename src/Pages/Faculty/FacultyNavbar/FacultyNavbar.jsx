@@ -71,19 +71,16 @@ const FacultyNavbar = () => {
           {menuOpen && (
             <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
               <li>
-                <Link to="#">Cafeteria</Link>
+                <Link  to="/dashboard">Home</Link>
               </li>
               <li>
-                <Link to="#">Bus Schedule </Link>
+                <Link   to="/courses">Courses</Link>
               </li>
               <li>
-                <Link to="#">Class Schedule</Link>
+                <Link  to="/students">          Students</Link>
               </li>
               <li>
-                <Link to="#">Events & Clubs</Link>
-              </li>
-              <li>
-                <Link to="#">Campus Map </Link>
+                <Link to="/research">   Research </Link>
               </li>
             </ul>
           )}
@@ -94,23 +91,23 @@ const FacultyNavbar = () => {
             to="/dashboard"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Dashboard
+          Home
           </Link>
           <Link
-            to=""
+            to="/courses"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
            Courses
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to=""
+            to="/students"
           >
           Students
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to="#"
+            to="/research"
           >
            Research
           </Link>
