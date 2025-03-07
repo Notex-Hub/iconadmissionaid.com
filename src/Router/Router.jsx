@@ -19,6 +19,7 @@ import Courses from "../Pages/Faculty/Courses/Courses";
 import Students from "../Pages/Faculty/Students/Students";
 import Reasrch from "../Pages/Faculty/Research/Reasrch";
 import MyOrder from "../Pages/StudentDashboard/MyOrder/MyOrder";
+import ProfilePage from "../Pages/Student/Home/profile/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -97,6 +98,10 @@ export const router = createBrowserRouter([
       {
         path: '/my-orders',
         element: <MyOrder />
+      },
+      {
+        path: '/std-profile',
+        element: <ProfilePage />
       }
     ],
   },

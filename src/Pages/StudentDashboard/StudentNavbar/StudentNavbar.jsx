@@ -70,10 +70,10 @@ const StudentNavbar = () => {
                 <Link to="/cafeteria">Meals</Link>
               </li>
               <li>
-                <Link to="#">Bus Schedule </Link>
+                <Link to="/busSchedule">Bus Schedule </Link>
               </li>
               <li>
-                <Link to="#">Class Schedule</Link>
+                <Link to="/cafeteria">Meals</Link>
               </li>
               <li>
                 <Link to="/my-orders">My Orders</Link>
@@ -90,7 +90,7 @@ const StudentNavbar = () => {
             to="/dashboard"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Dashboard
+            Home
           </Link>
           <Link
             to="/my-orders"
@@ -102,19 +102,19 @@ const StudentNavbar = () => {
             to="/cafeteria"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Cafeteria
+            Meals
           </Link>
           <Link
+            to="/busSchedule"
             className="text-sm font-medium hover:underline underline-offset-4"
-            to=""
           >
-            Students
+            Bus Schedule
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             to="#"
           >
-            Research
+            Campus Map
           </Link>
 
           <Profile logout={logout} />
