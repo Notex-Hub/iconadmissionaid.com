@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { IoIosSend } from "react-icons/io";
 import ReactMarkdown from "react-markdown";
@@ -12,11 +13,7 @@ const Chatbot = ({chatbot,setChatbot}) => {
 
   const handleUserInput = (e) => setUserInput(e.target.value);
 
-  const handleClear = () => {
-    setUserInput("");
-    setResponse([]);
-    setIsLoading(false);
-  };
+
 
   const handleSubmit = async () => {
     if (!userInput.trim()) {
