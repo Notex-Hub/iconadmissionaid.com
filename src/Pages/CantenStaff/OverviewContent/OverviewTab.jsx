@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import CafeteriaMenuTable from "../../../Ui/CafeteriaMenuTable";
 import CafeteriaStats from "../../../Ui/CafeteriaStats";
+import DayWiseMenuTable from "../../../Ui/DayWiseMenuTable";
 
 
 const OverviewTab = () => {
@@ -20,7 +20,8 @@ const OverviewTab = () => {
         </div>
 
         {/* Card Content (Menu Table) */}
-        <CafeteriaMenuTable />
+        {/* <CafeteriaMenuTable /> */}
+        <DayWiseMenuTable />
       </div>
     </div>
   );

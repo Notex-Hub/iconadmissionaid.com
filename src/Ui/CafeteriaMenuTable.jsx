@@ -1,52 +1,75 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import useMeals from "../Hooks/useMeals";
-import { axiosPublic } from "../Hooks/usePublic";
 import { toast } from "react-toastify";
+import useMeals from "../Hooks/useMeals";
 import MealItem from "./MealItam";
 import MealItemModal from "./MealItemModal";
+import { axiosPublic } from "../Hooks/usePublic";
 
-const CafeteriaMenuTable = () => {
-  const [menuItems, setMenuItems] = useState([]);
+const MealTypeTable = ({ mealType }) => {
+  const [mealsData, refetch] = useMeals();
+  const [mealsByDay, setMealsByDay] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [mealsData, refetch] = useMeals();
+  const [loading, setLoading] = useState(false);
 
-  // Get today's meals from API data
+  // Get days of week in proper order
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
   useEffect(() => {
     if (mealsData?.data) {
-      // Get current day name
-      const today = new Date().toLocaleString("en-us", { weekday: "long" });
+      const allDaysMeals = {};
 
-      // Find today's meals in the data
-      const todaysMealData = mealsData.data.find((day) => day.day === today);
+      // Process each day's data
+      daysOfWeek.forEach((day) => {
+        const dayData = mealsData.data.find((d) => d.day === day);
+        if (dayData && dayData.meals) {
+          // Filter for the selected meal type and transform
+          const filteredMeals = dayData.meals
+            .filter((meal) => meal.type === mealType.toLowerCase())
+            .map((meal) => ({
+              id: meal._id,
+              day_id: dayData._id,
+              _id: meal._id,
+              name: meal.name,
+              category: meal.category,
+              price:
+                typeof meal.price === "number"
+                  ? `$${meal.price.toFixed(2)}`
+                  : meal.price,
+              calories: meal.calories,
+              protein: meal.protein,
+              fat: meal.fat,
+              carbs: meal.carbs,
+              day: day, // Add day info
+              available: meal.available ?? true,
+              dietary: [meal.category],
+              type: meal.type,
+            }));
 
-      if (todaysMealData && todaysMealData.meals) {
-        // Transform meals data to match our component's format
-        const formattedMeals = todaysMealData.meals.map((meal) => ({
-          id: meal._id,
-          day_id: todaysMealData._id, 
-          _id: meal._id, // Keep original ID for API operations
-          name: meal.name,
-          category: meal.category,
-          price:
-            typeof meal.price === "number"
-              ? `$${meal.price.toFixed(2)}`
-              : meal.price,
-          calories: meal.calories,
-          available: meal.available ?? true,
-          dietary: [meal.category],
-          type: meal.type,
-        }));
+          allDaysMeals[day] = filteredMeals;
+        } else {
+          allDaysMeals[day] = [];
+        }
+      });
 
-        setMenuItems(formattedMeals);
-      }
+      setMealsByDay(allDaysMeals);
     }
-  }, [mealsData]);
+  }, [mealsData, mealType, daysOfWeek]);
 
   // Open modal for adding a new item
-  const openAddModal = () => {
-    setSelectedItem(null);
+  const openAddModal = (day) => {
+    setSelectedItem({ type: mealType.toLowerCase(), day: day });
     setModalOpen(true);
   };
 
@@ -56,6 +79,12 @@ const CafeteriaMenuTable = () => {
     setModalOpen(true);
   };
 
+  // Handle save (will refresh data through the refetch)
+  const handleSave = () => {
+    setModalOpen(false);
+    refetch();
+  };
+
   // Handle item deletion
   const handleDelete = async (item) => {
     if (!window.confirm(`Are you sure you want to delete ${item.name}?`)) {
@@ -63,65 +92,55 @@ const CafeteriaMenuTable = () => {
     }
 
     try {
+      setLoading(true);
       // Call API to delete meal
       await axiosPublic.delete(`/meal/${item._id}`);
 
-      // Update local state
-      setMenuItems(menuItems.filter((i) => i.id !== item.id));
-
       // Show success message
-      toast.success("Item deleted successfully");
+      toast.success(`${item.name} deleted successfully`);
 
       // Refresh data
       refetch();
     } catch (error) {
       console.error("Error deleting item:", error);
       toast.error(error.response?.data?.message || "Failed to delete item");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  // Handle item save (add/edit)
-  const handleSave = (item) => {
-    if (selectedItem) {
-      // Update existing item
-      setMenuItems(
-        menuItems.map((i) =>
-          i.id === selectedItem.id ? { ...item, id: selectedItem.id } : i
-        )
-      );
-    } else {
-      // Add new item
-      setMenuItems([...menuItems, { ...item, id: `TEMP_${Date.now()}` }]);
-    }
-
-    setModalOpen(false);
-  };
-
-  // Group meals by type (breakfast, lunch, dinner)
-  const groupedMeals = {
-    breakfast: menuItems.filter((item) => item.type === "breakfast"),
-    lunch: menuItems.filter((item) => item.type === "lunch"),
-    dinner: menuItems.filter((item) => item.type === "dinner"),
   };
 
   return (
-    <div className="w-full p-2">
+    <div className="bg-white rounded-lg shadow-sm border p-4">
       <div className="flex items-center justify-between mb-4">
-        <div className="text-lg font-semibold">
-          Today&apos;s Menu -{" "}
-          {new Date().toLocaleDateString("en-US", { weekday: "long" })}
-        </div>
+        <h3 className="text-lg font-medium capitalize">
+          {mealType} Menu (All Days)
+        </h3>
         <button
           className="px-3 py-2 text-sm border rounded-md bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2"
-          onClick={openAddModal}
+          onClick={() =>
+            openAddModal(
+              new Date().toLocaleString("en-us", { weekday: "long" })
+            )
+          }
+          disabled={loading}
         >
-          <FaPlus /> Add Item
+          <FaPlus /> Add {mealType} Item
         </button>
       </div>
 
-      {["breakfast", "lunch", "dinner"].map((mealType) => (
-        <div key={mealType} className="mb-6 relative">
-          <h3 className="text-lg font-medium capitalize mb-3">{mealType}</h3>
+      {/* Show tables for each day of the week */}
+      {daysOfWeek.map((day) => (
+        <div key={day} className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-medium text-gray-700">{day}</h4>
+            <button
+              className="px-2 py-1 text-xs border rounded-md bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1"
+              onClick={() => openAddModal(day)}
+              disabled={loading}
+            >
+              <FaPlus size={10} /> Add {mealType} for {day}
+            </button>
+          </div>
 
           <div className="overflow-x-auto border rounded-lg">
             <table className="w-full min-w-[800px] border-collapse">
@@ -131,15 +150,14 @@ const CafeteriaMenuTable = () => {
                   <th className="p-2 text-left">Category</th>
                   <th className="p-2 text-left">Price</th>
                   <th className="p-2 text-left">Calories</th>
-                  <th className="p-2 text-left">Dietary</th>
+                  <th className="p-2 text-left">Nutritional</th>
                   <th className="p-2 text-left">Status</th>
                   <th className="p-2 text-right">Actions</th>
                 </tr>
               </thead>
-
               <tbody>
-                {groupedMeals[mealType].length > 0 ? (
-                  groupedMeals[mealType].map((item) => (
+                {mealsByDay[day] && mealsByDay[day].length > 0 ? (
+                  mealsByDay[day].map((item) => (
                     <MealItem
                       key={item.id}
                       item={item}
@@ -151,7 +169,13 @@ const CafeteriaMenuTable = () => {
                 ) : (
                   <tr>
                     <td colSpan="7" className="p-4 text-center text-gray-500">
-                      No {mealType} items available for today
+                      No {mealType} items for {day}.
+                      <button
+                        className="text-blue-500 ml-2 hover:underline"
+                        onClick={() => openAddModal(day)}
+                      >
+                        Add one now
+                      </button>
                     </td>
                   </tr>
                 )}
@@ -173,4 +197,4 @@ const CafeteriaMenuTable = () => {
   );
 };
 
-export default CafeteriaMenuTable;
+export default MealTypeTable;

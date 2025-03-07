@@ -10,12 +10,12 @@ const MealItemModal = ({ item, onClose, onSave, refetchData }) => {
       category: "",
       price: "",
       calories: "",
-      protein: "", // Added protein field
-      fat: "", // Added fat field
-      carbs: "", // Added carbs field
+      protein: "", 
+      fat: "", 
+      carbs: "", 
       available: true,
       dietary: [],
-      type: "breakfast", // Default type
+      type: "breakfast", 
     }
   );
 

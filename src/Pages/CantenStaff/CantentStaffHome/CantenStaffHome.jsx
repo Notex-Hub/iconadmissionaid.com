@@ -2,6 +2,7 @@ import { useState } from "react";
 import OverviewTab from "../OverviewContent/OverviewTab";
 import useMeals from "../../../Hooks/useMeals";
 import MealItemModal from "../../../Ui/MealItemModal";
+import MealTypeTable from "../../../Ui/CafeteriaMenuTable";
 
 const CantenStaffHome = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -31,7 +32,7 @@ const CantenStaffHome = () => {
 
       <div className="w-full">
         {/* Tabs List */}
-        <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-4 bg-gray-200 w-fit px-5 rounded-lg py-1">
+        <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-4 bg-gray-200 w-fit px-5 rounded-lg py-1 mt-4 mb-4">
           {["overview", "breakfast", "lunch", "dinner", "special"].map(
             (tab) => (
               <button
@@ -51,20 +52,41 @@ const CantenStaffHome = () => {
         </div>
 
         {/* Tabs Content */}
-        <div className="p-4 text-gray-700">
+        <div className="text-gray-700">
           {activeTab === "overview" && (
-            <div className="">
+            <div>
               <OverviewTab />
             </div>
           )}
-          {activeTab === "breakfast" && <p>Breakfast Menu</p>}
-          {activeTab === "lunch" && <p>Lunch Menu</p>}
-          {activeTab === "dinner" && <p>Dinner Menu</p>}
-          {activeTab === "special" && <p>Special Menus</p>}
+
+          {/* Show MealTypeTable for each meal type tab */}
+          {activeTab === "breakfast" && <MealTypeTable mealType="breakfast" />}
+          {activeTab === "lunch" && <MealTypeTable mealType="lunch" />}
+          {activeTab === "dinner" && <MealTypeTable mealType="dinner" />}
+
+          {/* Special tab content for special menu items */}
+          {activeTab === "special" && (
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-medium mb-2">Special Menu Items</h3>
+                <p className="text-gray-500">
+                  Create and manage special menu items for events and holidays.
+                </p>
+              </div>
+
+              {/* Feature Coming Soon */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                <p className="text-blue-800 font-medium">Coming Soon</p>
+                <p className="text-blue-700 text-sm mt-1">
+                  Special menu management will be available in the next update.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Add Item Modal */}
+      {/* Global add item modal */}
       {modalOpen && (
         <MealItemModal
           onClose={() => setModalOpen(false)}
