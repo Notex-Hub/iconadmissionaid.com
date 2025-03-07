@@ -15,6 +15,7 @@ import FacultyPrivate from "../Private/FacultyPrivate";
 import Admin from "../Pages/Admin/Admin/Admin";
 import Meals from "../Pages/CantenStaff/Meals/Meals";
 import Order from "../Pages/CantenStaff/Order/Order";
+import MyOrder from "../Pages/StudentDashboard/MyOrder/MyOrder";
 
 export const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ export const router = createBrowserRouter([
         path: "/admin-dashboard",
         element: <Admin />,
       },
+      {
+        path: '/my-orders',
+        element: <MyOrder />
+      }
     ],
   },
 ]);
