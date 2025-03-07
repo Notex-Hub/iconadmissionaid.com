@@ -1,17 +1,22 @@
+import { useMemo } from "react";
+import useDashboardOverview from "../../../Hooks/useAdmindashboard";
 import { OverView } from "../../../Ui/OverView";
 import { RecentActivity } from "../../../Ui/RecentActivity";
 
-
-
-
 const StudentOverview = () => {
+  const [data] = useDashboardOverview();
+console.log(data)
+  const overData = useMemo(() => (data?.data ? data?.data : []), [data]);
+
   return (
     <div className="space-y-4">
       {/* Top Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="card">
           <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Courses Enrolled</div>
+            <div className="card-title text-sm font-medium">
+              Courses Enrolled
+            </div>
           </div>
           <div className="card-content">
             <div className="text-2xl font-bold">77</div>
@@ -29,7 +34,9 @@ const StudentOverview = () => {
 
         <div className="card">
           <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Upcoming Events</div>
+            <div className="card-title text-sm font-medium">
+              Upcoming Events
+            </div>
           </div>
           <div className="card-content">
             <div className="text-2xl font-bold">44</div>
@@ -38,7 +45,9 @@ const StudentOverview = () => {
 
         <div className="card">
           <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Library Books Due</div>
+            <div className="card-title text-sm font-medium">
+              Library Books Due
+            </div>
           </div>
           <div className="card-content">
             <div className="text-2xl font-bold">400</div>
@@ -53,7 +62,7 @@ const StudentOverview = () => {
             <div className="card-title">Overview</div>
           </div>
           <div className="card-content pl-2">
-            <OverView/>
+            <OverView />
           </div>
         </div>
 
@@ -62,7 +71,7 @@ const StudentOverview = () => {
             <div className="card-title my-2">Recent Activity</div>
           </div>
           <div className="card-content">
-            <RecentActivity />
+            <RecentActivity activities={overData?.recentactivity} />
           </div>
         </div>
       </div>
