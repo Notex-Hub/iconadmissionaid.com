@@ -1,16 +1,18 @@
 /* eslint-disable react/no-unescaped-entities */
-import CafeteriaMenuTable from "../../../Ui/CafeteriaMenuTable";
 import CafeteriaStats from "../../../Ui/CafeteriaStats";
+import DayWiseMenuTable from "../../../Ui/DayWiseMenuTable";
 
 
 const OverviewTab = () => {
+  const today = new Date().toLocaleString("en-us", { weekday: "long" });
+  console.log(today);
   return (
     <div className="space-y-6 p-4">
       {/* Cafeteria Stats Section */}
       <CafeteriaStats />
 
       {/* Today's Menu Card */}
-      <div className="bg-white shadow-md rounded-lg p-6 border">
+      <div className="bg-white shadow-md rounded-lg p-4 border">
         {/* Card Header */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Today's Menu</h2>
@@ -18,7 +20,8 @@ const OverviewTab = () => {
         </div>
 
         {/* Card Content (Menu Table) */}
-        <CafeteriaMenuTable />
+        {/* <CafeteriaMenuTable /> */}
+        <DayWiseMenuTable />
       </div>
     </div>
   );
