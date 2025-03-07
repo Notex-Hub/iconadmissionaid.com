@@ -86,20 +86,20 @@ const CantenStaffNavbar = () => {
 
         <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
           <Link
-            to="/dashboard"
+            to="/cantenstaff"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
             Home
           </Link>
           <Link
-            to="/cafeteria"
+            to="/meals"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Cafeteria
+            Meals
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to="/busSchedule"
+            to="/canteen-staff/order"
           >
             Order
           </Link>
