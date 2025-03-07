@@ -14,6 +14,7 @@ import StudentDashboard from "../Pages/StudentDashboard/StudentDashboard/Student
 import FacultyPrivate from "../Private/FacultyPrivate";
 import Admin from "../Pages/Admin/Admin/Admin";
 import Meals from "../Pages/CantenStaff/Meals/Meals";
+import Order from "../Pages/CantenStaff/Order/Order";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "/meals",
         element: <Meals />,
+      },
+      {
+        path: '/canteen-staff/order',
+        element: <Order />
       },
       {
         path: "/unauthorized",

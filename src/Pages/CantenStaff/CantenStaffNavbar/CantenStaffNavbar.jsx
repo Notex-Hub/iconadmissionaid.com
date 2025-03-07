@@ -90,7 +90,7 @@ const CantenStaffNavbar = () => {
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
-            to="/busSchedule"
+            to="/canteen-staff/order"
           >
             Order
           </Link>
