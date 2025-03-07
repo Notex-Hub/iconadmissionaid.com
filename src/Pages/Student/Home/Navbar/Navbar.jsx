@@ -9,6 +9,7 @@ import useProfile from '../../../../Hooks/useProfile';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const { profile,refetch } = useProfile();
   const menuRef = useRef(null);
   
@@ -73,16 +74,19 @@ const Navbar = () => {
           <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 absolute right-1 z-10">
           
             <li>
-              <Link to="#">Cafeteria</Link>
+              <Link to='/dashboard'>Home</Link>
             </li>
             <li>
-              <Link to="#">Bus Schedule              </Link>
+              <Link to='/cafeteria'>Meals</Link>
             </li>
             <li>
-              <Link to="#">Class Schedule</Link>
+              <Link to="/busSchedule">Bus Schedule              </Link>
             </li>
             <li>
-              <Link to="#">Events & Clubs</Link>
+              <Link to="/classSchedule">Class Schedule</Link>
+            </li>
+            <li>
+              <Link to="/evets">Events & Clubs</Link>
             </li>
             <li>
               <Link to="#">Campus Map         </Link>
@@ -97,10 +101,10 @@ const Navbar = () => {
       <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
      
         <Link to='/dashboard' className="text-sm font-medium hover:underline underline-offset-4">Home</Link>
-        <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Cafeteria</Link>
+        <Link to='/cafeteria' className="text-sm font-medium hover:underline underline-offset-4">Meals</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/busSchedule">Bus Schedule  </Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="/classSchedule">Class Schedule</Link>
-        <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Events & Clubs</Link>
+        <Link className="text-sm font-medium hover:underline underline-offset-4" to="/evets">Events & Clubs</Link>
         <Link className="text-sm font-medium hover:underline underline-offset-4" to="#">Campus Map  </Link>
         {/* Sign Up Modal */}
         <Profile logout={logout} />

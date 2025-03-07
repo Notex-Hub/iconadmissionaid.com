@@ -41,7 +41,16 @@ export function CourseContent() {
     });
   };
 
-  const handleOnclick = () => {
+  const handleDelete = (_id) => {
+
+    axiosPublic.delete(`/course/${_id}`).then(res => {
+      console.log(res)
+      toast('Course Delete Succes');
+      refetch()
+
+    }).catch(err => {
+      console.log(err)
+    })
 
   }
 
@@ -135,7 +144,7 @@ export function CourseContent() {
                 <td className="px-4 py-4 text-sm text-gray-700">{course.credits}</td>
                 <td className="px-4 py-4 text-sm text-gray-700">{course.department}</td>
                 <td className="px-4 py-4 text-sm text-gray-700">{course.prerequisites.join(", ")}</td>
-                <td onClick={handleOnclick} className="px-4 py-4 text-sm text-gray-700"><MdDelete/></td>
+                <td onClick={() => handleDelete(course?._id)} className="px-4 cursor-pointer py-4 text-sm text-gray-700"><MdDelete/></td>
               </tr>
             ))}
           </tbody>

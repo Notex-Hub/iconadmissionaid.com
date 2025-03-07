@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
-import DashboardLayout from "../Layout/DashboardLayout";
 import CafeteriaMenu from "../Pages/Student/Cafeteria/Cafeteria/CafeteriaMenu";
 import Home from "../Pages/Student/Home/Home/Home";
 import BusSchedule from "../Pages/Student/Bus/Bus/BusSchedule";
@@ -15,6 +14,10 @@ import FacultyPrivate from "../Private/FacultyPrivate";
 import Admin from "../Pages/Admin/Admin/Admin";
 import Meals from "../Pages/CantenStaff/Meals/Meals";
 import Order from "../Pages/CantenStaff/Order/Order";
+import Event from "../Pages/Student/Event/Event";
+import Courses from "../Pages/Faculty/Courses/Courses";
+import Students from "../Pages/Faculty/Students/Students";
+import Reasrch from "../Pages/Faculty/Research/Reasrch";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +52,18 @@ export const router = createBrowserRouter([
       {
         path: "/meals",
         element: <Meals />,
+      },{
+        path:'/events',
+        element:<Event/>
+      },{
+        path:'/courses',
+        element:<Courses/>
+      },{
+        path:'/students',
+        element:<Students/>
+      },{
+        path:'/research',
+        element:<Reasrch/>
       },
       {
         path: '/canteen-staff/order',
