@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BellIcon } from "lucide-react";
 
 import Profile from "../../Student/Home/Navbar/Profile";
-
-
+import useProfile from "../../../Hooks/useProfile";
+import { toast } from "react-toastify";
 
 const CantenStaffNavbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { profile, refetch } = useProfile();
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+    refetch();
+    window.location.reload();
+    toast.success("Logout Success");
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -107,7 +116,7 @@ const CantenStaffNavbar = () => {
             Campus Map{" "}
           </Link>
 
-          <Profile />
+          <Profile logout={logout} />
           <button className="btn btn-ghost btn-circle">
             <BellIcon className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
