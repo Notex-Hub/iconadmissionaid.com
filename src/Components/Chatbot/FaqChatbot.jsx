@@ -1,83 +1,104 @@
-/* eslint-disable react/prop-types */
 import { useState } from "react";
-import axios from "axios";
-import { VscChromeClose } from "react-icons/vsc";
+import { IoIosSend } from "react-icons/io";
+import ReactMarkdown from "react-markdown";
+import { generateContent } from "./GFenerateContent";
 
-const CohereChatbot = ({chatbot,setChatbot}) => {
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hi! Ask me any FAQ." }
-  ]);
-  const [input, setInput] = useState("");
-  const sendMessage = async () => {
-    if (!input.trim()) return;
 
-    const newMessages = [...messages, { sender: "user", text: input }];
-    setMessages(newMessages);
-    setInput("");
 
+const Chatbot = ({chatbot,setChatbot}) => {
+  const [userInput, setUserInput] = useState("");
+  const [response, setResponse] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUserInput = (e) => setUserInput(e.target.value);
+
+  const handleClear = () => {
+    setUserInput("");
+    setResponse([]);
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!userInput.trim()) {
+      setResponse([{ type: "system", message: "Please enter a prompt.." }]);
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-        "https://api.cohere.ai/v1/generate",
-        {
-          model: "command",
-          prompt: input,
-          max_tokens: 100
-        },
-        {
-          headers: {
-            Authorization: `Bearer EU1C429f4pATYCQtwNfcEgQnFQnPwzm9BeLobNim`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      const res = await generateContent(userInput);
+      setResponse((prev) => [
+        ...prev,
+        { type: "user", message: userInput },
+        { type: "bot", message: res() },
+      ]);
+      setUserInput("");
+    } catch (err) {
+      console.error("Error generating response:", err);
+      setResponse((prev) => [
+        ...prev,
+        { type: "system", message: "Failed to generate response" },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      const botReply = response.data.generations[0]?.text || "Sorry, I couldn't understand.";
-      setMessages([...newMessages, { sender: "bot", text: botReply }]);
-    } catch (error) {
-      console.error("Error fetching response:", error);
-      setMessages([...newMessages, { sender: "bot", text: "Error fetching response." }]);
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
   return (
-    <div className="w-96 border border-gray-300 rounded-lg p-4 flex flex-col bg-white shadow-lg">
-        <div className="mb-3 flex justify-between items-center">
-            <h1>AI Chatbot</h1>
-            <h1><VscChromeClose className="cursor-pointer" onClick={()=>setChatbot(!chatbot)}  size={24}/></h1>
-        </div>
-      <div className="h-64 overflow-y-auto flex flex-col gap-2 p-2 bg-gray-100 rounded-md">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`max-w-[70%] px-3 py-2 rounded-lg ${
-              msg.sender === "user"
-                ? "bg-blue-500 text-white self-end"
-                : "bg-gray-200 text-gray-800 self-start"
-            }`}
-          >
-            {msg.text}
-          </div>
-        ))}
+    <div className="w-full max-w-lg mx-auto p-4 rounded-lg shadow-lg bg-white">
+      <div className="flex items-center justify-between pb-2 border-b">
+        <h2 className="text-xl font-semibold text-gray-800">🤖 AI Chatbot</h2>
+        <button onClick={()=>setChatbot(!chatbot)} className="text-sm text-red-500 hover:text-red-600">
+          X
+        </button>
       </div>
 
-      <div className="flex mt-3">
+      <div className="h-80 overflow-y-auto p-2 space-y-2 bg-gray-100 rounded-md mt-2">
+        {response.length === 0 ? (
+          <p className="text-center text-gray-500">Got Questions? Ask Anything!</p>
+        ) : (
+          response.map((msg, index) => (
+            <div key={index} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+              <p
+                className={`px-4 py-2 rounded-lg max-w-xs ${
+                  msg.type === "user"
+                    ? "bg-blue-500 text-white self-end"
+                    : "bg-gray-300 text-gray-800 self-start"
+                }`}
+              >
+                <ReactMarkdown>{msg.message}</ReactMarkdown>
+              </p>
+            </div>
+          ))
+        )}
+        {isLoading && <p className="text-center text-gray-500">⏳ Generating response...</p>}
+      </div>
+
+      <div className="flex items-center mt-3 space-x-2">
         <input
           type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Ask a question..."
+          value={userInput}
+          onChange={handleUserInput}
+          onKeyDown={handleKeyPress}
+          placeholder="Type your message..."
           className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
-          onClick={sendMessage}
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+          onClick={handleSubmit}
+          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
         >
-          Send
+          <IoIosSend size={24} />
         </button>
       </div>
     </div>
   );
 };
 
-export default CohereChatbot;
+export default Chatbot;

@@ -1,6 +1,5 @@
 import  { useState } from 'react';
 import AdminOverview from '../AdminOverView/AdminOverview';
-import AdminCourses from '../AdminOverView/AdminCourses';
 import AdminUsers from '../AdminOverView/AdminUsers';
 import AdminCampus from '../AdminOverView/AdminCampus';
 import AdminEvents from '../AdminOverView/AdminEvents';
