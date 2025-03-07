@@ -18,6 +18,7 @@ import Event from "../Pages/Student/Event/Event";
 import Courses from "../Pages/Faculty/Courses/Courses";
 import Students from "../Pages/Faculty/Students/Students";
 import Reasrch from "../Pages/Faculty/Research/Reasrch";
+import MyOrder from "../Pages/StudentDashboard/MyOrder/MyOrder";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
         path: "/admin-dashboard",
         element: <Admin />,
       },
+      {
+        path: '/my-orders',
+        element: <MyOrder />
+      }
     ],
   },
 ]);
