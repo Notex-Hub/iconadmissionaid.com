@@ -1,5 +1,9 @@
 import  { useState } from 'react';
 import AdminOverview from '../AdminOverView/AdminOverview';
+import AdminCourses from '../AdminOverView/AdminCourses';
+import AdminUsers from '../AdminOverView/AdminUsers';
+import AdminCampus from '../AdminOverView/AdminCampus';
+import AdminEvents from '../AdminOverView/AdminEvents';
 
 
 
@@ -17,7 +21,7 @@ const AdminTab = () => {
           className={`py-2 px-4  font-semibold ${activeTab === 'overview' ? 'bg-white text-black rounded-md ' : 'text-gray-600 cursor-pointer'}`}
           onClick={() => handleTabChange('overview')}
         >
-       Overview
+        Overview
         </button>
         <button
           className={`py-2 px-4 text-lg font-semibold ${activeTab === 'courses' ? 'bg-white text-black rounded-md' : 'text-gray-600 cursor-pointer'}`}
@@ -36,24 +40,32 @@ const AdminTab = () => {
           className={`py-2 px-4 text-lg font-semibold ${activeTab === 'campus' ? 'bg-white text-black rounded-md' : 'text-gray-600 cursor-pointer'}`}
           onClick={() => handleTabChange('campus')}
         >
-      Campus Map
+        Campus Map
         </button>
         <button
           className={`py-2 px-4 text-lg font-semibold ${activeTab === 'events' ? 'bg-white text-black rounded-md' : 'text-gray-600 cursor-pointer'}`}
           onClick={() => handleTabChange('events')}
         >
-Events
+        Events
         </button>
       </div>
 
       <div className="mt-4">
         {activeTab === 'overview' && <div>
-<AdminOverview/>
+          <AdminOverview/>
           </div>}
-        {activeTab === 'courses' && <div>uu</div>}
-        {activeTab === 'users' && <div>fsdfsd</div>}
-        {activeTab === 'campus' && <div>map</div>}
-        {activeTab === 'events' && <div>events</div>}
+        {activeTab === 'courses' && <div>
+          <AdminCourses/>
+          </div>}
+        {activeTab === 'users' && <div>
+          <AdminUsers/>
+          </div>}
+        {activeTab === 'campus' && <div>
+          <AdminCampus/>
+          </div>}
+        {activeTab === 'events' && <div>
+          <AdminEvents/>
+          </div>}
        
       </div>
     </div>

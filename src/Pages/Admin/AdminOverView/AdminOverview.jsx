@@ -1,57 +1,34 @@
+import { useMemo } from "react";
+import useDashboardOverview from "../../../Hooks/useAdmindashboard";
 import { OverView } from "../../../Ui/OverView";
 import { RecentActivity } from "../../../Ui/RecentActivity";
 
-
-
-
 const AdminOverview = () => {
+  const [data]=useDashboardOverview()
+
+
+  const overData = useMemo(()=>data?.data?data?.data:[],[data])
+
+
+/* admin-dashboard */
+
+
   return (
     <div className="space-y-4">
       {/* Top Cards */}
       <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5 grid-cols-3">
-        <div className="card">
+        {
+          overData?.summary?.map((summary,index)=><div className="card"
+          key={index}
+          >
           <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Total Students</div>
+            <div className="card-title text-sm font-medium">{summary?.name}</div>
           </div>
           <div className="card-content">
-            <div className="text-2xl font-bold">77</div>
+            <div className="text-2xl font-bold">{summary?.value}</div>
           </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Total Faculty</div>
-          </div>
-          <div className="card-content">
-            <div className="text-2xl font-bold">66</div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Active Courses</div>
-          </div>
-          <div className="card-content">
-            <div className="text-2xl font-bold">44</div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Total Meals</div>
-          </div>
-          <div className="card-content">
-            <div className="text-2xl font-bold">400</div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-header flex items-center justify-between pb-2">
-            <div className="card-title text-sm font-medium">Upcoming Events</div>
-          </div>
-          <div className="card-content">
-            <div className="text-2xl font-bold">400</div>
-          </div>
-        </div>
+        </div>)
+        }
       </div>
 
       {/* Bottom Cards */}
@@ -70,7 +47,9 @@ const AdminOverview = () => {
             <div className="card-title my-2">Recent Activity</div>
           </div>
           <div className="card-content">
-            <RecentActivity />
+            <RecentActivity 
+            activities={overData?.recentactivity}
+            />
           </div>
         </div>
       </div>
