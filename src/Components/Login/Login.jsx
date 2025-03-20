@@ -92,6 +92,22 @@ const Login = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-gray-100">
       <h1 className="text-3xl font-bold text-gray-800">University App Login</h1>
+      <div>
+        <div className="bg-green-50 px-2 py-3 rounded-md">
+          <p>Admin Login Details</p>
+          <hr />
+          <p>Email:admin@gmail.com</p>
+          <p>Pass:12345678</p>
+        </div>
+
+        <div className="bg-yellow-50 px-2 py-3 rounded-md">
+          <p>Student Login Details</p>
+          <hr />
+          <p>Email:admin@gmail.com</p>
+          <p>Pass:12345678</p>
+        </div>
+
+      </div>
 
       {/* Login Form */}
       <form
