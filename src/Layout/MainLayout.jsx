@@ -5,8 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const MainLayout = () => {
 
-
-
     return (
         <div className="relative">
             <ToastContainer position="top-right" autoClose={3000} />

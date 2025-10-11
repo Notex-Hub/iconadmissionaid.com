@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Icon Website — Tailwind Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Small utility for nice gradient text if needed */
+    .gradient-text {
+      background: linear-gradient(90deg,#7c3aed,#06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <!-- NAV -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-teal-400 rounded-md flex items-center justify-center text-white font-bold">Ic</div>
+        <div>
+          <div class="font-semibold text-lg">IconSite</div>
+          <div class="text-xs text-gray-500">UI Kit & Library</div>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a class="hover:text-gray-900" href="#">Features</a>
+        <a class="hover:text-gray-900" href="#">Pricing</a>
+        <a class="hover:text-gray-900" href="#">Docs</a>
+        <a class="hover:text-gray-900" href="#">Resources</a>
+        <a href="#" class="ml-2 px-4 py-2 rounded-md border border-gray-200 hover:bg-gray-100">Sign in</a>
+        <a href="#" class="ml-2 px-4 py-2 rounded-md bg-gradient-to-r from-purple-600 to-teal-400 text-white shadow">Get started</a>
+      </nav>
+
+      <!-- mobile menu button -->
+      <div class="md:hidden">
+        <button id="mobileBtn" class="p-2 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="mt-8">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <section>
+        <p class="inline-flex items-center gap-2 text-sm bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7H7v6h6V7z" /></svg>
+          New — 300+ Icons
+        </p>
+
+        <h1 class="mt-6 text-4xl md:text-5xl font-extrabold leading-tight">
+          Beautiful, consistent <span class="gradient-text">icons & UI</span> for your product
+        </h1>
+
+        <p class="mt-4 text-gray-600 max-w-xl">
+          A curated icon system plus convenient React components and accessible markup — built for speed and consistency. Download SVGs, use React components, or import via CDN.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-gradient-to-r from-purple-600 to-teal-400 text-white shadow" href="#">
+            Get started
+          </a>
+          <a class="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-gray-200 hover:bg-gray-100" href="#">
+            Explore icons
+          </a>
+        </div>
+
+        <!-- Small stats / badges -->
+        <div class="mt-8 flex flex-wrap gap-4 text-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded shadow flex items-center justify-center text-sm">⭐</div>
+            <div>
+              <div class="font-semibold">4.9/5</div>
+              <div class="text-gray-500">Product rating</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded shadow flex items-center justify-center text-sm">⚡</div>
+            <div>
+              <div class="font-semibold">300+</div>
+              <div class="text-gray-500">Icons & Components</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hero image / preview -->
+      <aside class="relative">
+        <div class="mx-auto max-w-md md:max-w-lg">
+          <div class="bg-white rounded-2xl shadow-lg p-6">
+            <!-- Mock icon grid -->
+            <div class="grid grid-cols-4 gap-4">
+              <!-- repeat icons -->
+              <div class="p-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center">🔷</div>
+                <div class="text-xs text-gray-500">Icon</div>
+              </div>
+              <div class="p-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-lg bg-teal-50 flex items-center justify-center">🔶</div>
+                <div class="text-xs text-gray-500">Icon</div>
+              </div>
+              <div class="p-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">⭐</div>
+                <div class="text-xs text-gray-500">Icon</div>
+              </div>
+              <div class="p-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-lg bg-pink-50 flex items-center justify-center">❤</div>
+                <div class="text-xs text-gray-500">Icon</div>
+              </div>
+              <!-- additional rows -->
+              <div class="col-span-4 mt-4">
+                <div class="h-2 bg-gray-100 rounded"></div>
+                <div class="text-xs text-gray-400 mt-2">Preview window</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs text-gray-500">Preview of icons & components</div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- FEATURES / ICON GRID -->
+    <section class="mt-16">
+      <div class="max-w-7xl mx-auto px-6">
+        <h3 class="text-lg font-semibold">What's inside</h3>
+        <p class="text-gray-600 mt-2 max-w-2xl">Everything you need to design and build faster — pixel-perfect icons, accessible markup, and ready-to-use components.</p>
+
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <!-- Feature card -->
+          <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition">
+            <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center">🧩</div>
+            <h4 class="mt-4 font-semibold">Modular Icons</h4>
+            <p class="mt-2 text-sm text-gray-500">Consistent stroke, aligned grid, SVG & React variants.</p>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition">
+            <div class="w-12 h-12 rounded-lg bg-teal-50 flex items-center justify-center">⚙️</div>
+            <h4 class="mt-4 font-semibold">Components</h4>
+            <p class="mt-2 text-sm text-gray-500">Buttons, Toggles, Icon button sets ready to use.</p>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition">
+            <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">📦</div>
+            <h4 class="mt-4 font-semibold">Bundles</h4>
+            <p class="mt-2 text-sm text-gray-500">Downloadable packs: SVG, Figma, React, CSS.</p>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition">
+            <div class="w-12 h-12 rounded-lg bg-pink-50 flex items-center justify-center">🌐</div>
+            <h4 class="mt-4 font-semibold">CDN & Docs</h4>
+            <p class="mt-2 text-sm text-gray-500">Easy CDN import and full documentation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA BAND -->
+    <section class="mt-16 bg-gradient-to-r from-indigo-600 to-teal-500 text-white py-12">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <h3 class="text-2xl font-bold">Ready to supercharge your UI?</h3>
+          <p class="mt-2 text-sm opacity-90">Start using the icon library today — free for personal projects.</p>
+        </div>
+        <div class="flex gap-3">
+          <a class="px-5 py-3 rounded-md bg-white text-indigo-700 font-semibold" href="#">Get free icons</a>
+          <a class="px-5 py-3 rounded-md border border-white/30 hover:bg-white/10" href="#">See pricing</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 bg-white border-t">
+      <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="font-semibold text-lg">IconSite</div>
+          <p class="mt-2 text-sm text-gray-500">Beautiful icons & components for modern products.</p>
+        </div>
+
+        <div>
+          <h5 class="font-medium">Product</h5>
+          <ul class="mt-3 text-sm text-gray-600 space-y-2">
+            <li><a href="#">Icons</a></li>
+            <li><a href="#">Components</a></li>
+            <li><a href="#">Integrations</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="font-medium">Company</h5>
+          <ul class="mt-3 text-sm text-gray-600 space-y-2">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="font-medium">Get in touch</h5>
+          <p class="mt-3 text-sm text-gray-600">contact@example.com</p>
+          <div class="mt-4 flex gap-3 text-gray-500">
+            <span class="p-2 bg-gray-100 rounded">TW</span>
+            <span class="p-2 bg-gray-100 rounded">GH</span>
+            <span class="p-2 bg-gray-100 rounded">LN</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t py-4 text-center text-sm text-gray-500">
+        © <span id="year"></span> IconSite. All rights reserved.
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // small mobile nav toggle (very simple)
+    const mobileBtn = document.getElementById('mobileBtn')
+    mobileBtn && mobileBtn.addEventListener('click', () => {
+      alert('Mobile menu placeholder — will implement responsive drawer if you want.')
+    })
+
+    // update year
+    document.getElementById('year').textContent = new Date().getFullYear()
+  </script>
+</body>
+</html>
