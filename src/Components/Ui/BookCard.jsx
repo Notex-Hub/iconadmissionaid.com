@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
+import book from "../../assets/book/ewb.png";
 
 const BookCard = ({ course }) => {
   return (
     <div className="rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 p-3">
       <img
         className="w-full h-auto object-cover"
-        src={"/public/course/img.jpg"}
+        src={book}
         alt={course.title}
       />
       <div className="p-4">
@@ -21,7 +22,7 @@ const BookCard = ({ course }) => {
             এক নজরে পড়ুন
           </button>
           <button className="w-full bg-[#F91616] text-white font-semibold py-2 px-2 rounded-lg  transition-colors duration-300">
-           অর্ডার করুন
+            অর্ডার করুন
           </button>
         </div>
       </div>
