@@ -1,5 +1,4 @@
 import CoursesSection from "../../Package/CoursesSection";
-import Button from "../../Ui/Button";
 import SectionText from "../../Ui/SectionText";
 
 const AdmissionPrepration = () => {
@@ -36,9 +35,7 @@ const AdmissionPrepration = () => {
         </p>
       </div>
       <CoursesSection />
-      <div className="flex justify-center items-center my-5">
-        <Button text="View All Courses" />
-      </div>
+     
     </div>
   );
 };

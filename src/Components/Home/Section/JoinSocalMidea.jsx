@@ -14,9 +14,14 @@ const JoinSocalMidea = () => {
       img: "/public/university/banner2.png",
     },
     {
+      id: 3,
+      title: "Private University Admission group",
+      img: "/public/university/banner2.png",
+    },
+    {
       id: 4,
       title: "Private University Admission group",
-      img: "/public/university/banner4.png",
+      img: "/public/university/banner2.png",
     },
   ];
   return (

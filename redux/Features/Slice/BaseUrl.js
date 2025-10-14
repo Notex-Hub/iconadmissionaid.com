@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { jwtDecode } from "jwt-decode";
 import { userLoggedIn, userLoggedOut } from "../Api/Auth/AuthSlice";
 
@@ -43,6 +43,7 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     "User",
+    "University",
     "Auth",
     "Purchase",
     "Exam",

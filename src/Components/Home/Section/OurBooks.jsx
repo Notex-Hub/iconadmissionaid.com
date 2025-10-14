@@ -1,5 +1,4 @@
 import BookSection from "../../Package/BookSection";
-import Button from "../../Ui/Button";
 import SectionText from "../../Ui/SectionText";
 
 const OurBooks = () => {
@@ -9,9 +8,6 @@ const OurBooks = () => {
         <SectionText title="আমাদের বই সমূহ" />
       </div>
       <BookSection />
-      <div className="flex justify-center items-center my-5">
-        <Button text="View All Courses" />
-      </div>
     </div>
   );
 };

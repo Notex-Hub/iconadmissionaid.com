@@ -1,50 +1,47 @@
-const UniversitySmallCard = () => {
-  const university = [
-    {
-      id: 1,
-      title: "নর্থ সাউথ ইউনিভার্সিটি",
-      img: "/public/university/nsu.png",
-    },
-    {
-      id: 2,
-      title: "ব্র্যাক ইউনিভার্সিটি",
-      img: "/public/university/brac.png",
-    },
-    {
-      id: 3,
-      title: "ইস্ট ওয়েস্ট ইউনিভার্সিটি",
-      img: "/public/university/east-west.png",
-    },
-    {
-      id: 4,
-      title: "আহসানউল্লাহ ইউনিভার্সিটি",
-      img: "/public/university/aiub.png",
-    },
-    {
-      id: 5,
-      title: "American International University",
-      img: "/public/university/aiub.png",
-    },
-    {
-      id: 6,
-      title: "Independent University",
-      img: "/public/university/iub.png",
-    },
-  ];
+/* eslint-disable react/prop-types */
 
+const UniversitySmallCard = ({ 
+  universities = [], 
+  selectedId = null, 
+  onSelect = () => {} 
+}) => {
+  // universities = [{ id, title, img, slug? }]
   return (
-    <div className="max-w-6xl mx-auto flex justify-between items-center gap-5 flex-wrap my-10">
-      {university?.map((item) => (
-        <div
+    <div className="max-w-6xl mx-auto flex justify-center md:justify-center items-center gap-5 flex-wrap my-10">
+      {/* "All" card */}
+      <button
+        onClick={() => onSelect(null)}
+        className={`flex flex-col justify-center items-center px-6 py-3 rounded-xl border transition ${
+          selectedId === null ? "border-indigo-600 shadow-md" : "border-gray-200"
+        }`}
+      >
+        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-sm font-semibold">
+          All
+        </div>
+        <p className="mt-2 text-sm font-medium text-gray-700 text-center">All</p>
+      </button>
+
+      {universities.map((item) => (
+        <button
           key={item.id}
-          className="flex justify-between items-center px-14 py-3 rounded border border-gray-200"
+          onClick={() => onSelect(item.id)}
+          className={`flex flex-col justify-center items-center px-6 py-3 rounded-xl border transition ${
+            selectedId === item.id ? "border-indigo-600 shadow-md" : "border-gray-200"
+          }`}
         >
           <img
-            className="w-10 h-10 object-contain rounded-full border p-1"
+            className="w-12 h-12 object-contain rounded-full border p-1"
             src={item.img}
             alt={item.title}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/public/university/default.png";
+            }}
           />
-        </div>
+          <p className="mt-2 text-sm font-medium text-gray-700 text-center">
+            {item.title}
+          </p>
+        </button>
       ))}
     </div>
   );
