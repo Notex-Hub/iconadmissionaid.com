@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 const BannerSection = ({ banner, text }) => {
   return (
-    <section className="relative w-full overflow-hidden">
+    <section className="relative md:w-full overflow-hidden">
       {/* Banner image */}
-      <div className="relative w-full">
+      <div className="relative md:w-full">
         <img
           src={banner}
           alt="Banner"
-          className="object-cover object-center h-[500px] w-full"
+          className=" object-center md:h-[500px] md:w-full h-40 "
         />
       </div>
 

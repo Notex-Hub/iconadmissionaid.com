@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 const CourseCard = ({ course }) => {
+  
   const hasOffer = course.offerPrice && course.offerPrice > 0;
   const coursePrice = course.isFree ? "Free" : `BDT ${course.price || 0} TK`;
   const offerPrice = hasOffer ? `BDT ${course.offerPrice} TK` : null;
@@ -30,7 +31,7 @@ const CourseCard = ({ course }) => {
           <p className="text-[#1C1C1C]">কোর্সটি করেছে: ১২৫২ জন</p>
         </div>
 
-        <button className="w-full bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
+        <button className="w-full cursor-pointer bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
           বিস্তারিত দেখুন
         </button>
       </div>
