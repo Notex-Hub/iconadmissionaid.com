@@ -2,16 +2,15 @@ import { apiSlice } from "../../Slice/BaseUrl";
 
 export const examApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllModule: builder.query({
+    getAllExam: builder.query({
       query: (params) => ({
-        url: "/module",
+        url: "/exam",
         method: "GET",
-        params, 
+        params,
       }),
-     
     }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetAllModuleQuery } = examApi;
+export const { useGetAllExamQuery } = examApi;
