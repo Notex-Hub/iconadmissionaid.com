@@ -90,7 +90,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
         <div className="bg-gradient-to-br from-white/6 to-white/4 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-2xl font-extrabold text-[#5D0000]">Login</h3>
+              <h3 className="text-2xl font-extrabold text-white">Login</h3>
               <p className="text-sm text-gray-200">ফোন নম্বর ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
             </div>
 
@@ -179,7 +179,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
                   onClose?.();
                   onOpenSignUp?.();
                 }}
-                className="underline"
+                className="underline cursor-pointer"
               >
                 Create account
               </button>

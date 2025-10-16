@@ -11,6 +11,7 @@ import WhyChooseIcon from "../../Components/Home/WhyChooseIcon/WhyChooseIcon";
 import Footer from "../../Layout/Footer";
 
 const Home = () => {
+  
 
   return (
     <div className="relative">

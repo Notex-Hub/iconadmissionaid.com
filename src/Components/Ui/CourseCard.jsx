@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 /* eslint-disable react/prop-types */
 const CourseCard = ({ course }) => {
   
@@ -31,9 +33,11 @@ const CourseCard = ({ course }) => {
           <p className="text-[#1C1C1C]">কোর্সটি করেছে: ১২৫২ জন</p>
         </div>
 
-        <button className="w-full cursor-pointer bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
-          বিস্তারিত দেখুন
-        </button>
+       <Link to={`/course/${course.slug}`}>
+          <button className="w-full cursor-pointer bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
+            বিস্তারিত দেখুন
+          </button>
+        </Link>
       </div>
     </div>
   );
