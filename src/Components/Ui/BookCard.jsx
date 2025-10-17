@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import bookFallback from "../../assets/book/ewb.png"; 
+import { Link } from "react-router-dom";
+import bookFallback from "../../assets/book/ewb.png";
 
 const BookCard = ({ course }) => {
   const title = course?.title || "Untitled Book";
@@ -33,10 +34,11 @@ const BookCard = ({ course }) => {
         </div>
 
         <div className="flex justify-between items-center gap-4">
-          <button className="w-full mr-2 bg-gradient-to-r from-[#1E5A1E] to-[#008000] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
-            এক নজরে পড়ুন
-          </button>
-          <button className="w-full bg-[#F91616] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
+          <Link to={`/book/${course?.slug}`}>
+            <button className="w-full cursor-pointer mr-2 bg-gradient-to-r from-[#1E5A1E] to-[#008000] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
+              এক নজরে পড়ুন
+            </button></Link>
+          <button className=" bg-[#F91616] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
             অর্ডার করুন
           </button>
         </div>

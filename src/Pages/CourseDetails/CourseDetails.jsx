@@ -154,7 +154,7 @@ const modules = (modulesData?.data || []).filter((m) => {
   return (
     <>
     <Navbar/>
-      <div className="py-8 px-4 container md:px-8 lg:px-16  mx-auto bg-gray-50 min-h-screen">
+      <div className="py-8 px-4 container  mx-auto bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8  lg:mt-20">
         {/* Main column */}
         <main className="lg:col-span-8 space-y-6">

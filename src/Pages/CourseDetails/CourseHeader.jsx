@@ -5,7 +5,7 @@ export function CourseHeader({ course }) {
   const priceTag = course.isFree ? "Free" : course.offerPrice && course.offerPrice > 0 ? `BDT ${course.offerPrice}` : `BDT ${course.price}`;
   return (
     <div className="bg-white rounded-xl shadow p-6 relative overflow-hidden">
-      <img src={course.cover_photo} alt={course.title} className="w-full h-44 md:h-56  rounded-md mb-4" />
+      <img src={course.cover_photo} alt={course.title} className="w-full    rounded-md mb-4" />
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold leading-tight">{course.title}</h1>

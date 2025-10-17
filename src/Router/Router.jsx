@@ -7,6 +7,11 @@ import FreeClass from "../Pages/FreeClass/FreeClass";
 import FreeTest from "../Pages/FreeTest/FreeTest";
 import CourseDetailsPage from "../Pages/CourseDetails/CourseDetails";
 import ScrollToTop from "../Ui/ScrollToTop";
+import BookDetails from "../Pages/BookDetails/BookDetails";
+import Dashboard from "../Pages/Dashboard/Dashboard";
+import DashboardLayout from "../Layout/DashboardLayout";
+import MyCourse from "../Components/Dashboard/MyCourse/MyCourse";
+import BuyCourse from "../Pages/BuyCourse/BuyCourse";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +56,35 @@ export const router = createBrowserRouter([
           <CourseDetailsPage />
         </ScrollToTop>
       }
+      , {
+        path: "/book/:slug",
+        element: <ScrollToTop>
+          <BookDetails />
+        </ScrollToTop>
+      }
+      , {
+        path: "/enroll/:slug",
+        element: <ScrollToTop>
+          <BuyCourse />
+        </ScrollToTop>
+      }
     ],
   },
+  {
+    path: "dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        path: "",
+        element: <Dashboard />
+      },
+       {
+        path: "my-courses",
+        element: <ScrollToTop>
+          <MyCourse />
+        </ScrollToTop>
+
+      }
+    ]
+  }
 ]);

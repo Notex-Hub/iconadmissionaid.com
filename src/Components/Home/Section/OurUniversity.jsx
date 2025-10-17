@@ -1,11 +1,14 @@
+/* eslint-disable react/prop-types */
 import { FaArrowRight } from "react-icons/fa";
 import SectionText from "../../Ui/SectionText";
 import Button from "../../Ui/Button";
 import { useGetUniversityQuery } from "../../../../redux/Features/Api/university/university";
+import { useNavigate } from "react-router-dom";
 
 const OurUniversity = () => {
   const { data: universityData, isLoading, isError } = useGetUniversityQuery();
   const universities = universityData?.data || [];
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -50,7 +53,8 @@ const OurUniversity = () => {
     );
   }
 
-  const fallbackImg = "../../../../public/university/aiub.png";
+  const fallbackImg = "/university/default.png"; // adjust to your public path
+
   return (
     <div className="container mx-auto px-4">
       <div className="text-center my-12 md:my-16">
@@ -64,13 +68,23 @@ const OurUniversity = () => {
         {universities.map((item) => {
           const title = item?.name || "Unnamed University";
           const imgSrc = item?.cover_photo || item?.image || fallbackImg;
+          const uniId = item?._id || item?.id || null;
 
           return (
-            <div
-              key={item._id || title}
+            <button
+              key={uniId || title}
+              onClick={() => {
+                if (!uniId) {
+                  // safety: if no id, fallback to course listing page without filter
+                  navigate("/courses");
+                } else {
+                  // navigate to courses page with uni query param
+                  navigate(`/courses?uni=${encodeURIComponent(uniId)}`);
+                }
+              }}
               className="flex justify-between items-center bg-white p-3 md:p-5 border border-gray-200 rounded-xl shadow-sm 
                          cursor-pointer transition duration-300 ease-in-out
-                         hover:border-blue-500 hover:shadow-lg hover:bg-blue-50"
+                         hover:border-blue-500 hover:shadow-lg hover:bg-blue-50 text-left w-full"
             >
               <div className="flex items-center gap-4">
                 <img
@@ -86,17 +100,17 @@ const OurUniversity = () => {
                   {title}
                 </p>
               </div>
-              <p className="text-lg md:text-xl ">
+              <div className="text-lg md:text-xl">
                 <FaArrowRight />
-              </p>
-            </div>
+              </div>
+            </button>
           );
         })}
       </div>
 
       {universities.length === 8 && (
         <div className="flex justify-center items-center my-5">
-          <Button text="View All Courses" />
+          <Button text="View All Courses" onClick={() => navigate("/courses")} />
         </div>
       )}
     </div>
