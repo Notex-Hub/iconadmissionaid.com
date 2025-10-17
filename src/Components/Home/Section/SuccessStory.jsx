@@ -6,22 +6,32 @@ const SuccessStory = () => {
     {
       id: 1,
       title: "BRAC Spring 2026 Admission Help Desk",
-      img: "/public/review/Rectangle 31.png",
+      img: "https://i.ibb.co.com/xKWHZzgF/Rectangle-31.png",
     },
     {
       id: 2,
       title: "East West University Admission Help Desk",
-      img: "/public/review/Rectangle 32.png",
+      img: "https://i.ibb.co.com/3mgbd35q/Rectangle-32.png" ,
     },
     {
       id: 3,
       title: "BRAC Spring 2026 Admission Help Desk",
-      img: "/public/review/Rectangle 33.png",
+      img: "https://i.ibb.co.com/99tvCWrH/Rectangle-33.png" ,
     },
     {
       id: 4,
       title: "East West University Admission Help Desk",
-      img: "/public/review/Rectangle 34.png",
+      img: "https://i.ibb.co.com/SXf0Pj8w/Rectangle-34.png",
+    },
+     {
+      id: 5,
+      title: "BRAC Spring 2026 Admission Help Desk",
+      img: "https://i.ibb.co.com/xKWHZzgF/Rectangle-31.png",
+    },
+     {
+      id: 6,
+      title: "BRAC Spring 2026 Admission Help Desk",
+      img: "https://i.ibb.co.com/99tvCWrH/Rectangle-33.png" ,
     },
   ];
 

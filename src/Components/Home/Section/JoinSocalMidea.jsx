@@ -6,22 +6,22 @@ const JoinSocalMidea = () => {
     {
       id: 1,
       title: "BRAC Spring 2026 Admission Help Desk",
-      img: "/public/university/banner1.png",
+      img: "https://i.ibb.co.com/RTrjJS05/banner2.png",
     },
     {
       id: 2,
       title: "East West University Admission Help Desk",
-      img: "/public/university/banner2.png",
+      img: "https://i.ibb.co.com/p6JXPKFC/Rectangle-22.png",
     },
     {
       id: 3,
       title: "Private University Admission group",
-      img: "/public/university/banner2.png",
+      img: "https://i.ibb.co.com/p6JXPKFC/Rectangle-22.png",
     },
     {
       id: 4,
       title: "Private University Admission group",
-      img: "/public/university/banner2.png",
+      img: "https://i.ibb.co.com/RTrjJS05/banner2.png",
     },
   ];
   return (
