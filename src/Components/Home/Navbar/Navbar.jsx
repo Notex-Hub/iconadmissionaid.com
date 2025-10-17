@@ -3,9 +3,12 @@ import logo from "../../../assets/Home/logo.png";
 import { Link } from "react-router-dom";
 import SignUpModal from "../../Auth/SignUpModal/SignUpModal";
 import LoginModal from "../../Auth/LoginModal/LoginModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { userLoggedOut } from "../../../../redux/Features/Api/Auth/AuthSlice";
 
 export default function Navbar() {
+  const dispatch = useDispatch();
+
   const { userInfo } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +30,10 @@ export default function Navbar() {
     isScrolled || mobileMenuOpen
       ? "bg-white shadow-md"
       : "bg-white/10 backdrop-blur-md shadow-sm";
+
+  const logouthandel = async () => {
+    dispatch(userLoggedOut());
+  };
 
   return (
     <>
@@ -79,12 +86,16 @@ export default function Navbar() {
           </div>
 
           {userInfo?.phone ? (
-            <img
-            className="w-12 h-12 rounded-full"
-              src={
-                userInfo?.profile_picture || "https://i.ibb.co.com/bjmC1HXM/profile.png"
-              }
-            />
+            <>
+              <img
+                className="w-12 h-12 rounded-full"
+                src={
+                  userInfo?.profile_picture ||
+                  "https://i.ibb.co.com/bjmC1HXM/profile.png"
+                }
+              />
+              <button onClick={() => logouthandel()}>Logout</button>
+            </>
           ) : (
             <button
               onClick={() => setOpenLogin(true)}
@@ -175,12 +186,15 @@ export default function Navbar() {
                 </Link>
               ))}
               {userInfo?.phone ? (
-                <img
-                  src={
-                    userInfo?.phone ||
-                    "https://i.ibb.co.com/bjmC1HXM/profile.png"
-                  }
-                />
+                <>
+                  <img
+                    className="w-12 h-12 rounded-full"
+                    src={
+                      userInfo?.phone ||
+                      "https://i.ibb.co.com/bjmC1HXM/profile.png"
+                    }
+                  />
+                </>
               ) : (
                 <button
                   onClick={() => setOpenLogin(true)}
@@ -216,9 +230,7 @@ export default function Navbar() {
           // slight delay so close animation runs (optional)
           setTimeout(() => setOpenSignUp(true), 120);
         }}
-        onLogin={async () => {
-        
-        }}
+        onLogin={async () => {}}
       />
 
       <SignUpModal open={openSignUp} onClose={() => setOpenSignUp(false)} />
