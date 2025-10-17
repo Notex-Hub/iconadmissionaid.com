@@ -216,9 +216,8 @@ export default function Navbar() {
           // slight delay so close animation runs (optional)
           setTimeout(() => setOpenSignUp(true), 120);
         }}
-        onLogin={async ({ phone, password }) => {
-          // call your login API here
-          // throw error on failure
+        onLogin={async () => {
+        
         }}
       />
 

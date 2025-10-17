@@ -2,10 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { useCreateStudentMutation } from "../../../../redux/Features/Api/Student/StudentApi";
 import { useLoginMutation } from "../../../../redux/Features/Api/Auth/AuthApi";
+import { userLoggedIn } from "../../../../redux/Features/Api/Auth/AuthSlice";
+import { useDispatch } from "react-redux";
 
 export default function SignUpModal({ open, onClose }) {
   const [createStudent] = useCreateStudentMutation();
   const [loginStudent] = useLoginMutation();
+  const dispatch = useDispatch();
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
@@ -78,11 +81,18 @@ export default function SignUpModal({ open, onClose }) {
     try {
       setLoading(true);
       // Finalize creation by including the password/OTP. Backend should handle create/verify.
-      await loginStudent({
+      const res = await loginStudent({
         phone: phone.trim(),
         password: password.trim(),
       }).unwrap();
 
+      const token = res?.data?.data?.accessToken;
+      const user = res?.data?.data?.user;
+
+      if (!token || !user) {
+        throw new Error("Invalid response from server");
+      }
+      dispatch(userLoggedIn({ user, token }));
       // success -> close modal (or you could redirect / show success message)
       onClose();
     } catch (err) {
