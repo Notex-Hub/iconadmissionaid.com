@@ -6,16 +6,21 @@ import { router } from "./Router/Router";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 import { store } from "../redux/Store";
+import { restoreSession } from "../redux/Features/Slice/RestoreSession";
+
 const queryClient = new QueryClient();
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
+(async function init() {
+  await restoreSession(store);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-
-        <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </Provider>
-  </React.StrictMode>
-);
+  root.render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </Provider>
+    </React.StrictMode>
+  );
+})();

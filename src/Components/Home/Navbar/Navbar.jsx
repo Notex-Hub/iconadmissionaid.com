@@ -3,8 +3,10 @@ import logo from "../../../assets/Home/logo.png";
 import { Link } from "react-router-dom";
 import SignUpModal from "../../Auth/SignUpModal/SignUpModal";
 import LoginModal from "../../Auth/LoginModal/LoginModal";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
+  const { userInfo } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -19,7 +21,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const textColor = isScrolled || mobileMenuOpen ? "text-gray-800" : "text-white";
+  const textColor =
+    isScrolled || mobileMenuOpen ? "text-gray-800" : "text-white";
   const bgColor =
     isScrolled || mobileMenuOpen
       ? "bg-white shadow-md"
@@ -37,7 +40,10 @@ export default function Navbar() {
           </div>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex flex-1 max-w-md mx-4"
+          >
             <div className="relative w-full">
               <input
                 type="text"
@@ -72,30 +78,38 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Login Button */}
-          <button
-            onClick={() => setOpenLogin(true)}
-            className={`hidden cursor-pointer md:flex items-center gap-2 px-4 py-2 rounded-full transition-all shadow-sm ${
-              isScrolled || mobileMenuOpen
-                ? "bg-red-600 text-white hover:bg-red-700"
-                : "bg-white/20 text-white hover:bg-white/30"
-            }`}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {userInfo?.phone ? (
+            <img
+            className="w-12 h-12 rounded-full"
+              src={
+                userInfo?.profile_picture || "https://i.ibb.co.com/bjmC1HXM/profile.png"
+              }
+            />
+          ) : (
+            <button
+              onClick={() => setOpenLogin(true)}
+              className={`hidden cursor-pointer md:flex items-center gap-2 px-4 py-2 rounded-full transition-all shadow-sm ${
+                isScrolled || mobileMenuOpen
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-            <span>Login</span>
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span>Login</span>
+            </button>
+          )}
 
           {/* Mobile Menu Toggle */}
           <button
@@ -160,26 +174,34 @@ export default function Navbar() {
                   {name}
                 </Link>
               ))}
-
-              <button
-                onClick={() => setOpenLogin(true)}
-                className="flex cursor-pointer items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all mt-2 shadow"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {userInfo?.phone ? (
+                <img
+                  src={
+                    userInfo?.phone ||
+                    "https://i.ibb.co.com/bjmC1HXM/profile.png"
+                  }
+                />
+              ) : (
+                <button
+                  onClick={() => setOpenLogin(true)}
+                  className="flex cursor-pointer items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all mt-2 shadow"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                <span>Login</span>
-              </button>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  <span>Login</span>
+                </button>
+              )}
             </div>
           </div>
         )}

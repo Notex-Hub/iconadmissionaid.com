@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { useLoginMutation } from "../../../../redux/Features/Api/Auth/AuthApi";
+import { userLoggedIn } from "../../../../redux/Features/Api/Auth/AuthSlice";
+import { useDispatch } from "react-redux";
 
-/**
- * Props:
- *  - open: boolean
- *  - onClose: () => void
- *  - onLogin: async ({ phone, password }) => void
- *  - onOpenSignUp: () => void   // called when user clicks "Create account"
- */
 export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
+  const [userLogin] = useLoginMutation();
+  const dispatch = useDispatch();
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,7 +40,10 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
 
     const p = normalizePhone(phone);
     if (!/^\+?\d{8,15}$/.test(p)) {
-      setMessage({ type: "error", text: "সঠিক ফোন নম্বর দিন (country code optional)।" });
+      setMessage({
+        type: "error",
+        text: "সঠিক ফোন নম্বর দিন (country code optional)।",
+      });
       return;
     }
     if (!password || password.length < 3) {
@@ -61,11 +63,22 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
 
     try {
       setLoading(true);
-      await onLogin({ phone: p, password });
+      const res = await userLogin({ phone: p, password });
+
+      const token = res?.data?.data?.accessToken;
+      const user = res?.data?.data?.user;
+
+      if (!token || !user) {
+        throw new Error("Invalid response from server");
+      }
+      dispatch(userLoggedIn({ user, token }));
       setMessage({ type: "success", text: "লগিন সফল।" });
       setTimeout(() => onClose?.(), 600);
     } catch (err) {
-      setMessage({ type: "error", text: err?.message ?? "লগিন হয়নি — সঠিক তথ্য দিন।" });
+      setMessage({
+        type: "error",
+        text: err?.message ?? "লগিন হয়নি — সঠিক তথ্য দিন।",
+      });
     } finally {
       setLoading(false);
     }
@@ -91,7 +104,9 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-2xl font-extrabold text-white">Login</h3>
-              <p className="text-sm text-gray-200">ফোন নম্বর ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
+              <p className="text-sm text-gray-200">
+                ফোন নম্বর ও পাসওয়ার্ড দিয়ে প্রবেশ করুন
+              </p>
             </div>
 
             <button
@@ -99,8 +114,18 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
               className="text-gray-200 hover:text-white p-2 rounded-md"
               aria-label="Close login"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -132,7 +157,9 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
             {message && (
               <div
                 className={`py-2 px-3 rounded-md text-sm ${
-                  message.type === "error" ? "bg-red-600/20 text-red-200" : "bg-green-600/10 text-green-200"
+                  message.type === "error"
+                    ? "bg-red-600/20 text-red-200"
+                    : "bg-green-600/10 text-green-200"
                 }`}
               >
                 {message.text}
@@ -166,7 +193,9 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
             <button
               type="button"
               className="underline"
-              onClick={() => alert("Forgot password flow should be implemented by backend.")}
+              onClick={() =>
+                alert("Forgot password flow should be implemented by backend.")
+              }
             >
               Forgot password?
             </button>
