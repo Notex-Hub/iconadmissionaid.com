@@ -38,9 +38,9 @@ const BookCard = ({ course }) => {
             <button className="w-full cursor-pointer mr-2 bg-gradient-to-r from-[#1E5A1E] to-[#008000] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
               এক নজরে পড়ুন
             </button></Link>
-          <button className=" bg-[#F91616] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
+          <Link  to={`/buy/book/${course?.slug}`} className=" bg-[#F91616] cursor-pointer text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
             অর্ডার করুন
-          </button>
+          </Link>
         </div>
       </div>
     </div>

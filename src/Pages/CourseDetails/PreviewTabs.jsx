@@ -47,7 +47,7 @@ export function PreviewTabs({ course, modules = [] }) {
         <div className="flex space-x-2">
           <TabButton active={active === "overview"} onClick={() => setActive("overview")}>Overview</TabButton>
           <TabButton active={active === "syllabus"} onClick={() => setActive("syllabus")}>Syllabus</TabButton>
-          <TabButton active={active === "resources"} onClick={() => setActive("resources")}>Resources</TabButton>
+          {/* <TabButton active={active === "resources"} onClick={() => setActive("resources")}>Resources</TabButton> */}
         </div>
       </div>
 

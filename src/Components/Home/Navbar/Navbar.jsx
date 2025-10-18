@@ -72,7 +72,7 @@ function ProfileMenu({ userInfo, onLogout }) {
           <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Dashboard</Link>
           <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Profile</Link>
           <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Settings</Link>
-          <Link to="/my-courses" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Courses</Link>
+          <Link to="/dashboard/my-courses" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Courses</Link>
 
           <button
             onClick={() => { setOpen(false); onLogout(); }}

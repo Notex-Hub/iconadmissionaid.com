@@ -38,7 +38,7 @@ export default function CourseDetailsPage() {
   const course = useMemo(() => {
     if (!item) return null;
     const source = item.courseId && typeof item.courseId === "object" ? item.courseId : item;
-    console.log(source)
+    console.log("source", source)
     return {
       id: source._id || item._id,
       courseId:source,
@@ -51,7 +51,7 @@ export default function CourseDetailsPage() {
       price: source.price || 0,
       offerPrice: source.offerPrice || 0,
       course_type: source.course_type || source.courseType || "—",
-      category: typeof source.category === "object" ? source.category : { title: source.category || "" },
+      category:  source.category?.title,
       instructors: item.instructors || source.instructors || [],
       daySchedule: source.daySchedule || item.daySchedule || [],
       timeShedule: source.timeShedule || item.timeShedule || [],
@@ -100,49 +100,31 @@ export default function CourseDetailsPage() {
   // normalize course university ids into an array of id strings
 const getCourseUniversityIds = (course) => {
   const u = course?.courseId?.universityId ?? course?.universityId ?? null;
-
-  // if it's an array (of strings or objects)
   if (Array.isArray(u)) {
     return u
       .map((it) => (typeof it === "object" ? it._id : String(it)))
       .filter(Boolean);
   }
-
-  // if it's an object like { _id: '...' }
   if (u && typeof u === "object") {
     return [u._id].filter(Boolean);
   }
-
-  // if it's a primitive id (string/number)
   if (u) return [String(u)];
-
   return [];
 };
 
 const courseUniversityIds = getCourseUniversityIds(course);
-
-// now filter modules: module.universityId can be array (most likely), object or string
 const modules = (modulesData?.data || []).filter((m) => {
   const mu = m?.universityId;
-
-  // if module.universityId is an array -> check intersection
   if (Array.isArray(mu)) {
-    // items inside mu might be objects or strings
     const moduleIds = mu.map((it) => (typeof it === "object" ? it._id : String(it))).filter(Boolean);
     return moduleIds.some((id) => courseUniversityIds.includes(id));
   }
-
-  // if module.universityId is an object like { _id: '...' }
   if (mu && typeof mu === "object") {
     return courseUniversityIds.includes(mu._id);
   }
-
-  // if module.universityId is a primitive (string)
   if (mu) {
     return courseUniversityIds.includes(String(mu));
   }
-
-  // no universityId on module -> exclude
   return false;
 });
 

@@ -116,7 +116,7 @@ export default function BuyCourse() {
     <>
       <Navbar />
       <main className="bg-gray-50 min-h-screen pt-24 pb-12">
-        <div className="container mx-auto px-4 max-w-5xl">
+        <div className="container mx-auto px-4 ">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow">
@@ -125,10 +125,7 @@ export default function BuyCourse() {
                   <div className="flex-1">
                     <h1 className="text-2xl font-bold text-gray-900">{courseTitle}</h1>
                     <p className="text-sm text-gray-500 mt-1">{course.category?.title || course.category?.title || ""}</p>
-                    <div className="mt-3 flex items-center gap-3">
-                      <div className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold">Instructor: {course.createdBy?.name}</div>
-                      <div className="text-sm text-gray-500">Course ID: {course._id}</div>
-                    </div>
+                   
                   </div>
                 </div>
               </div>
@@ -186,8 +183,8 @@ export default function BuyCourse() {
 
               <div className="bg-white rounded-2xl p-5 shadow text-sm text-gray-700">
                 <div className="font-semibold mb-2">Need help?</div>
-                <div className="text-gray-500">Contact support: support@example.com</div>
-                <div className="mt-2 text-gray-500">Phone: +8801XXXXXXXXX</div>
+                <div className="text-gray-500">Contact support: support@iconaid.com</div>
+                <div className="mt-2 text-gray-500">Phone: +8801799-056414</div>
               </div>
             </aside>
           </div>

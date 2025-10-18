@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetAllBooksQuery } from "../../../redux/Features/Api/books/booksApi";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import Footer from "../../Layout/Footer";
@@ -72,7 +72,7 @@ const BookDetails = () => {
                     <img
                       src={book.coverPhoto || "/placeholder-book.jpg"}
                       alt={book.title}
-                      className="w-full h-[400px] object-cover"
+                      className="w-full h-[400px] "
                     />
                   </div>
                 </div>
@@ -104,14 +104,13 @@ const BookDetails = () => {
 
                   <div className="mt-5 flex flex-wrap gap-3">
                     {book.pdf ? (
-                      <a
-                        href={book.pdf}
-                        target="_blank"
+                      <Link
+                        to={`/buy/book/${book.slug}`}
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:scale-105 transition-all"
+                        className="inline-flex cursor-pointer items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:scale-105 transition-all"
                       >
                         <FiDownload /> কিনুন
-                      </a>
+                      </Link>
                     ) : (
                       <button className="inline-flex items-center gap-2 bg-gray-200 text-gray-700 px-5 py-2.5 rounded-xl">
                         <FiBookOpen /> প্রিভিউ নেই
@@ -122,12 +121,12 @@ const BookDetails = () => {
                       onClick={() =>
                         navigator.share
                           ? navigator.share({
-                              title: book.title,
-                              url: window.location.href,
-                            }).catch(() => {})
+                            title: book.title,
+                            url: window.location.href,
+                          }).catch(() => { })
                           : alert("Share not supported")
                       }
-                      className="inline-flex items-center gap-2 bg-gray-50 px-5 py-2.5 rounded-xl shadow-sm hover:bg-gray-100 transition"
+                      className="inline-flex cursor-pointer items-center gap-2 bg-gray-50 px-5 py-2.5 rounded-xl shadow-sm hover:bg-gray-100 transition"
                     >
                       <FiShare2 /> শেয়ার করুন
                     </button>
@@ -186,15 +185,15 @@ const BookDetails = () => {
                   )}
 
                   <div className="mt-6 flex flex-col gap-3">
-                    <button className="w-full bg-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-green-700 transition flex items-center justify-center gap-2">
+                    <Link  to={`/buy/book/${book.slug}`} className="w-full curpo bg-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-green-700 transition flex items-center justify-center gap-2">
                       <FiDownload /> কিনুন
-                    </button>
-                    <button className="w-full bg-white text-green-600 px-5 py-2.5 rounded-xl shadow hover:bg-green-50 transition">
+                    </Link>
+                    {/* <button className="w-full bg-white text-green-600 px-5 py-2.5 rounded-xl shadow hover:bg-green-50 transition">
                       বুকমার্ক
                     </button>
                     <button className="w-full bg-gray-100 text-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-200 transition">
                       রিপোর্ট সমস্যা
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 
@@ -231,7 +230,7 @@ const BookDetails = () => {
             </aside>
           </section>
 
-         
+
         </div>
       </main>
       <Footer />

@@ -12,6 +12,8 @@ import Dashboard from "../Pages/Dashboard/Dashboard";
 import DashboardLayout from "../Layout/DashboardLayout";
 import MyCourse from "../Components/Dashboard/MyCourse/MyCourse";
 import BuyCourse from "../Pages/BuyCourse/BuyCourse";
+import BuyBookForm from "../Pages/BookDetails/BuyBookForm";
+import CourseModulesPage from "../Components/Dashboard/MyCourse/CourseModulesPage";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +70,12 @@ export const router = createBrowserRouter([
           <BuyCourse />
         </ScrollToTop>
       }
+      , {
+        path: "/buy/book/:slug",
+        element: <ScrollToTop>
+          <BuyBookForm/>
+        </ScrollToTop>
+      }
     ],
   },
   {
@@ -82,6 +90,13 @@ export const router = createBrowserRouter([
         path: "my-courses",
         element: <ScrollToTop>
           <MyCourse />
+        </ScrollToTop>
+
+      },
+       {
+        path:"course/modules/:slug",
+        element: <ScrollToTop>
+          <CourseModulesPage  />
         </ScrollToTop>
 
       }

@@ -25,13 +25,13 @@ export function Sidebar({ course }) {
         </div>
 
         <Link to={`/enroll/${course.slug || course.id}`} className="block">
-          <button className="w-full bg-[#16a34a] text-white font-semibold py-3 rounded-lg hover:opacity-95 transition">কোর্সটি নিন</button>
+          <button className="w-full bg-[#16a34a] text-white font-semibold py-3 rounded-lg hover:opacity-95 transition cursor-pointer">কোর্সটি নিন</button>
         </Link>
 
-        <div className="mt-3 flex gap-2">
+        {/* <div className="mt-3 flex gap-2">
           <button className="flex-1 border rounded py-2 text-sm">Preview</button>
           <button className="flex-1 border rounded py-2 text-sm">Contact</button>
-        </div>
+        </div> */}
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow">
@@ -52,7 +52,7 @@ export function Sidebar({ course }) {
         <div className="font-semibold mb-2">Need Help?</div>
         <div>Hotline: +8801799-056414</div>
         <div className="mt-2">
-          <Link to="/support" className="text-sm underline">Contact Support</Link>
+          <Link to="/" className="text-sm underline">Contact Support</Link>
         </div>
       </div>
     </div>
