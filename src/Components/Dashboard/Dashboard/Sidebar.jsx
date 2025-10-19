@@ -97,6 +97,7 @@ export default function Sidebar() {
       items: [
         { name: "My Courses", path: "/dashboard/my-courses" },
         { name: "My Products", path: "/my-products" },
+        { name: "My Profile", path: "/dashboard/my-profile" },
         { name: "Live Classes", path: "/live-classes" },
       ],
     },

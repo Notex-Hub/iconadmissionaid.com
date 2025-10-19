@@ -10,9 +10,17 @@ export const studentApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Student"],
     }),
+    getAllStudent: builder.query({
+      query: (data) => ({
+        url: "/student",
+        method: "GET",
+        body: data,
+      }),
+      providesTags: ["Student"],
+    }),
     studentUpdateProfile: builder.mutation({
       query: (data) => ({
-        url: `/student/update-student/${data?.sId}`,
+        url: `/student/update-student`,
         method: "PATCH",
         body: data,
       }),
@@ -40,4 +48,5 @@ export const {
   useStudentProfileQuery,
   useStudentUpdateProfileMutation,
   useCreateStudentMutation,
+  useGetAllStudentQuery
 } = studentApi;

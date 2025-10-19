@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import  { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Navbar from "../../Components/Home/Navbar/Navbar";
@@ -79,8 +79,6 @@ const ExamCheckout = () => {
         coupon: couponApplied,
         userId: userInfo?._id,
       };
-
-      // TODO: replace this with actual createOrder API
       navigate(`/exam/${exam?.slug}`, { state: { payload } });
     } catch (err) {
       console.error("Checkout error:", err);

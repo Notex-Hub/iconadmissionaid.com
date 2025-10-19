@@ -34,22 +34,18 @@ const StartExam = () => {
     }
 
     try {
-      // 🔹 Backend এ ডেটা পাঠাও
       const res = await register({
         name: name.trim(),
         phone: phone.trim(),
-        examSlug: slug, // চাইলে অতিরিক্ত info পাঠাতে পারো
+        examSlug: slug,
       }).unwrap();
 
       console.log("Register Response:", res);
 
       if (res?.status === true || res?.success) {
-        // success হলে মেসেজ দেখাও
         setInfo("তোমার নম্বরে একটি পাসওয়ার্ড/OTP পাঠানো হয়েছে। সেটি দিয়ে লগইন করো।");
-
-        // কিছু সময় পরে রিডাইরেক্ট করো (optional)
         setTimeout(() => {
-          navigate(`/exam/${slug}/run`, {
+          navigate(`/exam/${slug}`, {
             state: { name: name.trim(), phone: phone.trim() },
           });
         }, 1000);

@@ -15,18 +15,12 @@ import ScoresSummary from "../../Components/Dashboard/ExamAndScores/ScoresSummar
 import ScoresTable from "../../Components/Dashboard/ExamAndScores/ScoresTable";
 import ExamCard from "../../Components/Dashboard/ExamAndScores/ExamCard";
 
-
-
-/**
- * Fixed ExamAndScores page — no conditional hooks, stable hook order.
- */
 const ExamAndScores = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { userInfo } = useSelector((s) => s.auth || {});
 
-  // --- Hooks (ALL at top, never inside conditionals) ---
-  // fetch exams
+ 
   const {
     data: examData,
     isLoading: examsLoading,
@@ -40,14 +34,11 @@ const ExamAndScores = () => {
     isError: attemptsError,
   } = useGetAllmcqAttempQuery();
 
-  // local UI state
   const [activeTab, setActiveTab] = useState("exam");
 
-  // --- Derived values (useMemo safe because it's unconditional) ---
   const exams = examData?.data ?? [];
   const attempts = attemptsData?.data ?? [];
 
-  // resolve exam id from slug (if slug is mongo id or exam.slug or examTitle)
   const resolvedExamId = useMemo(() => {
     if (!slug) return null;
     const s = String(slug).trim().toLowerCase();
@@ -63,7 +54,6 @@ const ExamAndScores = () => {
     return found?._id ?? null;
   }, [exams, slug]);
 
-  // filter attempts for this exam (robust matching)
   const attemptsForExam = useMemo(() => {
     if (!slug) return [];
     const s = String(slug).trim().toLowerCase();
@@ -86,7 +76,6 @@ const ExamAndScores = () => {
     return attemptsForExam.filter((a) => String(a?.studentId?._id) === String(uid)).length;
   }, [attemptsForExam, userInfo]);
 
-  // fallback published exams list (for "Exam" tab)
   const filteredExams = useMemo(() => {
     const list = exams ?? [];
     if (!slug) return list.filter((e) => e?.status === "published");
@@ -94,7 +83,6 @@ const ExamAndScores = () => {
     return list.filter((e) => e?.slug && String(e.slug).trim().toLowerCase() === s);
   }, [exams, slug]);
 
-  // --- Handlers ---
   const handleStart = (exam) => {
     if (!userInfo) {
       navigate(`/exam/${exam.slug}/start`, { state: { redirectTo: `/exam/${exam.slug}/run` } });
@@ -103,7 +91,6 @@ const ExamAndScores = () => {
     navigate(`/exam/${exam.slug}/run`);
   };
 
-  // wherever you defined handleViewAttempt (e.g., ExamAndScores or ScoresTable parent)
 const handleViewAttempt = (attemptId, examSlugFromAttempt) => {
   const fallbackSlug = slug ?? examSlugFromAttempt ?? ""; 
   const finalSlug = String(examSlugFromAttempt || fallbackSlug || "").trim();
@@ -118,8 +105,6 @@ const handleViewAttempt = (attemptId, examSlugFromAttempt) => {
 
 
   const handleBack = () => navigate(-1);
-
-  // --- Loading / Error short-circuits (these do NOT call hooks) ---
   if (examsLoading || attemptsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -136,22 +121,18 @@ const handleViewAttempt = (attemptId, examSlugFromAttempt) => {
     );
   }
 
-  // --- Render UI (all hooks already called above) ---
   return (
     <div className="min-h-screen bg-[#f7fafc]">
       <div className="absolute inset-x-0 top-0 z-50"><Navbar /></div>
-
       <main className="container mx-auto px-4 pt-28 pb-12">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex rounded-lg overflow-hidden bg-transparent shadow-sm mb-6">
             <TabButton active={activeTab === "exam"} onClick={() => setActiveTab("exam")}>Exam</TabButton>
             <TabButton active={activeTab === "scores"} onClick={() => setActiveTab("scores")}>Scores</TabButton>
           </div>
-
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Available Exams</h1>
           <p className="text-sm text-gray-500 mb-6">Select an exam to begin your assessment</p>
         </div>
-
         <section className="space-y-6">
           {activeTab === "exam" && (
             <>

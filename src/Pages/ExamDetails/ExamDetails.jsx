@@ -15,7 +15,6 @@ const ExamDetails = () => {
     const { userInfo } = useSelector((state) => state.auth || {});
     const { data: examData, isLoading, isError } = useGetAllExamQuery();
     const exams = examData?.data ?? [];
-
     const exam = useMemo(() => {
         if (!slug) return null;
         const s = slug.trim().toLowerCase();
@@ -40,26 +39,33 @@ const ExamDetails = () => {
         return false;
     }, [exam]);
 
-    const handleStart = () => {
-        if (!userInfo) {
-            navigate(`/exam/${slug}/start`, { state: { redirectTo: `/exam/${slug}/run` } });
-            return;
-        }
-        navigate(`/exam/${slug}/checkout`);
-    };
+   const handleStart = () => {
+  if (!userInfo) {
+    navigate(`/exam/${slug}/start`, {
+      state: { redirectTo: `/exam/${slug}/run` },
+    });
+    return;
+  }
+  if (isExamFree) {
+    navigate(`/exam/${slug}`);
+    return;
+  }
+  navigate(`/exam/${slug}/checkout`);
+};
+
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>লোড হচ্ছে...</p>
-            </div>
+         <div className="min-h-screen flex items-center justify-center">
+         <p>লোড হচ্ছে...</p>
+        </div>
         );
     }
 
     if (isError) {
         return (
             <div className="min-h-screen flex items-center justify-center text-red-500">
-                <p>এক্সাম লোড করতে সমস্যা হয়েছে।</p>
+            <p>এক্সাম লোড করতে সমস্যা হয়েছে।</p>
             </div>
         );
     }
@@ -67,23 +73,21 @@ const ExamDetails = () => {
     if (!exam) {
         return (
             <>
-                <Navbar />
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-semibold mb-2">এক্সাম পাওয়া যায়নি</h2>
-                        <p className="text-gray-600">অনুগ্রহ করে আবার চেষ্টা করুন অথবা হোমে ফিরে যান।</p>
-                        <div className="mt-4">
-                            <button className="px-2 py-2 bg-black text-white rounded cursor-pointer" onClick={() => navigate(-1)} >Go Back</button>
-
-                        </div>
-                    </div>
+            <Navbar />
+            <div className="min-h-screen flex items-center justify-center">
+             <div className="text-center">
+              <h2 className="text-2xl font-semibold mb-2">এক্সাম পাওয়া যায়নি</h2>
+              <p className="text-gray-600">অনুগ্রহ করে আবার চেষ্টা করুন অথবা হোমে ফিরে যান।</p>
+              <div className="mt-4">
+             <button className="px-2 py-2 bg-black text-white rounded cursor-pointer" onClick={() => navigate(-1)} >Go Back</button>
+             </div>
+            </div>
                 </div>
                 <Footer/>
             </>
         );
     }
 
-    // helper: determine if exam is accessible (published and schedule/time)
     const isPublished = exam.status === "published";
     const now = new Date();
     const scheduleDate = exam.scheduleDate ? new Date(exam.scheduleDate) : null;
@@ -94,20 +98,19 @@ const ExamDetails = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="absolute top-0 left-0 w-full z-50">
-                <Navbar />
+            <Navbar />
             </div>
             <BannerSection
                 banner={banner}
                 text={{
                     title: "University-Standard Online Exams Smart & Secure",
                     subtitle:
-                        "Prepare students with real NSU, BRACU, AUST, EWU, AIUB & IUB exam patterns.",
+                    "Prepare students with real NSU, BRACU, AUST, EWU, AIUB & IUB exam patterns.",
                 }}
             />
 
             <div className="container mx-auto px-4 pt-10  pb-16">
                 <div className=" max-w-6xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-                    {/* Header image */}
                     <div className="w-full h-56 md:h-72 relative">
                         <img
                             src={cover}
@@ -115,13 +118,10 @@ const ExamDetails = () => {
                             className="w-full h-full object-cover"
                         />
                     </div>
-
                     <div className="p-6">
                         <h1 className="text-2xl md:text-3xl font-bold text-[#7a0000] mb-2">
                             {exam.examTitle || "Exam Title"}
                         </h1>
-
-                        {/* short meta */}
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between text-sm text-gray-600 gap-2 mb-4">
                             <div>
                                 <span className="font-medium">Type: </span> {exam.examType || "N/A"}
@@ -190,11 +190,7 @@ const ExamDetails = () => {
                                 </button>
                             </div>
                         </div>
-
-                        {/* extra details */}
                         <div className="mt-6 text-sm text-gray-600">
-
-                            {/* show price if available */}
                             {typeof exam.price !== "undefined" && (
                                 <p className="text-xl text-green-500 font-medium"><span className="font-medium">Price:</span> {exam.price === 0 ? "Free" : `${exam.price}  ৳`}</p>
                             )}
@@ -202,7 +198,6 @@ const ExamDetails = () => {
                     </div>
                 </div>
             </div>
-
             <Footer />
         </div>
     );

@@ -18,9 +18,7 @@ const QUESTIONS_PER_PAGE = 10;
 const ExamRun = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { userInfo } = useSelector((s) => s.auth || {}); // get student id for payload
-
-  // get exam meta (duration, title)
+  const { userInfo } = useSelector((s) => s.auth || {});
   const { data: examData } = useGetAllExamQuery();
   const exams = examData?.data ?? [];
   const examMeta = useMemo(() => {
@@ -29,7 +27,6 @@ const ExamRun = () => {
     return exams.find((e) => e?.slug && String(e.slug).trim().toLowerCase() === s) ?? null;
   }, [exams, slug]);
 
-  // get all mcq and filter by exam slug
   const { data: mcqData, isLoading, isError } = useGetAllMcqQuery();
   const mcqs = mcqData?.data ?? [];
   const filtered = useMemo(() => {
@@ -38,10 +35,7 @@ const ExamRun = () => {
     return mcqs.filter((m) => m?.examId?.slug && String(m.examId.slug).trim().toLowerCase() === s);
   }, [mcqs, slug]);
 
-  // mcq attempt mutation
   const [submitMcqAttempt, { isLoading: submitting }] = useMcqAttempMutation();
-
-  // pagination
   const [page, setPage] = useState(1);
   const totalQuestions = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalQuestions / QUESTIONS_PER_PAGE));
@@ -96,48 +90,37 @@ const ExamRun = () => {
       return;
     }
 
-    // build answer array: map answers object to [{ questionId, selectedAnswer }]
-    // selectedAnswer will be index+1 as string (to match sample payload like "4")
     const answerArray = Object.entries(answers).map(([questionId, selectedValue]) => {
-      // find the mcq question to get option index
       const q = mcqs.find((m) => String(m._id) === String(questionId));
       let selectedAnswer = "";
       if (q && Array.isArray(q.options)) {
         const index = q.options.findIndex((o) => String(o) === String(selectedValue));
-        // if not found, try to interpret selectedValue as already an index
         if (index >= 0) {
           selectedAnswer = String(index + 1);
         } else if (!isNaN(Number(selectedValue))) {
           selectedAnswer = String(selectedValue);
         } else {
-          // fallback: send the option text
           selectedAnswer = String(selectedValue);
         }
       } else {
-        // fallback if q not found: send the selectedValue as-is
         selectedAnswer = String(selectedValue);
       }
 
       return { questionId, selectedAnswer };
     });
 
-    // If no answers selected, give warning but allow submission (depends on your requirement)
     if (answerArray.length === 0) {
       const confirmEmpty = window.confirm("তুমি কোনো প্রশ্ন নির্বাচন করোনি। তবুও সাবমিট করবে?");
       if (!confirmEmpty) return;
     }
-
     const payload = {
       answer: answerArray,
       studentId,
     };
 
     try {
-      // call mutation
       const res = await submitMcqAttempt(payload).unwrap();
       toast.success(res?.message ?? "উত্তর সফলভাবে সাবমিট হয়েছে।");
-
-      // navigate to result page with server response
       navigate(`/exam/${slug}/result`, { state: { serverResponse: res } });
     } catch (err) {
       console.error("mcqAttemp submit error:", err);
@@ -145,7 +128,6 @@ const ExamRun = () => {
       toast.error(msg);
     }
   };
-
   const handleBack = () => navigate(-1);
 
   if (isLoading) {
@@ -164,20 +146,17 @@ const ExamRun = () => {
     );
   }
 
-  // When there are no MCQs for this exam, show EmptyState
   if (!filtered || filtered.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="absolute inset-x-0 top-0 z-50">
           <Navbar />
         </div>
-
         <main className="container mx-auto px-4 pt-28 pb-12">
           <div className="max-w-3xl mx-auto">
             <EmptyState onBack={handleBack} />
           </div>
         </main>
-
         <Footer />
       </div>
     );

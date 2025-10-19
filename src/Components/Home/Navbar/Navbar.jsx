@@ -70,7 +70,7 @@ function ProfileMenu({ userInfo, onLogout }) {
           </div>
 
           <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Dashboard</Link>
-          <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Profile</Link>
+          <Link to="/dashboard/my-profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Profile</Link>
           <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Settings</Link>
           <Link to="/dashboard/my-courses" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Courses</Link>
 
@@ -99,7 +99,7 @@ function MobileProfileMenu({ userInfo, onLogout, onClose }) {
         </div>
       </div>
       <div className="mt-3 flex flex-col px-2 gap-2">
-        <Link to="/profile" onClick={onClose} className="block px-3 py-2 rounded hover:bg-gray-100">My Profile</Link>
+        <Link to="/dashboard/my-profile" onClick={onClose} className="block px-3 py-2 rounded hover:bg-gray-100">My Profile</Link>
         <Link to="/settings" onClick={onClose} className="block px-3 py-2 rounded hover:bg-gray-100">Settings</Link>
         <Link to="/my-courses" onClick={onClose} className="block px-3 py-2 rounded hover:bg-gray-100">My Courses</Link>
         <button onClick={() => { onClose(); onLogout(); }} className="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">Logout</button>

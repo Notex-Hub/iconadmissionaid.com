@@ -9,7 +9,6 @@ export const imgApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
-            // invalidatesTags: ["User","Student"],
         }),
 
     }),

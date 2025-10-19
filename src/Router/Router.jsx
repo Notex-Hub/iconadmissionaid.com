@@ -21,6 +21,7 @@ import ExamCheckout from "../Pages/ExamDetails/ExamCheckout";
 import ExamAndScores from "../Pages/ExamDetails/ExamAndScores";
 import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamResult from "../Components/Dashboard/ExamRun/ExamResult";
+import StudentProfile from "../Components/Dashboard/MyProfile/MyProfile";
 
 export const router = createBrowserRouter([
   {
@@ -153,6 +154,13 @@ export const router = createBrowserRouter([
         path:"course/modules/:slug",
         element: <ScrollToTop>
           <CourseModulesPage  />
+        </ScrollToTop>
+
+      },
+       {
+        path:"my-profile",
+        element: <ScrollToTop>
+          <StudentProfile  />
         </ScrollToTop>
 
       }
