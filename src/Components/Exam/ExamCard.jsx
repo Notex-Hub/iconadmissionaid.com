@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 // import { Link } from "react-router-dom";
 
+import { Link } from "react-router-dom";
+
 const ExamCard = ({ exam }) => {
+  console.log(exam)
   const bannerSrc = exam?.image ?? exam?.cover_photo ?? "/public/university/default.png";
   const uniName =
     exam?.universityId?.name ??
@@ -13,7 +16,7 @@ const ExamCard = ({ exam }) => {
   //   exam?.isFree === true || exam?.isFree === "true" || exam?.isFree === "1";
 
   return (
-    <article className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden max-w-full min-w-0">
+    <Link to={`/exam/exam-details/${exam?.slug}`} className="bg-white cursor-pointer  rounded-2xl shadow-md border border-gray-100 overflow-hidden max-w-full min-w-0">
       <div className="px-4 pt-4 pb-3 text-center">
         <h3 className="text-2xl sm:text-3xl font-extrabold text-[#8B0000] leading-tight">
           {uniName}
@@ -33,43 +36,8 @@ const ExamCard = ({ exam }) => {
         />
       </div>
 
-      {/* <div className="p-4">
-        <h4 className="text-lg font-semibold line-clamp-2">{exam?.examTitle}</h4>
-
-        <div className="mt-2 text-sm text-gray-600">
-          {moduleTitle && (
-            <div>
-              <strong>Module:</strong> {moduleTitle}
-            </div>
-          )}
-          <div>
-            <strong>Type:</strong> {exam?.examType ?? "N/A"}
-          </div>
-          <div>
-            <strong>Questions:</strong> {exam?.totalQuestion ?? "N/A"}
-          </div>
-          <div className="text-sm text-gray-500">
-            <strong>Schedule:</strong>{" "}
-            {exam?.scheduleDate ? new Date(exam.scheduleDate).toLocaleString() : "N/A"}
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center gap-3">
-          <Link
-            to={`/exam/${exam?.slug ?? exam?._id}`}
-            className="flex-1 text-center py-2 rounded-xl border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition"
-          >
-            View Exam
-          </Link>
-
-          {isFreeFlag && (
-            <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800 border border-green-200">
-              Free
-            </span>
-          )}
-        </div>
-      </div> */}
-    </article>
+    
+    </Link>
   );
 };
 

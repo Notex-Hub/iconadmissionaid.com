@@ -14,6 +14,13 @@ import MyCourse from "../Components/Dashboard/MyCourse/MyCourse";
 import BuyCourse from "../Pages/BuyCourse/BuyCourse";
 import BuyBookForm from "../Pages/BookDetails/BuyBookForm";
 import CourseModulesPage from "../Components/Dashboard/MyCourse/CourseModulesPage";
+import PaidTest from "../Pages/PaidTest/PaidTest";
+import ExamDetails from "../Pages/ExamDetails/ExamDetails";
+import StartExam from "../Pages/StartExam/StartExam";
+import ExamCheckout from "../Pages/ExamDetails/ExamCheckout";
+import ExamAndScores from "../Pages/ExamDetails/ExamAndScores";
+import ExamRun from "../Pages/ExamDetails/ExamRun";
+import ExamResult from "../Components/Dashboard/ExamRun/ExamResult";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +59,13 @@ export const router = createBrowserRouter([
           <ScrollToTop>
             <FreeTest />
           </ScrollToTop>,
+      },
+       {
+        path: "/paid-test",
+        element:
+          <ScrollToTop>
+            <PaidTest />
+          </ScrollToTop>,
       }, {
         path: "/course/:slug",
         element: <ScrollToTop>
@@ -74,6 +88,48 @@ export const router = createBrowserRouter([
         path: "/buy/book/:slug",
         element: <ScrollToTop>
           <BuyBookForm/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/exam-details/:slug",
+        element: <ScrollToTop>
+          <ExamDetails/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug/start",
+        element: <ScrollToTop>
+          <StartExam/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug/checkout",
+        element: <ScrollToTop>
+          <ExamCheckout/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug",
+        element: <ScrollToTop>
+          <ExamAndScores/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug/run",
+        element: <ScrollToTop>
+          <ExamRun/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug/result",
+        element: <ScrollToTop>
+          <ExamResult/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/:slug/result/:attemptId",
+        element: <ScrollToTop>
+          <ExamResult/>
         </ScrollToTop>
       }
     ],
