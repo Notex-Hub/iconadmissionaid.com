@@ -96,9 +96,8 @@ export default function Sidebar() {
       title: "Learning",
       items: [
         { name: "My Courses", path: "/dashboard/my-courses" },
-        { name: "My Products", path: "/my-products" },
         { name: "My Profile", path: "/dashboard/my-profile" },
-        { name: "Live Classes", path: "/live-classes" },
+        { name: "Live Classes", path: "/dashboard/live-classes" },
       ],
     },
     {
@@ -106,10 +105,10 @@ export default function Sidebar() {
       items: [
         { name: "Rewards", path: "/rewards" },
         { name: "Referrals", path: "/referrals" },
-        { name: "Orders", path: "/orders" },
+        { name: "Orders", path: "/dashboard/orders" },
       ],
     },
-    { title: "Settings", items: [{ name: "Settings", path: "/settings" }] },
+    { title: "Settings", items: [{ name: "Settings", path: "/dashboard/settings" }] },
   ];
 
   return (

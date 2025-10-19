@@ -4,14 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/Exam";
-import { useGetAllMcqQuery, useMcqAttempMutation } from "../../../redux/Features/Api/Mcq/McqApi"; // <-- added mutation hook
+import { useGetAllMcqQuery, useMcqAttempMutation } from "../../../redux/Features/Api/Mcq/McqApi";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import Footer from "../../Layout/Footer";
 import { EmptyState } from "../../Components/Dashboard/ExamRun/EmptyState";
 import { HeaderBar } from "../../Components/Dashboard/ExamRun/HeaderBar";
 import { QuestionCard } from "../../Components/Dashboard/ExamRun/QuestionCard";
 import { PaginationControls } from "../../Components/Dashboard/ExamRun/PaginationControls";
+import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/exam";
 
 const QUESTIONS_PER_PAGE = 10;
 

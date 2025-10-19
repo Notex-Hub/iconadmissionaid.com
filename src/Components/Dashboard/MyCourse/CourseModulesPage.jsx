@@ -1,17 +1,21 @@
 /* src/pages/CourseModules/CourseModulesPage.jsx */
 import { useMemo, useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useGetAllModuleQuery } from "../../../../redux/Features/Api/Module/ModuleApi";
 import { ModuleCard } from "./ModuleCard";
 import LectureList from "./LectureList";
+import ExamList from "./ExamList";
+import NoteList from "./NoteList";
 
-const TABS = ["Modules", "Lectures", "Exams", "Notes", "Facebook Group"];
+const TABS = ["Modules", "Lectures", "Exams", "Notes"];
 const ITEMS_PER_PAGE = 6;
 
 export default function CourseModulesPage() {
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { userInfo } = useSelector((s) => s.auth || {});
   const { data: moduleResp, isLoading, isError } = useGetAllModuleQuery();
   const modules = moduleResp?.data ?? [];
   const [activeTab, setActiveTab] = useState("Modules");
@@ -93,6 +97,22 @@ export default function CourseModulesPage() {
     setPage(next);
     setQuery({ page: next });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // --- Start exam handler ---
+  function handleStartExam(exam) {
+    const slugOrId = exam?.slug || exam?.id || exam?._id;
+    if (!slugOrId) {
+      alert("Exam slug not available.");
+      return;
+    }
+
+    // If user logged in, go directly to run; otherwise go to start with redirect
+    if (userInfo && (userInfo._id || userInfo.id)) {
+      navigate(`/exam/${slugOrId}/run`);
+    } else {
+      navigate(`/exam/${slugOrId}/start`, { state: { redirectTo: `/exam/${slugOrId}/run` } });
+    }
   }
 
   if (isLoading) {
@@ -233,16 +253,23 @@ export default function CourseModulesPage() {
         )}
 
         {activeTab === "Exams" && (
-          <section className="bg-white rounded-2xl p-6 shadow">
-            <h2 className="text-lg font-semibold mb-3">Exams</h2>
-            <div className="text-sm text-gray-600">Exams listing is not implemented yet. Provide exams data to render here.</div>
-          </section>
+          <div className="mt-4">
+            {selectedModule ? (
+              <ExamList moduleId={selectedModule._id || selectedModule.slug} onStartExam={handleStartExam} />
+            ) : (
+              <ExamList moduleIds={allowedModuleIdsForUniversities} onStartExam={handleStartExam} />
+            )}
+          </div>
         )}
 
+
         {activeTab === "Notes" && (
-          <section className="bg-white rounded-2xl p-6 shadow">
-            <h2 className="text-lg font-semibold mb-3">Notes</h2>
-            <div className="text-sm text-gray-600">Notes listing is not implemented yet. Provide notes data to render here.</div>
+          <section className="">
+            {selectedModule ? (
+              <NoteList moduleId={selectedModule._id || selectedModule.slug} />
+            ) : (
+              <NoteList moduleIds={allowedModuleIdsForUniversities} />
+            )}
           </section>
         )}
 

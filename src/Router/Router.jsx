@@ -22,6 +22,9 @@ import ExamAndScores from "../Pages/ExamDetails/ExamAndScores";
 import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamResult from "../Components/Dashboard/ExamRun/ExamResult";
 import StudentProfile from "../Components/Dashboard/MyProfile/MyProfile";
+import LiveClassForPurchased from "../Components/Dashboard/MyCourse/LiveClassForPurchased";
+import UserOrdersTable from "../Components/Dashboard/UserOrdersTable/UserOrdersTable";
+import SettingsPage from "../Components/Dashboard/SettingsPage/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -162,7 +165,24 @@ export const router = createBrowserRouter([
         element: <ScrollToTop>
           <StudentProfile  />
         </ScrollToTop>
-
+      },
+       {
+        path:"live-classes",
+        element: <ScrollToTop>
+          <LiveClassForPurchased  />
+        </ScrollToTop>
+      },
+       {
+        path:"orders",
+        element: <ScrollToTop>
+          <UserOrdersTable  />
+        </ScrollToTop>
+      },
+       {
+        path:"settings",
+        element: <ScrollToTop>
+          <SettingsPage />
+        </ScrollToTop>
       }
     ]
   }

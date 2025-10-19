@@ -70,9 +70,9 @@ function ProfileMenu({ userInfo, onLogout }) {
           </div>
 
           <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Dashboard</Link>
-          <Link to="/dashboard/my-profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Profile</Link>
-          <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Settings</Link>
           <Link to="/dashboard/my-courses" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Courses</Link>
+          <Link to="/dashboard/my-profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>My Profile</Link>
+          <Link to="/dashboard/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setOpen(false)}>Settings</Link>
 
           <button
             onClick={() => { setOpen(false); onLogout(); }}
@@ -248,7 +248,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
             </form>
 
             <div className="flex flex-col gap-2">
-              {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Free Class", path: "/free-class" },{ name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" },].map(({ name, path }) => (
+              {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Free Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" },].map(({ name, path }) => (
                 <Link key={name} to={path} onClick={() => setMobileMenuOpen(false)} className="text-gray-800 hover:bg-gray-100 px-4 py-2 rounded transition-colors">
                   {name}
                 </Link>
@@ -269,7 +269,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
         )}
       </nav>
 
-      <LoginModal open={openLogin} onClose={() => setOpenLogin(false)} onLogin={async () => {}} onOpenSignUp={() => { setOpenLogin(false); setTimeout(() => setOpenSignUp(true), 120); }} />
+      <LoginModal open={openLogin} onClose={() => setOpenLogin(false)} onLogin={async () => { }} onOpenSignUp={() => { setOpenLogin(false); setTimeout(() => setOpenSignUp(true), 120); }} />
       <SignUpModal open={openSignUp} onClose={() => setOpenSignUp(false)} />
     </>
   );
