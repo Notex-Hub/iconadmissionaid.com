@@ -15,8 +15,10 @@ const Footer = () => {
   const links = [
     { name: "Home", to: "/" },
     { name: "Courses", to: "/courses" },
-    { name: "About Us", to: "/about" },
-    { name: "Contact Us", to: "/contact" },
+    { name: "Books", to: "/books" },
+    { name: "Free Class", to: "/free-class" },
+    { name: "Free Test", to: "/free-test" },
+    { name: "Paid Test", to: "/paid-test" },
   ];
 
   const socialLinks = [
@@ -115,21 +117,21 @@ const Footer = () => {
         <hr className="border-gray-700" />
         <div className="flex flex-col md:flex-row justify-center items-center py-5 space-y-2 md:space-y-0 text-sm font-medium">
           <Link
-            to="/terms"
+            to="/"
             className="px-4 hover:text-red-600 transition duration-300"
           >
             Terms & Conditions
           </Link>
           <span className="hidden md:inline border-r border-gray-500 h-4"></span>
           <Link
-            to="/privacy"
+            to="/"
             className="px-4 hover:text-red-600 transition duration-300"
           >
             Privacy Policy
           </Link>
           <span className="hidden md:inline border-r border-gray-500 h-4"></span>
           <Link
-            to="/refund"
+            to="/"
             className="px-4 hover:text-red-600 transition duration-300"
           >
             Refund Policy

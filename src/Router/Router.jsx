@@ -16,10 +16,8 @@ import BuyBookForm from "../Pages/BookDetails/BuyBookForm";
 import CourseModulesPage from "../Components/Dashboard/MyCourse/CourseModulesPage";
 import PaidTest from "../Pages/PaidTest/PaidTest";
 import ExamDetails from "../Pages/ExamDetails/ExamDetails";
-import StartExam from "../Pages/StartExam/StartExam";
 import ExamCheckout from "../Pages/ExamDetails/ExamCheckout";
 import ExamAndScores from "../Pages/ExamDetails/ExamAndScores";
-import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamResult from "../Components/Dashboard/ExamRun/ExamResult";
 import StudentProfile from "../Components/Dashboard/MyProfile/MyProfile";
 import LiveClassForPurchased from "../Components/Dashboard/MyCourse/LiveClassForPurchased";
@@ -27,6 +25,8 @@ import UserOrdersTable from "../Components/Dashboard/UserOrdersTable/UserOrdersT
 import SettingsPage from "../Components/Dashboard/SettingsPage/SettingsPage";
 import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import ReferPage from "../Components/Dashboard/Refer/ReferPage";
+import ExamRun from "../Pages/ExamDetails/ExamRun";
+import ExamStartPage from "../Pages/StartExam/StartExam";
 
 export const router = createBrowserRouter([
   {
@@ -111,7 +111,7 @@ export const router = createBrowserRouter([
       , {
         path: "/exam/:slug/start",
         element: <ScrollToTop>
-          <StartExam/>
+          <ExamStartPage />
         </ScrollToTop>
       }
       , {

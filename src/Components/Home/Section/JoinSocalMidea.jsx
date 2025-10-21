@@ -1,4 +1,3 @@
-import Button from "../../Ui/Button";
 import SectionText from "../../Ui/SectionText";
 
 const JoinSocalMidea = () => {
@@ -55,9 +54,7 @@ const JoinSocalMidea = () => {
           </>
         ))}
       </div>
-      <div className="flex justify-center items-center my-5">
-        <Button text="View All Courses" />
-      </div>
+     
     </section>
   );
 };

@@ -1,5 +1,5 @@
 import Navbar from "../../Components/Home/Navbar/Navbar";
-import OurFreeClasses from "../../Components/Home/Section/OurFreeClasses";
+import OurFreeLectures from "../../Components/Home/Section/OurFreeClasses";
 import BannerSection from "../../Components/Ui/BannerSection";
 import Footer from "../../Layout/Footer";
 import banner from "../../assets/banner/freeclass.png";
@@ -12,7 +12,7 @@ const FreeClass = () => {
       </div>
       <BannerSection banner={banner} />
       <div className="container mx-auto">
-       <OurFreeClasses />
+       <OurFreeLectures />
       </div>
       <Footer />
     </div>

@@ -11,7 +11,7 @@ import { EmptyState } from "../../Components/Dashboard/ExamRun/EmptyState";
 import { HeaderBar } from "../../Components/Dashboard/ExamRun/HeaderBar";
 import { QuestionCard } from "../../Components/Dashboard/ExamRun/QuestionCard";
 import { PaginationControls } from "../../Components/Dashboard/ExamRun/PaginationControls";
-import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/exam";
+import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/Exam";
 
 const QUESTIONS_PER_PAGE = 10;
 

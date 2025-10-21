@@ -1,70 +1,208 @@
 /* eslint-disable react/prop-types */
-import  { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+
+// UI components
 import LiveClass from "../../Components/Dashboard/Dashboard/LiveClass";
 import { KPIBarCard } from "../../Components/Dashboard/Dashboard/KPIBarCard";
 import { LinearBar } from "../../Components/Dashboard/Dashboard/LineBar";
 
+// API hooks (adjust paths to your structure)
+import { useGetAllCqQuery } from "../../../redux/Features/Api/Cq/CqApi";
+import { useGetAllmcqAttempQuery } from "../../../redux/Features/Api/Mcq/McqApi";
+import { useGetAllPurchaseQuery } from "../../../redux/Features/Api/Purchase/Purchase";
+import { useGetAllOrderQuery } from "../../../redux/Features/Api/order/orderApi";
+import { useGetAllLiveClassQuery } from "../../../redux/Features/Api/live/Live";
 
-export default function Dashboard() {
-  const [data, setData] = useState({ mcq: null, cq: null, gap: null, attendance: null, summary: "No data available yet." });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [liveSessions, setLiveSessions] = useState([]);
+// -------------------- utils --------------------
+const fmtPercent = (n) => (Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : 0);
 
-  const fetchMockData = () =>
-    new Promise((res) =>
-      setTimeout(
-        () =>
-          res({
-            mcq: 72.5,
-            cq: 68.2,
-            gap: 85.3,
-            attendance: 91,
-            summary: "Focus on MCQs and CQs. Excellent performance in Gap section. Work on improving attendance.",
-            live: [
-              { id: 1, title: "Algebra: Key Tricks", instructor: "Mr. Rahim", type: "Lecture", date: "Oct 20, 2025", time: "6:00 PM", duration: 60, status: "Upcoming" },
-              { id: 2, title: "Physics: Mock Discussion", instructor: "Ms. Sultana", type: "Discussion", date: "Oct 17, 2025", time: "Right Now", duration: 45, status: "Live" },
-              { id: 3, title: "English: Essay Techniques", instructor: "Mr. Karim", type: "Lecture", date: "Oct 22, 2025", time: "4:00 PM", duration: 50, status: "Upcoming" }
-            ],
-            subjects: [
-              { name: "Algebra", value: 82 },
-              { name: "Physics", value: 68 },
-              { name: "English", value: 74 },
-              { name: "Chemistry", value: 59 },
-              { name: "General Knowledge", value: 90 }
-            ]
-          }),
-        700
-      )
-    );
+const isSameDay = (d1, d2) =>
+  d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+
+// Attendance (30-day rolling) stored in localStorage
+function useRollingAttendance() {
+  const [percent, setPercent] = useState(0);
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    fetchMockData()
-      .then((res) => {
-        if (!mounted) return;
-        setData(res);
-        setLiveSessions(res.live || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!mounted) return;
-        setError("Failed to load");
-        setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
+    const KEY = "dashboard_attendance_v1";
+    const today = new Date();
+    const stored = JSON.parse(localStorage.getItem(KEY) || "null");
+
+    let start = stored?.start ? new Date(stored.start) : today;
+    let days = stored?.days ?? 0;
+    let lastDay = stored?.lastDay ? new Date(stored.lastDay) : null;
+
+    // reset if > 30 days window
+    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 30) {
+      start = today;
+      days = 0;
+      lastDay = null;
+    }
+
+    // increment once per calendar day
+    if (!lastDay || !isSameDay(today, lastDay)) {
+      days = Math.min(30, days + 1);
+      lastDay = today;
+    }
+
+    localStorage.setItem(KEY, JSON.stringify({ start, days, lastDay }));
+    setPercent(fmtPercent((days / 30) * 100));
   }, []);
 
+  return percent; // 0..100
+}
+
+// MCQ stats from attempts
+function useMcqStats(attempts) {
+  return useMemo(() => {
+    if (!Array.isArray(attempts)) return { accuracy: 0, correct: 0, wrong: 0, total: 0, bySubject: [] };
+
+    let correct = 0;
+    let wrong = 0;
+    const subjectTotals = new Map(); // subject => {correct, total}
+
+    attempts.forEach((att) => {
+      const ans = att?.answer || [];
+      // prefer server-provided counts if they look valid
+      if (Number.isFinite(att?.correctCount) || Number.isFinite(att?.wrongCount)) {
+        correct += Number(att.correctCount || 0);
+        wrong += Number(att.wrongCount || 0);
+      }
+
+      // also compute per subject + fallback correctness if counts were zeros
+      ans.forEach((a) => {
+        const q = a?.questionId || {};
+        const subject = q?.subject?.trim() || "General";
+        const selectedIndex = parseInt(a?.selectedAnswer, 10) - 1;
+        const selected = Array.isArray(q?.options) ? q.options[selectedIndex] : undefined;
+        const isCorrect = selected && q?.correctAnswer && String(selected).trim() === String(q.correctAnswer).trim();
+
+        const prev = subjectTotals.get(subject) || { correct: 0, total: 0 };
+        subjectTotals.set(subject, { correct: prev.correct + (isCorrect ? 1 : 0), total: prev.total + 1 });
+
+        // if server counts are 0 but we can compute, add here too
+        if (!(Number.isFinite(att?.correctCount) || Number.isFinite(att?.wrongCount))) {
+          if (isCorrect) correct += 1; else wrong += 1;
+        }
+      });
+    });
+
+    const total = correct + wrong;
+    const accuracy = total > 0 ? (correct / total) * 100 : 0;
+
+    const bySubject = Array.from(subjectTotals, ([name, v]) => ({
+      name,
+      value: v.total > 0 ? Math.round((v.correct / v.total) * 100) : 0,
+    }))
+      .sort((a, b) => b.value - a.value);
+
+    return { accuracy, correct, wrong, total, bySubject };
+  }, [attempts]);
+}
+
+// CQ activity (count last 30 days)
+function useCqActivity(cqAttempts) {
+  return useMemo(() => {
+    if (!Array.isArray(cqAttempts)) return { count30d: 0, percent: 0 };
+    const now = new Date();
+    const since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const count30d = cqAttempts.filter((a) => new Date(a?.submittedTime || a?.createdAt || 0) >= since).length;
+    // normalize: 10 submissions == 100%
+    const percent = fmtPercent(Math.min(100, (count30d / 10) * 100));
+    return { count30d, percent };
+  }, [cqAttempts]);
+}
+
+export default function Dashboard() {
+  // auth
+  const { userInfo } = useSelector((state) => state.auth || {});
+
+  // queries
+  const { data: attemptsDataResp, isLoading: mcqLoading, isError: mcqError } = useGetAllmcqAttempQuery();
+  const { data: cqResp, isLoading: cqLoading, isError: cqError } = useGetAllCqQuery();
+  const { data: purchaseDataResp, isLoading: purchaseLoading } = useGetAllPurchaseQuery({ studentId: userInfo?._id });
+  const { data: ordersResp, isLoading: ordersLoading, isError: ordersError } = useGetAllOrderQuery();
+  const { data: liveResp, isLoading: liveLoading, isError: liveError } = useGetAllLiveClassQuery();
+
+  // shape data
+  const attempts = attemptsDataResp?.data || [];
+  const cqAttempts = cqResp?.data || [];
+  const purchases = purchaseDataResp?.data || [];
+  const orders = ordersResp?.data || [];
+  const liveClasses = liveResp?.data || [];
+
+  // KPIs
+  const mcqStats = useMcqStats(attempts);
+  const cqActivity = useCqActivity(cqAttempts);
+  const attendancePercent = useRollingAttendance();
+
+  // Subjects progress for LinearBar
+  const subjects = useMemo(() => {
+    const list = mcqStats.bySubject.length > 0 ? mcqStats.bySubject : [{ name: "General", value: fmtPercent(mcqStats.accuracy) }];
+    // keep at most 6 subjects for clean UI
+    return list.slice(0, 6);
+  }, [mcqStats]);
+
+  // Live sessions (latest 3 always)
+  const liveSessions = useMemo(() => {
+    const today = new Date();
+
+    const toSession = (lc) => {
+      const start = new Date(lc?.createdAt || Date.now()); // REPLACE with lc.startTime if available
+      const dateStr = start.toLocaleDateString(undefined, { month: "short", day: "2-digit", year: "numeric" });
+      const timeStr = start.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+
+      let status;
+      if (isSameDay(start, today)) status = "Live"; // today => Join Now
+      else if (start < today) status = "Past"; // already happened
+      else status = "Upcoming"; // future
+
+      return {
+        id: lc._id,
+        title: lc.title || lc.courseId?.course_title || "Live Class",
+        instructor: lc.createdBy?.name || "",
+        type: "Lecture",
+        date: dateStr,
+        time: timeStr,
+        duration: 60,
+        status,
+        link: lc.link,
+        _start: start.getTime(),
+      };
+    };
+
+    return (liveClasses || [])
+      .map(toSession)
+      .sort((a, b) => b._start - a._start)
+      .slice(0, 3);
+  }, [liveClasses]);
+
+  const loading = mcqLoading || cqLoading || purchaseLoading || ordersLoading || liveLoading;
+  const error = mcqError || cqError || ordersError || liveError ? "Failed to load some data." : null;
+
   function handleJoin(session) {
-    if (session.status === "Live") {
-      window.alert(`Joining live class: ${session.title}`);
-    } else {
-      window.alert(`Class not live yet. Scheduled: ${session.date} · ${session.time}`);
+    if (session.status === "Live" && session.link) {
+      window.open(session.link, "_blank");
+      return;
     }
+    if (session.status === "Past") {
+      window.alert("This class is already over.");
+      return;
+    }
+    window.alert("This class is not live yet.");
   }
+
+  // Dynamic summary
+  const summary = useMemo(() => {
+    const parts = [];
+    parts.push(`MCQ accuracy ${fmtPercent(mcqStats.accuracy)}% (${mcqStats.correct}/${mcqStats.total}).`);
+    parts.push(`CQ submissions (30d): ${cqActivity.count30d}.`);
+    parts.push(`Attendance last 30d: ${fmtPercent(attendancePercent)}%.`);
+    if (purchases.length > 0) parts.push(`Active course: ${purchases[0]?.courseId?.course_title || "—"}.`);
+    return parts.join(" ");
+  }, [mcqStats, cqActivity, attendancePercent, purchases]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-6">
@@ -75,15 +213,33 @@ export default function Dashboard() {
 
         {/* KPI cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <KPIBarCard title="MCQ Accuracy" value={loading ? null : data.mcq} trend={2.4} subtitle="Accuracy (last 10 tests)" colorClass="from-emerald-400 to-teal-400" />
-          <KPIBarCard title="CQ Avg Score" value={loading ? null : data.cq} trend={-1.2} subtitle="Constructive answers" colorClass="from-indigo-400 to-indigo-600" />
-          <KPIBarCard title="Attendance" value={loading ? null : data.attendance} trend={4} subtitle="Last 30 days" colorClass="from-yellow-400 to-orange-400" />
+          <KPIBarCard
+            title="MCQ Accuracy"
+            value={loading ? null : fmtPercent(mcqStats.accuracy)}
+            trend={0}
+            subtitle={`${mcqStats.correct}/${mcqStats.total} correct`}
+            colorClass="from-emerald-400 to-teal-400"
+          />
+          <KPIBarCard
+            title="CQ Activity (30d)"
+            value={loading ? null : cqActivity.percent}
+            trend={0}
+            subtitle={`${cqActivity.count30d} submissions`}
+            colorClass="from-indigo-400 to-indigo-600"
+          />
+          <KPIBarCard
+            title="Attendance"
+            value={loading ? null : fmtPercent(attendancePercent)}
+            trend={0}
+            subtitle="Rolling 30 days"
+            colorClass="from-yellow-400 to-orange-400"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             {/* Progress overview by subject */}
-            <div className="bg-white rounded-2xl p-5  shadow-sm">
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Progress Overview</h3>
                 <p className="text-sm text-gray-500">Subject-wise mastery</p>
@@ -92,8 +248,10 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {loading ? (
                   <p className="text-sm text-gray-500">Loading...</p>
+                ) : subjects.length === 0 ? (
+                  <p className="text-sm text-gray-500">No subject data yet.</p>
                 ) : (
-                  data.subjects.map((s) => (
+                  subjects.map((s) => (
                     <div key={s.name} className="flex items-center gap-4">
                       <div className="w-40">
                         <p className="text-sm font-medium text-gray-700">{s.name}</p>
@@ -116,22 +274,51 @@ export default function Dashboard() {
                 <h3 className="text-lg font-semibold text-gray-800">Recent Activity</h3>
                 <p className="text-sm text-gray-500">Last 7 days</p>
               </div>
-              <div className="bg-white rounded-2xl p-4 shadow-sm ">
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <ul className="divide-y">
-                  <li className="py-3 flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium">Completed: Algebra mock</p>
-                      <p className="text-xs text-gray-500">Score: 78% — reviewed mistakes</p>
-                    </div>
-                    <div className="text-xs text-gray-400">2 days ago</div>
-                  </li>
-                  <li className="py-3 flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium">Attempted: Physics quiz</p>
-                      <p className="text-xs text-gray-500">Score: 64% — needs revision</p>
-                    </div>
-                    <div className="text-xs text-gray-400">4 days ago</div>
-                  </li>
+                  {/* Purchases */}
+                  {(purchases || []).slice(0, 2).map((p) => (
+                    <li key={p._id} className="py-3 flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-medium">Purchased course</p>
+                        <p className="text-xs text-gray-500">{p?.courseId?.course_title} — {new Date(p?.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-xs text-green-600">Paid</div>
+                    </li>
+                  ))}
+
+                  {/* Orders */}
+                  {(orders || []).slice(0, 2).map((o) => (
+                    <li key={o._id} className="py-3 flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-medium">Order placed</p>
+                        <p className="text-xs text-gray-500">{o?.productId?.[0]?.title || "Product"} — {new Date(o?.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-xs text-gray-500">{o?.status}</div>
+                    </li>
+                  ))}
+
+                  {/* MCQ Attempt */}
+                  {(attempts || []).slice(0, 1).map((a) => (
+                    <li key={a._id} className="py-3 flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-medium">MCQ Attempt</p>
+                        <p className="text-xs text-gray-500">{a?.examId?.examTitle} — {a.correctCount}/{(a.correctCount || 0) + (a.wrongCount || 0)} correct</p>
+                      </div>
+                      <div className="text-xs text-gray-400">{new Date(a?.createdAt).toLocaleDateString()}</div>
+                    </li>
+                  ))}
+
+                  {/* CQ Submission */}
+                  {(cqAttempts || []).slice(0, 1).map((c) => (
+                    <li key={c._id} className="py-3 flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-medium">CQ Submitted</p>
+                        <p className="text-xs text-gray-500">{c?.examId?.examTitle} — PDF attached</p>
+                      </div>
+                      <div className="text-xs text-gray-400">{new Date(c?.submittedTime || c?.createdAt).toLocaleDateString()}</div>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -141,29 +328,18 @@ export default function Dashboard() {
           <div className="space-y-4">
             <LiveClass sessions={liveSessions} onJoin={handleJoin} />
 
-            <div className="bg-white rounded-2xl p-4 shadow-sm ">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <p className="text-sm font-medium text-gray-700 mb-2">Action Plan</p>
               <ol className="list-decimal pl-5 text-sm text-gray-600">
-                <li>Practice timed MCQ sections: 3 per week.</li>
-                <li>Write 2 CQ answers and review with tutor.</li>
-                <li>Attend weekly live class and review recording.</li>
+                <li>Review last 2 MCQ attempts and note errors.</li>
+                <li>Submit at least 2 CQ answers this week.</li>
+                <li>Join next live class and take notes.</li>
               </ol>
             </div>
           </div>
         </div>
 
-        {/* final summary */}
-        <div className="mt-6 bg-white rounded-2xl p-6 shadow-sm ">
-          <p className="text-lg font-semibold text-gray-800 mb-2">Overall Summary</p>
-          {loading ? <p className="text-sm text-gray-600">Loading full analysis...</p> : error ? <p className="text-sm text-red-600">{error}</p> : (
-            <>
-              <p className="text-sm text-gray-600 mb-3">{data.summary}</p>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );
 }
-
-

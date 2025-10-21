@@ -39,33 +39,33 @@ const ExamDetails = () => {
         return false;
     }, [exam]);
 
-   const handleStart = () => {
-  if (!userInfo) {
-    navigate(`/exam/${slug}/start`, {
-      state: { redirectTo: `/exam/${slug}/run` },
-    });
-    return;
-  }
-  if (isExamFree) {
-    navigate(`/exam/${slug}`);
-    return;
-  }
-  navigate(`/exam/${slug}/checkout`);
-};
+    const handleStart = () => {
+        if (!userInfo) {
+            navigate(`/exam/${slug}/start`, {
+                state: { redirectTo: `/exam/${slug}/run` },
+            });
+            return;
+        }
+        if (isExamFree) {
+            navigate(`/exam/${slug}`);
+            return;
+        }
+        navigate(`/exam/${slug}/checkout`);
+    };
 
 
     if (isLoading) {
         return (
-         <div className="min-h-screen flex items-center justify-center">
-         <p>লোড হচ্ছে...</p>
-        </div>
+            <div className="min-h-screen flex items-center justify-center">
+                <p>লোড হচ্ছে...</p>
+            </div>
         );
     }
 
     if (isError) {
         return (
             <div className="min-h-screen flex items-center justify-center text-red-500">
-            <p>এক্সাম লোড করতে সমস্যা হয়েছে।</p>
+                <p>এক্সাম লোড করতে সমস্যা হয়েছে।</p>
             </div>
         );
     }
@@ -73,17 +73,17 @@ const ExamDetails = () => {
     if (!exam) {
         return (
             <>
-            <Navbar />
-            <div className="min-h-screen flex items-center justify-center">
-             <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-2">এক্সাম পাওয়া যায়নি</h2>
-              <p className="text-gray-600">অনুগ্রহ করে আবার চেষ্টা করুন অথবা হোমে ফিরে যান।</p>
-              <div className="mt-4">
-             <button className="px-2 py-2 bg-black text-white rounded cursor-pointer" onClick={() => navigate(-1)} >Go Back</button>
-             </div>
-            </div>
+                <Navbar />
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-semibold mb-2">এক্সাম পাওয়া যায়নি</h2>
+                        <p className="text-gray-600">অনুগ্রহ করে আবার চেষ্টা করুন অথবা হোমে ফিরে যান।</p>
+                        <div className="mt-4">
+                            <button className="px-2 py-2 bg-black text-white rounded cursor-pointer" onClick={() => navigate(-1)} >Go Back</button>
+                        </div>
+                    </div>
                 </div>
-                <Footer/>
+                <Footer />
             </>
         );
     }
@@ -98,14 +98,14 @@ const ExamDetails = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="absolute top-0 left-0 w-full z-50">
-            <Navbar />
+                <Navbar />
             </div>
             <BannerSection
                 banner={banner}
                 text={{
                     title: "University-Standard Online Exams Smart & Secure",
                     subtitle:
-                    "Prepare students with real NSU, BRACU, AUST, EWU, AIUB & IUB exam patterns.",
+                        "Prepare students with real NSU, BRACU, AUST, EWU, AIUB & IUB exam patterns.",
                 }}
             />
 
@@ -175,8 +175,8 @@ const ExamDetails = () => {
                                     onClick={handleStart}
                                     disabled={!isPublished || isScheduledInFuture}
                                     className={`px-6 py-3 cursor-pointer rounded-lg text-white font-medium shadow-sm transition ${(!isPublished || isScheduledInFuture)
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-[#7a0000] hover:bg-red-700"
+                                        ? "bg-gray-400 cursor-not-allowed"
+                                        : "bg-[#7a0000] hover:bg-red-700"
                                         }`}
                                 >
                                     Start Exam
