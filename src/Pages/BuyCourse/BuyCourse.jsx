@@ -1,17 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGetAllCourseQuery } from "../../../redux/Features/Api/Course/CourseApi";
 import Footer from "../../Layout/Footer";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import CheckoutForm from "./CheckoutForm";
 import PaymentOptions from "./PaymentOptions";
+import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
+import { toast } from "react-toastify";
 
 export default function BuyCourse() {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
+  const [createBkash] = useCreateBkashMutation();
   const { data: courseResp, isLoading, isError } = useGetAllCourseQuery();
 
   const courses = courseResp?.data ?? [];
@@ -42,31 +44,40 @@ export default function BuyCourse() {
     return true;
   }
 
-  async function handlePlaceOrder(note = "") {
+  async function handlePlaceOrder() {
+    if(!userInfo){
+      toast.error("Please login to continue");
+      return;
+    }
+
     if (!validate()) {
-      alert("Enter valid name and phone (phone digits only).");
+      toast.error("Enter valid name and phone (phone digits only).");
       return;
     }
     setLoading(true);
     await new Promise((r) => setTimeout(r, 900));
     const payable = (course?.offerPrice && course.offerPrice > 0) ? course.offerPrice : course?.price ?? 0;
+    const paymentData =await createBkash({amount: payable});
     const orderPayload = {
-      id: `ORD-${Date.now()}`,
-      course: {
-        id: course?._id || slug,
-        title: course?.course_title || course?.title || "Unknown Course",
-        price: payable,
-      },
-      buyer,
-      paymentMethod,
-      note,
-      status: "pending",
-      createdAt: new Date().toISOString(),
+      courseId: course?._id ,
+      price: payable,
+      subtotal: payable,
+      discount:0,
+      charge:0,
+      totalAmount:payable,
+      studentId:userInfo._id,
+      name:buyer.name,
+      phone:buyer.phone,
     };
     localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
-    setLoading(false);
-    navigate(`/order-confirmation/${orderPayload.id}`, { state: { order: orderPayload } });
+    window.location.href = paymentData.data.data?.bkashURL;
   }
+
+   
+  
+
+
+
 
   if (isLoading) {
     return (

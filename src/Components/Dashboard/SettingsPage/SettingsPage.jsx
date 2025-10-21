@@ -1,19 +1,15 @@
 /* src/pages/Settings/SettingsPage.jsx */
-import  { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 export default function SettingsPage() {
   const { userInfo } = useSelector((s) => s.auth || {});
   const phoneFromProfile = userInfo?.phone || "";
-  const [activeTab, setActiveTab] = useState("change"); // "change" | "forgot"
+  const [activeTab, setActiveTab] = useState("change");
 
   const [loading, setLoading] = useState(false);
-
-  // common states
   const [phone, setPhone] = useState(phoneFromProfile);
-
-  // for change password
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,23 +21,39 @@ export default function SettingsPage() {
     setConfirmPassword("");
   }
 
+  // ✅ Change Password Function
   async function handleChangePassword(e) {
     e.preventDefault();
+
     if (!phone) return toast.error("ফোন নম্বর দিতে হবে।");
     if (!oldPassword) return toast.error("পুরনো পাসওয়ার্ড দিন।");
-    if (newPassword.length < 6) return toast.error("নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে।");
-    if (newPassword !== confirmPassword) return toast.error("পাসওয়ার্ড মিলছে না।");
+    if (newPassword.length < 6)
+      return toast.error("নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে।");
+    if (newPassword !== confirmPassword)
+      return toast.error("পাসওয়ার্ড মিলছে না।");
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, oldPassword, newPassword, confirmPassword }),
+      const res = await fetch("https://sandbox.iconadmissionaid.com/api/v1/user/change-password", {
+        method: "PATCH",
+        headers: {  "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          oldPassword,
+          newPassword,
+          confrimPassword: confirmPassword,
+        }),
+        credentials: "include",
       });
+
       const data = await res.json();
-      if (!res.ok) toast.error(data?.message || "Password change failed.");
-      else toast.success(data?.message || "Password changed successfully!");
+
+      if (!res.ok) {
+        toast.error(data?.message || "Password change failed.");
+      } else {
+        toast.success(data?.message || "Password changed successfully!");
+        resetFields(); // reset form on success
+      }
     } catch {
       toast.error("Network error!");
     } finally {
@@ -49,19 +61,31 @@ export default function SettingsPage() {
     }
   }
 
+  // ✅ Reset Password Function
   async function handleForgotPassword(e) {
     e.preventDefault();
+
     if (!phone) return toast.error("ফোন নম্বর দিতে হবে।");
+
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await fetch("https://sandbox.iconadmissionaid.com/api/v1/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone }),
       });
+
       const data = await res.json();
-      if (!res.ok) toast.error(data?.message || "SMS পাঠানো যায়নি!");
-      else toast.success(data?.message || "SMS পাঠানো হয়েছে! নতুন পাসওয়ার্ডটি SMS এ দেখুন।");
+
+      if (!res.ok) {
+        toast.error(data?.message || "SMS পাঠানো যায়নি!");
+      } else {
+        toast.success(
+          data?.message ||
+            "SMS পাঠানো হয়েছে! নতুন পাসওয়ার্ডটি SMS এ দেখুন।"
+        );
+        resetFields();
+      }
     } catch {
       toast.error("Network error!");
     } finally {
@@ -70,8 +94,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className=" bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-4">
-      <div className=" w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 sm:p-10">
+    <div className="bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-4">
+      <div className="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 sm:p-10">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
@@ -87,7 +111,7 @@ export default function SettingsPage() {
               setActiveTab("change");
               resetFields();
             }}
-            className={`px-4 py-2  rounded-xl text-sm font-medium ${
+            className={`px-4 py-2 rounded-xl text-sm font-medium ${
               activeTab === "change"
                 ? "bg-green-600 text-white shadow"
                 : "bg-gray-100 cursor-pointer text-gray-700 hover:bg-gray-200"

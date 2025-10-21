@@ -2,7 +2,7 @@
 import { jwtDecode } from "jwt-decode";
 import { userLoggedIn, userLoggedOut } from "../Api/Auth/AuthSlice";
 
-const API_BASE = "https://sandbox.iconadmissionaid.com/api/v1";
+const API_BASE = "http://localhost:8000/api/v1";
 
 export async function restoreSession(store) {
   const token = localStorage.getItem("accessToken");

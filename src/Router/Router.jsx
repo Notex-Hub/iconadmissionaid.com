@@ -25,6 +25,8 @@ import StudentProfile from "../Components/Dashboard/MyProfile/MyProfile";
 import LiveClassForPurchased from "../Components/Dashboard/MyCourse/LiveClassForPurchased";
 import UserOrdersTable from "../Components/Dashboard/UserOrdersTable/UserOrdersTable";
 import SettingsPage from "../Components/Dashboard/SettingsPage/SettingsPage";
+import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
+import ReferPage from "../Components/Dashboard/Refer/ReferPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +44,12 @@ export const router = createBrowserRouter([
         path: "/books",
         element: <ScrollToTop>
           <Books />
+        </ScrollToTop>,
+      },
+      {
+        path: "/payment-success",
+        element: <ScrollToTop>
+          <PaymentSuccess />
         </ScrollToTop>,
       },
       {
@@ -182,6 +190,12 @@ export const router = createBrowserRouter([
         path:"settings",
         element: <ScrollToTop>
           <SettingsPage />
+        </ScrollToTop>
+      },
+       {
+        path:"referrals",
+        element: <ScrollToTop>
+          <ReferPage />
         </ScrollToTop>
       }
     ]
