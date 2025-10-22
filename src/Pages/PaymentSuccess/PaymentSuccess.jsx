@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 import { useExecuteBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
 import { useCretaePurchaseMutation } from "../../../redux/Features/Api/Purchase/Purchase";
 
@@ -10,52 +10,68 @@ export default function PaymentSuccess() {
   const [executeBkash] = useExecuteBkashMutation();
   const [createPurchase] = useCretaePurchaseMutation();
 
+  const didRunRef = useRef(false);
+
   useEffect(() => {
+    if (didRunRef.current) return;
+    didRunRef.current = true;
+
     const paymentID = searchParams.get("paymentID");
     const status = searchParams.get("status");
+    const token = searchParams.get("token");
 
     async function verifyPayment() {
       if (status === "success" && paymentID) {
         try {
-          const { data } = await executeBkash({ paymentID }).unwrap();
+          const processedKey = `bkash_processed_${paymentID}`;
+          if (sessionStorage.getItem(processedKey)) {
+            return; 
+          }
+
+          const { data } = await executeBkash({ paymentID, token }).unwrap();
+
           if (data?.trxID) {
-            const lastOrder = JSON.parse(localStorage.getItem("lastOrder"));
-            // if (!lastOrder) {
-            //   toast.error("No order data found!");
-            //   navigate("/");
-            //   return;
-            // }
+            const lastOrderStr = localStorage.getItem("lastOrder");
+            const lastOrder = lastOrderStr ? JSON.parse(lastOrderStr) : null;
+
             const orderPayload = {
               ...lastOrder,
-              paymentStatus:"Paid",
-              paymentInfo:{
+              paymentStatus: "Paid",
+              paymentInfo: {
                 transactionId: data.trxID,
-                method:"Bkash",
-                accountNumber:data?.payerAccount
-              }
+                method: "Bkash",
+                accountNumber: data?.payerAccount,
+              },
             };
-            await createPurchase(orderPayload).unwrap();
-            localStorage.removeItem("lastOrder");
 
-            // toast.success("✅ আপনার পেমেন্ট সফলভাবে সম্পন্ন হয়েছে!");
-            // setTimeout(() => navigate("/my-courses"), 2000);
+            await createPurchase(orderPayload).unwrap();
+
+            sessionStorage.setItem(processedKey, "1");
+            localStorage.removeItem("lastOrder");
+            toast.success("Payment verified and purchase completed!");
+            /* orderPayload */
+            if(orderPayload.navigate){
+              navigate(orderPayload.navigate, { replace: true });
+              return; 
+            }
+           navigate("/", { replace: true });
+
           } else {
             toast.error("Payment verification failed!");
-           //navigate("/");
           }
         } catch (error) {
           console.error(error);
           toast.error("Payment verification failed!");
-         //navigate("/");
         }
       } else {
         toast.error("Payment canceled or failed!");
-       //navigate("/");
+        navigate("/", { replace: true });
+
       }
     }
 
     verifyPayment();
-  }, []);
+  }, [searchParams, executeBkash, createPurchase, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-lg">

@@ -44,8 +44,18 @@ export default function BuyCourse() {
     return true;
   }
 
+  // ---- helpers ----
+  const rawPrice = course?.offerPrice ?? course?.price ?? 0;
+  const payable =
+    course?.offerPrice && Number(course.offerPrice) > 0
+      ? Number(course.offerPrice)
+      : Number(course?.price ?? 0);
+
+  const isFreeCourse =
+    rawPrice === "0" || rawPrice === 0 || Number(rawPrice) === 0;
+
   async function handlePlaceOrder() {
-    if(!userInfo){
+    if (!userInfo) {
       toast.error("Please login to continue");
       return;
     }
@@ -54,30 +64,76 @@ export default function BuyCourse() {
       toast.error("Enter valid name and phone (phone digits only).");
       return;
     }
+
+    if (!course?._id) {
+      toast.error("Course not found!");
+      return;
+    }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    const payable = (course?.offerPrice && course.offerPrice > 0) ? course.offerPrice : course?.price ?? 0;
-    const paymentData =await createBkash({amount: payable});
-    const orderPayload = {
-      courseId: course?._id ,
-      price: payable,
-      subtotal: payable,
-      discount:0,
-      charge:0,
-      totalAmount:payable,
-      studentId:userInfo._id,
-      name:buyer.name,
-      phone:buyer.phone,
-    };
-    localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
-    window.location.href = paymentData.data.data?.bkashURL;
+    try {
+      // common payload
+      const orderPayload = {
+        courseId: course?._id,
+        price: isFreeCourse ? 0 : payable,
+        subtotal: isFreeCourse ? 0 : payable,
+        discount: 0,
+        charge: 0,
+        totalAmount: isFreeCourse ? 0 : payable,
+        studentId: userInfo._id,
+        name: buyer.name,
+        phone: buyer.phone,
+        path: "/purchase/create-purchase",
+        paymentStatus:"Paid"
+      };
+
+      if (isFreeCourse) {
+        const res = await fetch(
+          "https://sandbox.iconadmissionaid.com/api/v1/purchase/create-purchase",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(userInfo?.token
+                ? { Authorization: `Bearer ${userInfo.token}` }
+                : {}),
+            },
+            body: JSON.stringify(orderPayload),
+          }
+        );
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.message || "Failed to create free purchase");
+        }
+        const data = await res.json().catch(() => ({}));
+        localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
+        toast.success("Enrollment completed for free course!");
+        window.location.href = "/dashboard/my-courses";
+        return;
+      }
+
+      await new Promise((r) => setTimeout(r, 900));
+
+      const paymentData = await createBkash({ amount: payable });
+      localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
+      const bkashURL =
+        paymentData?.data?.data?.bkashURL ||
+        paymentData?.data?.bkashURL ||
+        paymentData?.bkashURL;
+
+      if (!bkashURL) {
+        throw new Error("bKash URL not returned from gateway.");
+      }
+
+      window.location.href = bkashURL;
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.message || "Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
   }
-
-   
-  
-
-
-
 
   if (isLoading) {
     return (
@@ -121,7 +177,6 @@ export default function BuyCourse() {
 
   const cover = course.cover_photo || "/course-thumb.jpg";
   const courseTitle = course.course_title || course.course_title;
-  const payable = (course.offerPrice && course.offerPrice > 0) ? course.offerPrice : course.price ?? 0;
 
   return (
     <>
@@ -132,11 +187,18 @@ export default function BuyCourse() {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                  <img src={cover} alt={courseTitle} className="w-full md:w-56 h-36 object-cover rounded-lg" />
+                  <img
+                    src={cover}
+                    alt={courseTitle}
+                    className="w-full md:w-56 h-36 object-cover rounded-lg"
+                  />
                   <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">{courseTitle}</h1>
-                    <p className="text-sm text-gray-500 mt-1">{course.category?.title || course.category?.title || ""}</p>
-                   
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {courseTitle}
+                    </h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {course.category?.title || ""}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -144,14 +206,21 @@ export default function BuyCourse() {
               <CheckoutForm buyer={buyer} onChange={handleBuyerChange} />
 
               <div className="bg-white rounded-2xl p-6 shadow">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Payment method</h3>
-                <PaymentOptions value={paymentMethod} onChange={(v) => setPaymentMethod(v)} />
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  Payment method
+                </h3>
+                <PaymentOptions
+                  value={paymentMethod}
+                  onChange={(v) => setPaymentMethod(v)}
+                />
               </div>
 
               <div className="flex items-center justify-between gap-4">
                 <div className="text-sm text-gray-600">
                   <div>Payable amount</div>
-                  <div className="text-2xl font-bold text-gray-900">৳{payable}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    ৳{isFreeCourse ? 0 : payable}
+                  </div>
                 </div>
 
                 <div className="flex gap-3">
@@ -160,7 +229,7 @@ export default function BuyCourse() {
                     disabled={loading}
                     className="bg-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-green-700 transition disabled:opacity-60"
                   >
-                    {loading ? "Processing..." : "Place Order"}
+                    {loading ? "Processing..." : isFreeCourse ? "Enroll Free" : "Place Order"}
                   </button>
                 </div>
               </div>
@@ -169,26 +238,34 @@ export default function BuyCourse() {
             <aside className="space-y-6">
               <div className="bg-white rounded-2xl p-5 shadow">
                 <div className="flex items-center gap-3">
-                  <img src={cover} alt="" className="w-16 h-12 object-cover rounded-md" />
+                  <img
+                    src={cover}
+                    alt=""
+                    className="w-16 h-12 object-cover rounded-md"
+                  />
                   <div>
                     <div className="text-sm text-gray-500">Selected Course</div>
-                    <div className="font-semibold text-gray-900">{courseTitle}</div>
+                    <div className="font-semibold text-gray-900">
+                      {courseTitle}
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-4">
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <div>Price</div>
-                    <div>৳{course.price ?? 0}</div>
+                    <div>৳{Number(rawPrice) || 0}</div>
                   </div>
                   <div className="flex items-center justify-between mt-2 text-sm font-semibold text-gray-900">
                     <div>Total</div>
-                    <div>৳{payable}</div>
+                    <div>৳{isFreeCourse ? 0 : payable}</div>
                   </div>
                 </div>
 
                 <div className="mt-4 text-xs text-gray-500">
-                  After placing the order, follow the payment instructions for Bkash/Nagad to complete the payment.
+                  {isFreeCourse
+                    ? "This is a free enrollment. Click Enroll Free to complete."
+                    : "After placing the order, follow the payment instructions for bKash/Nagad to complete the payment."}
                 </div>
               </div>
 

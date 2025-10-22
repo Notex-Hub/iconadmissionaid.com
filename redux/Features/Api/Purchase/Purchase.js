@@ -5,7 +5,7 @@ export const purchaseApi = apiSlice.injectEndpoints({
    
      cretaePurchase: builder.mutation({
       query: (data) => ({
-        url: `/purchase/create-purchase`,
+        url: data?.path,
         method: "POST",
         body: data,
       }),

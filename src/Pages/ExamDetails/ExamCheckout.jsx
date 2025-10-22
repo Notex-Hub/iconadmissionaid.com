@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import Footer from "../../Layout/Footer";
 import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/Exam";
+import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
 
 const ExampleCouponDB = {
   ICON10: { type: "percent", value: 10, label: "10% off" },
@@ -13,6 +14,7 @@ const ExampleCouponDB = {
 const ExamCheckout = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [createBkash] = useCreateBkashMutation();
   const { userInfo } = useSelector((s) => s.auth || {});
   const { data: examData, isLoading, isError } = useGetAllExamQuery();
   const exams = examData?.data ?? [];
@@ -71,15 +73,18 @@ const ExamCheckout = () => {
 
     setIsCheckingOut(true);
     try {
+      const paymentData =await createBkash({amount: total});
       const payload = {
-        items: [{ examId: exam._id, title: exam.examTitle, price }],
-        subtotal,
-        discount,
-        total,
-        coupon: couponApplied,
-        userId: userInfo?._id,
+      name: userInfo?.name || "",
+      number: userInfo?.phone || "",
+      intersted: `PaidExam`,
+      crmStatus:"Pending",
+      status:"Done",
+      path:"/free-test/create-free-test",
+      navigate:`/exam/${exam?.slug}`
       };
-      navigate(`/exam/${exam?.slug}`, { state: { payload } });
+      localStorage.setItem("lastOrder", JSON.stringify(payload));
+      window.location.href = paymentData.data.data?.bkashURL;
     } catch (err) {
       console.error("Checkout error:", err);
       alert("Checkout failed. আবার চেষ্টা করুন।");

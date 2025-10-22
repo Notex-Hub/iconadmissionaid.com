@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGetAllBooksQuery } from "../../../redux/Features/Api/books/booksApi";
 import { useEffect, useState } from "react";
 import Navbar from "../../Components/Home/Navbar/Navbar";
@@ -7,12 +7,13 @@ import Footer from "../../Layout/Footer";
 import DeliveryOptions from "./DeliveryOptions";
 import PaymentOptions from "./PaymentOptions";
 import OrderSummary from "./OrderSummary";
+import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
 
 export default function BuyBookForm() {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth || {});
   const { data: booksResp, isLoading, isError } = useGetAllBooksQuery();
+  const [createBkash] = useCreateBkashMutation();
 
   const books = booksResp?.data ?? [];
   const book = books.find((b) => b.slug === slug) ?? null;
@@ -43,7 +44,7 @@ export default function BuyBookForm() {
     return true;
   }
 
-  async function handlePlaceOrder(note = "") {
+  async function handlePlaceOrder() {
     if (!validate()) {
       alert("Enter valid Name, Phone (digits only) and Full Address.");
       return;
@@ -55,23 +56,24 @@ export default function BuyBookForm() {
     const bookPrice = (book?.offerPrice && book.offerPrice > 0) ? book.offerPrice : (book?.price ?? 0);
     const deliveryCharge = DELIVERY_CHARGES[deliveryLocation] ?? 0;
     const total = Number(bookPrice) + Number(deliveryCharge);
-
+   const paymentData = await createBkash({ amount: total });
     const orderPayload = {
-      id: `ORD-B-${Date.now()}`,
-      type: "book",
-      book: { id: book?._id || slug, title: book?.title || "Unknown Book", slug: book?.slug, price: bookPrice },
-      buyer,
-      paymentMethod,
-      delivery: { location: deliveryLocation, charge: deliveryCharge },
-      total,
-      note,
-      status: "pending",
-      createdAt: new Date().toISOString(),
+      name: buyer.name,
+      phone: buyer.phone,
+      address: buyer.address, 
+      subTotal: bookPrice,
+      discount: book?.price && bookPrice < book.price ? (book.price - bookPrice) : 0,
+      productId: [book?._id],
+      userId: userInfo?._id || null,
+      charge: 0,
+      shiping: deliveryCharge,
+      quantity: 1,
+      totalAmount: total,
+      paidAmount: total,
+      path:"/order/create-order",
     };
-
     localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
-    setLoading(false);
-    navigate(`/order-confirmation/${orderPayload.id}`, { state: { order: orderPayload } });
+    window.location.href = paymentData.data.data?.bkashURL;
   }
 
   if (isLoading) {
