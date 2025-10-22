@@ -3,8 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import { userLoggedIn, userLoggedOut } from "../Api/Auth/AuthSlice";
 
 const baseQuery = fetchBaseQuery({
-  //baseUrl: "https://sandbox.iconadmissionaid.com/api/v1/",
- baseUrl: "http://localhost:8000/api/v1/",
+  baseUrl: "https://sandbox.iconadmissionaid.com/api/v1/",
+//  baseUrl: "http://localhost:8000/api/v1/",
   credentials: "include",
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("accessToken");
