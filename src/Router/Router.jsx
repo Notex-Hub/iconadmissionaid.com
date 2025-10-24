@@ -27,6 +27,8 @@ import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import ReferPage from "../Components/Dashboard/Refer/ReferPage";
 import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamStartPage from "../Pages/StartExam/StartExam";
+import { GroupsPage } from "../Components/Home/AllGroups/AllGroups";
+import NsuResultsLanding from "../Pages/NsuResultsLanding/NsuResultsLanding";
 
 export const router = createBrowserRouter([
   {
@@ -66,6 +68,13 @@ export const router = createBrowserRouter([
         ,
       },
       {
+        path: "/groups",
+        element: <ScrollToTop>
+          <GroupsPage />
+        </ScrollToTop>
+        ,
+      },
+      {
         path: "/free-test",
         element:
           <ScrollToTop>
@@ -77,6 +86,13 @@ export const router = createBrowserRouter([
         element:
           <ScrollToTop>
             <PaidTest />
+          </ScrollToTop>,
+      }, 
+       {
+        path: "/result",
+        element:
+          <ScrollToTop>
+            <NsuResultsLanding />
           </ScrollToTop>,
       }, {
         path: "/course/:slug",

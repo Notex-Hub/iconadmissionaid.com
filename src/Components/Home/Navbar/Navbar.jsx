@@ -196,7 +196,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
           </form>
 
           <div className="hidden lg:flex items-center gap-6">
-            {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Fee Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" }].map(({ name, path }) => (
+            {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Fee Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" },{ name: "Result", path: "/result" }].map(({ name, path }) => (
               <Link key={name} to={path} className={`${textColor} hover:text-gray-200 font-medium transition-colors`}>
                 {name}
               </Link>
@@ -248,7 +248,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
             </form>
 
             <div className="flex flex-col gap-2">
-              {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Free Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" },].map(({ name, path }) => (
+              {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Free Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }, { name: "Paid Test", path: "/paid-test" },{ name: "Result", path: "/result" }].map(({ name, path }) => (
                 <Link key={name} to={path} onClick={() => setMobileMenuOpen(false)} className="text-gray-800 hover:bg-gray-100 px-4 py-2 rounded transition-colors">
                   {name}
                 </Link>
