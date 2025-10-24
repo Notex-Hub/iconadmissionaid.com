@@ -103,7 +103,7 @@ export default function Sidebar() {
     {
       title: "Explore",
       items: [
-        { name: "Rewards", path: "/rewards" },
+        { name: "Rewards", path: "/dashboard/rewards" },
         { name: "Referrals", path: "/dashboard/referrals" },
         { name: "Orders", path: "/dashboard/orders" },
       ],

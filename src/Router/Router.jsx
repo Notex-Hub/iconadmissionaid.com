@@ -29,6 +29,8 @@ import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamStartPage from "../Pages/StartExam/StartExam";
 import { GroupsPage } from "../Components/Home/AllGroups/AllGroups";
 import NsuResultsLanding from "../Pages/NsuResultsLanding/NsuResultsLanding";
+import ReferRewardsPage from "../Components/Dashboard/Rewards/Rewards";
+import ErrorPage from "../ErrorPage/ErrorPage";
 
 export const router = createBrowserRouter([
   {
@@ -213,7 +215,17 @@ export const router = createBrowserRouter([
         element: <ScrollToTop>
           <ReferPage />
         </ScrollToTop>
+      },
+       {
+        path:"rewards",
+        element: <ScrollToTop>
+          <ReferRewardsPage />
+        </ScrollToTop>
       }
     ]
+  },
+  {
+    path: "*",
+    element: <ErrorPage />,
   }
 ]);
