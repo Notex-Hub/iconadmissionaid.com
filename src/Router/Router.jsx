@@ -31,6 +31,7 @@ import { GroupsPage } from "../Components/Home/AllGroups/AllGroups";
 import NsuResultsLanding from "../Pages/NsuResultsLanding/NsuResultsLanding";
 import ReferRewardsPage from "../Components/Dashboard/Rewards/Rewards";
 import ErrorPage from "../ErrorPage/ErrorPage";
+import ForgotPasswordPage from "../Pages/ForgotPasswordPage/ForgotPasswordPage";
 
 export const router = createBrowserRouter([
   {
@@ -67,7 +68,12 @@ export const router = createBrowserRouter([
         element: <ScrollToTop>
           <FreeClass />
         </ScrollToTop>
-        ,
+      },
+      {
+        path: "/forgot-password",
+        element: <ScrollToTop>
+          <ForgotPasswordPage />
+        </ScrollToTop>
       },
       {
         path: "/groups",

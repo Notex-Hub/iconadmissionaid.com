@@ -90,7 +90,7 @@ export default function SignUpModal({ open, onClose }) {
       const user = res?.data?.data?.user;
 
       if (!token || !user) {
-        throw new Error("Invalid response from server");
+        throw new Error("Please enter a valid user credentials.");
       }
       dispatch(userLoggedIn({ user, token }));
       // success -> close modal (or you could redirect / show success message)

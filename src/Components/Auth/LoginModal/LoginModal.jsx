@@ -3,7 +3,15 @@ import PropTypes from "prop-types";
 import { useLoginMutation } from "../../../../redux/Features/Api/Auth/AuthApi";
 import { userLoggedIn } from "../../../../redux/Features/Api/Auth/AuthSlice";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
+/**
+ * LoginModal - বাংলা মেসেজ সহ
+ *
+ * প্রত্যাশা:
+ * - useLoginMutation -> RTK Query mutation hook (trigger returns a promise with .unwrap())
+ * - userLoggedIn -> redux slice action
+ */
 export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
   const [userLogin] = useLoginMutation();
   const dispatch = useDispatch();
@@ -11,8 +19,9 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(null); // { type: 'error'|'success'|'info', text: string }
   const dialogRef = useRef(null);
+  const msgTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -20,6 +29,11 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
       setPassword("");
       setMessage(null);
       setLoading(false);
+      if (msgTimeoutRef.current) {
+        clearTimeout(msgTimeoutRef.current);
+        msgTimeoutRef.current = null;
+      }
+      // small timeout so dialog is mounted before querying
       setTimeout(() => dialogRef.current?.querySelector("input")?.focus(), 60);
     }
   }, [open]);
@@ -32,7 +46,66 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  const normalizePhone = (v) => v.replace(/[^\d+]/g, "");
+  useEffect(() => {
+    return () => {
+      if (msgTimeoutRef.current) clearTimeout(msgTimeoutRef.current);
+    };
+  }, []);
+
+  const normalizePhone = (v) => (v || "").replace(/[^\d+]/g, "");
+
+  const showMessage = (type, text, autoHide = true, ms = 4000) => {
+    setMessage({ type, text });
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+      msgTimeoutRef.current = null;
+    }
+    if (autoHide) {
+      msgTimeoutRef.current = setTimeout(() => setMessage(null), ms);
+    }
+  };
+
+  const parseErrorMessage = (err) => {
+    // 여러 ধরনে error আসতে পারে: FetchBaseQueryError, Error, SerializedError, plain object/string
+    // চেষ্টা করবো ব্যাকএন্ডের ব্যবহারিক জায়গা (err.data.message, err.data, err.message, err)
+    try {
+      if (!err) return "লগিন হয়নি — সঠিক তথ্য দিন।";
+
+      // RTK Query fetchBaseQuery error shape: { status, data, error }
+      if (typeof err === "object") {
+        // backend structured message
+        if (err.data) {
+          // data could be string or object
+          const d = err.data;
+          if (typeof d === "string" && d.trim()) return d;
+          if (d?.message) return d.message;
+          if (d?.error) return d.error;
+          // sometimes validation errors: { errors: { field: ['msg'] } }
+          if (d?.errors) return JSON.stringify(d.errors);
+        }
+
+        // serialized Error with message
+        if (err.message) return err.message;
+
+        // sometimes error payload in err.data?.message or err.data?.errorMessage etc
+        const possible =
+          err?.data?.message || err?.data?.error || err?.data?.errorMessage;
+        if (possible) return String(possible);
+
+        // fallback to stringified object (avoid giant dumps)
+        const s = JSON.stringify(err);
+        if (s && s !== "{}") return s;
+      }
+
+      // if it's a primitive string
+      if (typeof err === "string" && err.trim()) return err;
+
+      return "লগিন হয়নি — সঠিক তথ্য দিন।";
+      // eslint-disable-next-line no-unused-vars
+    } catch (e) {
+      return "লগিন হয়নি — সঠিক তথ্য দিন।";
+    }
+  };
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -40,45 +113,58 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
 
     const p = normalizePhone(phone);
     if (!/^\+?\d{8,15}$/.test(p)) {
-      setMessage({
-        type: "error",
-        text: "সঠিক ফোন নম্বর দিন (country code optional)।",
-      });
+      showMessage("error", "সঠিক ফোন নম্বর দিন (country code optional)।");
       return;
     }
     if (!password || password.length < 3) {
-      setMessage({ type: "error", text: "পাসওয়ার্ড অন্তত ৩ অক্ষর দিন।" });
+      showMessage("error", "পাসওয়ার্ড অন্তত ৩ অক্ষর দিন।");
       return;
     }
 
+    // If caller did NOT pass an onLogin function, keep the local behavior:
     if (typeof onLogin !== "function") {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        setMessage({ type: "success", text: "লগিন সফল (সিমুলেশন)।" });
+        showMessage("success", "লগইন সফল (সিমুলেশন)।");
         setTimeout(() => onClose?.(), 700);
       }, 700);
       return;
     }
 
+    // Otherwise, use RTK Query mutation (with unwrap) and robust error handling
     try {
       setLoading(true);
-      const res = await userLogin({ phone: p, password });
+      showMessage("info", "প্রবেশ করা হচ্ছে...", true, 10000);
 
-      const token = res?.data?.data?.accessToken;
-      const user = res?.data?.data?.user;
+      // unwrap() will throw on rejected response so we jump to catch
+      const result = await userLogin({ phone: p, password }).unwrap();
+
+      // Depending on backend, token/user may be nested differently.
+      // Common patterns:
+      // 1) result = { data: { accessToken, user } }
+      // 2) result = { accessToken, user }
+      // 3) result = { token: '...', user: { ... } }
+      const token =
+        result?.data?.accessToken ?? result?.accessToken ?? result?.token;
+      const user =
+        result?.data?.user ?? result?.user ?? result?.data ?? undefined;
 
       if (!token || !user) {
-        throw new Error("Invalid response from server");
+        // If not found, throw a descriptive Error so catch handles it uniformly
+        throw new Error("সার্ভার থেকে প্রত্যাশিত তথ্য পাওয়া যায়নি।");
       }
+
+      // dispatch login to redux
       dispatch(userLoggedIn({ user, token }));
-      setMessage({ type: "success", text: "লগিন সফল।" });
+
+      showMessage("success", "লগইন সফল।");
       setTimeout(() => onClose?.(), 600);
     } catch (err) {
-      setMessage({
-        type: "error",
-        text: err?.message ?? "লগিন হয়নি — সঠিক তথ্য দিন।",
-      });
+      const msg = parseErrorMessage(err);
+      showMessage("error", msg);
+      // 개발 중이면 콘সোলে বিস্তারিত দেখা কাজে লাগতে পারে
+      // console.error("Login error raw:", err);
     } finally {
       setLoading(false);
     }
@@ -103,7 +189,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
         <div className="bg-gradient-to-br from-white/6 to-white/4 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-2xl font-extrabold text-white">Login</h3>
+              <h3 className="text-2xl font-extrabold text-white">লগইন</h3>
               <p className="text-sm text-gray-200">
                 ফোন নম্বর ও পাসওয়ার্ড দিয়ে প্রবেশ করুন
               </p>
@@ -132,7 +218,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm text-gray-200">Phone</label>
+              <label className="text-sm text-gray-200">ফোন</label>
               <input
                 type="tel"
                 value={phone}
@@ -144,7 +230,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
             </div>
 
             <div>
-              <label className="text-sm text-gray-200">Password</label>
+              <label className="text-sm text-gray-200">পাসওয়ার্ড</label>
               <input
                 type="password"
                 value={password}
@@ -156,11 +242,14 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
 
             {message && (
               <div
-                className={`py-2 px-3 rounded-md text-sm ${
-                  message.type === "error"
+                role={message.type === "error" ? "alert" : "status"}
+                aria-live={message.type === "error" ? "assertive" : "polite"}
+                className={`py-2 px-3 rounded-md text-sm ${message.type === "error"
                     ? "bg-red-600/20 text-red-200"
-                    : "bg-green-600/10 text-green-200"
-                }`}
+                    : message.type === "success"
+                      ? "bg-green-600/10 text-green-200"
+                      : "bg-white/6 text-gray-200"
+                  }`}
               >
                 {message.text}
               </div>
@@ -172,7 +261,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
                 disabled={loading}
                 className="flex-1 rounded-xl px-4 py-2 bg-[#5D0000] hover:bg-red-700 text-white font-semibold transition disabled:opacity-60"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? "Loading..." : "Login"}
               </button>
 
               <button
@@ -181,24 +270,29 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
                   setPhone("");
                   setPassword("");
                   setMessage(null);
+                  if (msgTimeoutRef.current) {
+                    clearTimeout(msgTimeoutRef.current);
+                    msgTimeoutRef.current = null;
+                  }
                 }}
                 className="px-3 py-2 rounded-xl bg-white/6 border border-white/10 text-white"
               >
-                Clear
+                Reset
               </button>
             </div>
           </form>
 
           <div className="mt-4 flex items-center justify-between text-sm text-gray-300">
-            <button
-              type="button"
-              className="underline"
-              onClick={() =>
-                alert("Forgot password flow should be implemented by backend.")
-              }
-            >
-              Forgot password?
-            </button>
+            <Link to="/forgot-password">
+              <button
+                type="button"
+                className="underline cursor-pointer"
+              
+              >
+                পাসওয়ার্ড ভুলে গেছেন?
+              </button>
+            </Link>
+
 
             <div>
               <span className="text-gray-300 mr-2">নতুন ব্যবহারকারী?</span>
@@ -210,7 +304,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
                 }}
                 className="underline cursor-pointer"
               >
-                Create account
+                অ্যাকাউন্ট তৈরি করুন
               </button>
             </div>
           </div>
