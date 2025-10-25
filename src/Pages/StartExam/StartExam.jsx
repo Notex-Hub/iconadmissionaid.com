@@ -40,7 +40,7 @@ export default function StartExamPage() {
     return /^01\d{9}$/.test(cleaned) || /^8801\d{9}$/.test(cleaned);
   };
 
-  const postFreeTest = async ({ name: n, number: num, intersted: intr = "" }) => {
+  const postFreeTest = async ({ name: n, number: num, intersted: intr = "Free Test" }) => {
     const payload = { name: n, number: num, intersted: intr };
     const res = await fetch(
       "https://sandbox.iconadmissionaid.com/api/v1/free-test/create-free-test",

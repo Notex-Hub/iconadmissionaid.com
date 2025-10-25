@@ -6,7 +6,7 @@ import { useGetAllLectureQuery } from "../../../../redux/Features/Api/Lecture/le
 
 // Helper function to post form data
 const postFreeTest = async ({ name: n, number: num, intersted: intr = "" }) => {
-  const payload = { name: n, number: num, intersted: intr, crmStatus:"Pending", status:"Failed" };
+  const payload = { name: n, number: num, intersted: intr, crmStatus:"Pending", status:"Processing" };
   const res = await fetch(
     "https://sandbox.iconadmissionaid.com/api/v1/free-test/create-free-test",
     {

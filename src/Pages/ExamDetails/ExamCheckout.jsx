@@ -79,7 +79,7 @@ const ExamCheckout = () => {
       number: userInfo?.phone || "",
       intersted: `PaidExam`,
       crmStatus:"Pending",
-      status:"Done",
+      status:"Processing",
       path:"/free-test/create-free-test",
       navigate:`/exam/${exam?.slug}`
       };
