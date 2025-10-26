@@ -2,9 +2,9 @@ import { apiSlice } from "../../Slice/BaseUrl";
 
 export const paymentGatewayApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        createBkash: builder.mutation({
+        createPaymentMethod: builder.mutation({
             query: (data) => ({
-                url: `/payment-gateway/bkash`,
+                url: `/payment-gateway/${data.path}`,
                 method: "POST",
                 body: data,
             }),
@@ -22,6 +22,6 @@ export const paymentGatewayApi = apiSlice.injectEndpoints({
 });
 
 export const {
-useCreateBkashMutation,
+useCreatePaymentMethodMutation,
 useExecuteBkashMutation
 } = paymentGatewayApi;

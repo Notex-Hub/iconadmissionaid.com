@@ -7,13 +7,13 @@ import Footer from "../../Layout/Footer";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import CheckoutForm from "./CheckoutForm";
 import PaymentOptions from "./PaymentOptions";
-import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
+import { useCreatePaymentMethodMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
 import { toast } from "react-toastify";
 
 export default function BuyCourse() {
   const { slug } = useParams();
   const { userInfo } = useSelector((state) => state.auth);
-  const [createBkash] = useCreateBkashMutation();
+  const [createPaymentMethod] = useCreatePaymentMethodMutation();
   const { data: courseResp, isLoading, isError } = useGetAllCourseQuery();
 
   const courses = courseResp?.data ?? [];
@@ -43,6 +43,7 @@ export default function BuyCourse() {
     if (!/^\+?\d{8,15}$/.test(buyer.phone)) return false;
     return true;
   }
+
 
   // ---- helpers ----
   const rawPrice = course?.offerPrice ?? course?.price ?? 0;
@@ -83,6 +84,7 @@ export default function BuyCourse() {
         studentId: userInfo._id,
         name: buyer.name,
         phone: buyer.phone,
+         navigate:"/dashboard/my-courses",
         path: "/purchase/create-purchase",
         paymentStatus:"Paid"
       };
@@ -106,7 +108,7 @@ export default function BuyCourse() {
           const err = await res.json().catch(() => ({}));
           throw new Error(err?.message || "Failed to create free purchase");
         }
-        const data = await res.json().catch(() => ({}));
+        await res.json().catch(() => ({}));
         localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
         toast.success("Enrollment completed for free course!");
         window.location.href = "/dashboard/my-courses";
@@ -115,7 +117,7 @@ export default function BuyCourse() {
 
       await new Promise((r) => setTimeout(r, 900));
 
-      const paymentData = await createBkash({ amount: payable });
+      const paymentData = await createPaymentMethod({ amount: payable, path: paymentMethod});
       localStorage.setItem("lastOrder", JSON.stringify(orderPayload));
       const bkashURL =
         paymentData?.data?.data?.bkashURL ||

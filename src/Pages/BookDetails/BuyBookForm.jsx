@@ -7,13 +7,13 @@ import Footer from "../../Layout/Footer";
 import DeliveryOptions from "./DeliveryOptions";
 import PaymentOptions from "./PaymentOptions";
 import OrderSummary from "./OrderSummary";
-import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
+import { useCreatePaymentMethodMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
 
 export default function BuyBookForm() {
   const { slug } = useParams();
   const { userInfo } = useSelector((state) => state.auth || {});
   const { data: booksResp, isLoading, isError } = useGetAllBooksQuery();
-  const [createBkash] = useCreateBkashMutation();
+  const [createBkash] = useCreatePaymentMethodMutation();
 
   const books = booksResp?.data ?? [];
   const book = books.find((b) => b.slug === slug) ?? null;
@@ -32,7 +32,7 @@ export default function BuyBookForm() {
   const [deliveryLocation, setDeliveryLocation] = useState("inside");
   const [loading, setLoading] = useState(false);
 
-  const DELIVERY_CHARGES = { inside: 80, outside: 120 };
+  const DELIVERY_CHARGES = { inside: 80, outside: 0 };
 
   function handleBuyerChange(next) {
     setBuyer((s) => ({ ...s, ...next }));
@@ -56,7 +56,7 @@ export default function BuyBookForm() {
     const bookPrice = (book?.offerPrice && book.offerPrice > 0) ? book.offerPrice : (book?.price ?? 0);
     const deliveryCharge = DELIVERY_CHARGES[deliveryLocation] ?? 0;
     const total = Number(bookPrice) + Number(deliveryCharge);
-   const paymentData = await createBkash({ amount: total });
+   const paymentData = await createBkash({ amount: total, path: paymentMethod });
     const orderPayload = {
       name: buyer.name,
       phone: buyer.phone,
@@ -70,6 +70,7 @@ export default function BuyBookForm() {
       quantity: 1,
       totalAmount: total,
       paidAmount: total,
+      navigate:"/dashboard/orders",
       path:"/order/create-order",
     };
     localStorage.setItem("lastOrder", JSON.stringify(orderPayload));

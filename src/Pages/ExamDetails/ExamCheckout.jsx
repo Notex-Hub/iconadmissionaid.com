@@ -4,17 +4,15 @@ import { useSelector } from "react-redux";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import Footer from "../../Layout/Footer";
 import { useGetAllExamQuery } from "../../../redux/Features/Api/Exam/Exam";
-import { useCreateBkashMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
+import { useCreatePaymentMethodMutation } from "../../../redux/Features/Api/Paymentgateway/paymentGatewayApi";
+import PaymentOptions from "../BuyCourse/PaymentOptions";
 
-const ExampleCouponDB = {
-  ICON10: { type: "percent", value: 10, label: "10% off" },
-  SAVE50: { type: "fixed", value: 50, label: "50 TK off" },
-};
 
 const ExamCheckout = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [createBkash] = useCreateBkashMutation();
+  const [paymentMethod, setPaymentMethod] = useState("bkash");
+  const [createBkash] = useCreatePaymentMethodMutation();
   const { userInfo } = useSelector((s) => s.auth || {});
   const { data: examData, isLoading, isError } = useGetAllExamQuery();
   const exams = examData?.data ?? [];
@@ -27,37 +25,13 @@ const ExamCheckout = () => {
     );
   }, [exams, slug]);
 
-  const [coupon, setCoupon] = useState("");
-  const [couponApplied, setCouponApplied] = useState(null);
-  const [couponError, setCouponError] = useState("");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const price = Number(exam?.price ?? exam?.amount ?? 0);
   const subtotal = price;
-  const discount = useMemo(() => {
-    if (!couponApplied) return 0;
-    if (couponApplied.type === "percent")
-      return Math.round((subtotal * couponApplied.value) / 100);
-    if (couponApplied.type === "fixed") return couponApplied.value;
-    return 0;
-  }, [couponApplied, subtotal]);
-  const total = Math.max(subtotal - discount, 0);
+ 
+  const total = Math.max(subtotal - 0, 0);
 
-  const handleApplyCoupon = () => {
-    setCouponError("");
-    setCouponApplied(null);
-    const code = (coupon || "").trim().toUpperCase();
-    if (!code) {
-      setCouponError("কুপন কোড দিন।");
-      return;
-    }
-    const found = ExampleCouponDB[code];
-    if (!found) {
-      setCouponError("অবৈধ কুপন কোড।");
-      return;
-    }
-    setCouponApplied(found);
-  };
 
   const handleCheckout = async () => {
     if (!exam) {
@@ -73,7 +47,7 @@ const ExamCheckout = () => {
 
     setIsCheckingOut(true);
     try {
-      const paymentData =await createBkash({amount: total});
+      const paymentData =await createBkash({amount: total,path: paymentMethod});
       const payload = {
       name: userInfo?.name || "",
       number: userInfo?.phone || "",
@@ -154,10 +128,15 @@ const ExamCheckout = () => {
           </div>
 
           {/* Coupon */}
-          <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+            <div className="bg-white rounded-2xl p-6 shadow">
+                            <h3 className="text-lg font-semibold mb-3">Payment method</h3>
+                            <PaymentOptions value={paymentMethod} onChange={setPaymentMethod} />
+                          </div>
+         {/*  <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">
               Apply Coupon
             </h4>
+              
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
@@ -181,17 +160,13 @@ const ExamCheckout = () => {
                 Coupon Applied: {couponApplied.label}
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* Summary */}
           <div className="bg-gray-50 p-5 rounded-xl shadow-sm space-y-2 text-gray-700">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>{subtotal} TK</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Discount</span>
-              <span>-{discount} TK</span>
             </div>
             <div className="flex justify-between text-lg font-semibold text-gray-900 border-t border-gray-200 pt-3">
               <span>Total</span>
