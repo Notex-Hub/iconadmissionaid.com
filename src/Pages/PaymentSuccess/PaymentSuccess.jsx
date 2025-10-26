@@ -54,7 +54,7 @@ export default function PaymentSuccess() {
               navigate(orderPayload.navigate, { replace: true });
               return; 
             }
-           navigate("/", { replace: true });
+           navigate("/dashboard/my-courses", { replace: true });
 
           } else {
             toast.error("Payment verification failed!");
