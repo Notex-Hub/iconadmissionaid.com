@@ -22,6 +22,7 @@ export default function CourseDetailsPage() {
   const { data: rawResponse, error, isLoading, isFetching } = useGetAllCourseDetailsQuery();
   // eslint-disable-next-line no-unused-vars
   const [activeTab, setActiveTab] = useState("overview");
+  
 
   const item = useMemo(() => {
     const list = rawResponse?.data || [];

@@ -186,18 +186,18 @@ const OurFreeLectures = () => {
               {freeLectures.map((lecture) => {
                 const thumb = lecture.videoId
                   ? `https://img.youtube.com/vi/${lecture.videoId}/mqdefault.jpg`
-                  : "/public/lecture/default.png";
+                  : "https://i.ibb.co.com/0jfFssL0/varsity-b-unit-and-gst-admission-course-2025-thumbnail.jpg";
 
                 return (
                   <article
                     key={lecture._id}
-                    className="group bg-white rounded-2xl shadow-sm overflow-hidden border hover:shadow-lg transition-shadow duration-200"
+                    className="group bg-white rounded-2xl shadow-sm overflow-hidden h-80  hover:shadow-lg transition-shadow duration-200"
                   >
                     <div className="relative">
                       <img
                         src={thumb}
                         alt={lecture.title}
-                        className="w-full h-44 object-cover"
+                        className="w-full h-80 "
                       />
                       <button
                         onClick={() => handlePlayClick(lecture)}

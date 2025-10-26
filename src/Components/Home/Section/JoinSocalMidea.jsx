@@ -1,20 +1,13 @@
+/* src/components/JoinSocialMedia.jsx */
 /* eslint-disable react/prop-types */
-// Pure React (no TypeScript). Save as .jsx if you want JSX syntax.
-// Exports two components:
-// 1) JoinSocialMedia — shows the first 4 groups and a "View all groups" button
-// 2) GroupsPage — shows ALL groups on a dedicated page (use it at /groups)
-//
-// How to use:
-// - On your homepage/section, render <JoinSocialMedia />
-// - Create a route/page at /groups that renders <GroupsPage />
-// Optional: Replace <a href> with Next.js <Link> if you use Next Router.
 
+import { Link } from "react-router-dom";
 import SectionText from "../../Ui/SectionText";
 
-// ---- Shared data -----------------------------------------------------------
-const COMMON_IMAGE =
-  "../../../../public/groups/Rectangle 20.png";
-
+/**
+ * Groups data
+ * NOTE: corrected image hosts (removed accidental ".com" after i.ibb.co)
+ */
 export const GROUPS = [
   // NSU
   {
@@ -22,12 +15,14 @@ export const GROUPS = [
     title: "North South University Admission Help Desk",
     link: "https://www.facebook.com/groups/nsuadmissionhelpdesk/",
     university: "NSU",
+    image: "https://i.ibb.co/0jNdV7Gs/Rectangle-22-1.png",
   },
   {
     id: 2,
     title: "NSU Summer 2025 Admission Help Desk",
     link: "https://www.facebook.com/groups/714828723553900/",
     university: "NSU",
+    image: "https://i.ibb.co/0jNdV7Gs/Rectangle-22-1.png",
   },
 
   // BRAC
@@ -36,12 +31,14 @@ export const GROUPS = [
     title: "BRAC University Admission Help Desk",
     link: "https://www.facebook.com/groups/660767802905541/",
     university: "BRAC",
+    image: "https://i.ibb.co/zHns5HjL/Rectangle-20-1.png",
   },
   {
     id: 4,
     title: "BRAC Summer 2025 Admission Help Desk",
     link: "https://www.facebook.com/groups/646857520994185/",
     university: "BRAC",
+    image: "https://i.ibb.co/zHns5HjL/Rectangle-20-1.png",
   },
 
   // EWU
@@ -50,12 +47,14 @@ export const GROUPS = [
     title: "East West University Admission Help Desk",
     link: "https://www.facebook.com/groups/1630116420981929",
     university: "EWU",
+    image: "https://i.ibb.co/KzNyB0zG/Rectangle-21-1.png",
   },
   {
     id: 6,
     title: "East West University Spring 2026 Admission Help Desk",
     link: "https://www.facebook.com/groups/eastwestuniversityadmissiontest",
     university: "EWU",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // Private University
@@ -64,6 +63,7 @@ export const GROUPS = [
     title: "Private University Admission group",
     link: "https://www.facebook.com/groups/privateuniversityadmissiongroup",
     university: "Private",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // IUB
@@ -72,6 +72,7 @@ export const GROUPS = [
     title: "IUB Admission Test Helpline",
     link: "https://www.facebook.com/groups/iubadmissiontesthelpline",
     university: "IUB",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // AIUB
@@ -80,6 +81,7 @@ export const GROUPS = [
     title: "AIUB Admission Test Helpline",
     link: "https://www.facebook.com/groups/aiubadmissiontesthelpline",
     university: "AIUB",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // AUST
@@ -88,6 +90,7 @@ export const GROUPS = [
     title: "AUST Admission Test Help",
     link: "https://www.facebook.com/groups/austadmissiontesthelp",
     university: "AUST",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // UAP
@@ -96,6 +99,7 @@ export const GROUPS = [
     title: "UAP Admission Test",
     link: "https://www.facebook.com/groups/uapadmissiontest",
     university: "UAP",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 
   // UIU
@@ -104,24 +108,33 @@ export const GROUPS = [
     title: "UIU Admission Test",
     link: "https://www.facebook.com/groups/uiuadmissiontest",
     university: "UIU",
+    image: "https://i.ibb.co/gM2p6HsH/Rectangle-23-1.png",
   },
 ];
 
-// ---- Small card component --------------------------------------------------
+// fallback image if item.image missing
+const FALLBACK_IMAGE = "https://via.placeholder.com/600x360?text=Group+Image";
+
+/* Small card component */
 export function GroupCard({ item }) {
+  const imgSrc = item?.image || FALLBACK_IMAGE;
   return (
     <div className="rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 bg-white">
-      <img className="w-full h-44 object-cover" src={COMMON_IMAGE} alt={item.title} />
+      <img
+        className="w-full "
+        src={imgSrc}
+        alt={item?.title || "Group image"}
+        loading="lazy"
+      />
       <div className="p-4">
         <h3 className="font-bold text-lg mb-1 leading-snug">{item.title}</h3>
-        {item.university && (
-          <p className="text-sm text-gray-600 mb-3">{item.university}</p>
-        )}
+        {item.university && <p className="text-sm text-gray-600 mb-3">{item.university}</p>}
         <div className="flex justify-center items-center">
           <a
             href={item.link}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`Join ${item.title} (opens in new tab)`}
             className="w-fit bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
           >
             Join Now
@@ -132,9 +145,7 @@ export function GroupCard({ item }) {
   );
 }
 
-
-
-// ---- 1) Section: Show only first 4 + View All button ----------------------
+/* Section: Show only first 4 + View All button */
 export function JoinSocialMedia() {
   const firstFour = GROUPS.slice(0, 4);
 
@@ -154,10 +165,13 @@ export function JoinSocialMedia() {
       </div>
 
       <div className="max-w-6xl mx-auto flex justify-center pt-10 pb-16">
-        {/* If you're on Next.js, wrap this <a> with <Link href="/groups"> */}
-        <a
-          href="/groups"
+        {/* If you use react-router and want client-side navigation, replace the <a> below with:
+            <RouterLink to="/groups" className="...">View all groups</RouterLink>
+            Otherwise keep the <a> so it works on any setup. */}
+        <Link
+          to="/groups"
           className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-300 hover:border-gray-400 text-gray-800 font-semibold"
+          aria-label="View all groups"
         >
           View all groups
           <svg
@@ -167,14 +181,14 @@ export function JoinSocialMedia() {
             strokeWidth={1.5}
             stroke="currentColor"
             className="w-5 h-5"
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
           </svg>
-        </a>
+        </Link>
       </div>
     </section>
   );
 }
-
 
 export default JoinSocialMedia;

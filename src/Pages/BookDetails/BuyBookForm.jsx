@@ -128,7 +128,7 @@ export default function BuyBookForm() {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                  <img src={cover} alt={book.title} className="w-full md:w-48 h-48 object-cover rounded-lg" />
+                  <img src={cover} alt={book.title} className="w-full md:w-48 h-48 rounded-lg" />
                   <div className="flex-1">
                     <h1 className="text-2xl font-bold text-gray-900">{book.title}</h1>
                     <p className="text-sm text-gray-500 mt-1">{book.categoryId?.name || "Category"} • {book.bookType || "Type"}</p>
