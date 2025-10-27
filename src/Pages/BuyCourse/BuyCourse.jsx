@@ -57,7 +57,7 @@ export default function BuyCourse() {
 
   async function handlePlaceOrder() {
     if (!userInfo) {
-      toast.error("Please login to continue");
+      toast.error("আপনার ইতীমধ্যে একটি একাউন্ট রয়েছে। কোর্সটি কিনতে অনুগ্রহ করে লগ ইন করুন");
       return;
     }
 
