@@ -12,33 +12,40 @@ const BookCard = ({ course }) => {
 
   return (
     <div className="rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 p-3">
-      <img
-        className="w-full h-96 "
-        src={cover}
-        alt={title}
-      />
+      {/* Maintain 1:1 aspect ratio */}
+      <div className="relative w-full aspect-square overflow-hidden bg-gray-100">
+        <img
+          className="absolute inset-0 w-full h-full object-cover"
+          src={cover}
+          alt={title}
+          loading="lazy"
+        />
+      </div>
+
       <div className="p-4">
-        <h3 className="font-bold text-lg text-center text-[#F91616] mb-2 px-5">
+        <h3 className="font-bold md:text-lg text-xs text-center text-[#F91616] mb-2 md:px-5">
           {title}
         </h3>
 
         <div className="flex justify-center items-center gap-2 mb-4">
           {showOriginal && (
-            <p className="text-[#D91A19] line-through">
-              TK {price}
-            </p>
+            <p className="text-[#D91A19] line-through">TK {price}</p>
           )}
-          <p className="text-[#008000] ">
+          <p className="text-[#008000]">
             {displayOffer === 0 ? "Free" : `TK ${displayOffer}`}
           </p>
         </div>
 
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex justify-between items-center md:gap-4">
           <Link to={`/book/${course?.slug}`}>
-            <button className="w-full cursor-pointer mr-2 bg-gradient-to-r from-[#1E5A1E] to-[#008000] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
+            <button className="md:w-full text-xs cursor-pointer mr-2 bg-gradient-to-r from-[#1E5A1E] to-[#008000] text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
               এক নজরে পড়ুন
-            </button></Link>
-          <Link  to={`/buy/book/${course?.slug}`} className=" bg-[#F91616] cursor-pointer text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300">
+            </button>
+          </Link>
+          <Link
+            to={`/buy/book/${course?.slug}`}
+            className="bg-[#F91616] text-xs cursor-pointer text-white font-semibold py-2 px-2 rounded-lg transition-colors duration-300"
+          >
             অর্ডার করুন
           </Link>
         </div>

@@ -27,13 +27,18 @@ const ExamRun = () => {
     return exams.find((e) => e?.slug && String(e.slug).trim().toLowerCase() === s) ?? null;
   }, [exams, slug]);
 
+  console.log("exam", examMeta)
+
   const { data: mcqData, isLoading, isError } = useGetAllMcqQuery();
   const mcqs = mcqData?.data ?? [];
+  console.log("")
   const filtered = useMemo(() => {
     if (!slug) return [];
     const s = String(slug).trim().toLowerCase();
     return mcqs.filter((m) => m?.examId?.slug && String(m.examId.slug).trim().toLowerCase() === s);
   }, [mcqs, slug]);
+
+  console.log("filtered mcq", filtered)
 
   const [submitMcqAttempt, { isLoading: submitting }] = useMcqAttempMutation();
   const [page, setPage] = useState(1);

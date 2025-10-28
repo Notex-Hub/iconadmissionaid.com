@@ -25,7 +25,7 @@ const FreeTest = () => {
       universitiesFromApi.map((u) => ({
         id: u._id,
         title: u.name,
-        img: u.cover_photo ?? "/public/university/default.png",
+        img: u.image ?? "/public/university/default.png",
         slug: u.slug ?? null,
       })),
     [universitiesFromApi]

@@ -2,7 +2,7 @@
 /* src/pages/CourseModules/ExamList.jsx */
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { useGetAllExamQuery } from "../../../../redux/Features/Api/Exam/exam"; // adjust path if needed
+import { useGetAllExamQuery } from "../../../../redux/Features/Api/Exam/Exam";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -214,15 +214,7 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                    <div className="inline-flex items-center gap-2">
-                      {ex.isFree ? (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs">Free</span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs">
-                          {ex.price ? `৳ ${ex.price}` : "Paid"}
-                        </span>
-                      )}
-                    </div>
+                  
 
                     <div className="flex flex-col items-center gap-2">
                       <button
@@ -233,7 +225,7 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
                             setActiveExam(ex);
                           }
                         }}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm"
+                        className="inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm"
                       >
                         Start
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -241,22 +233,11 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
                         </svg>
                       </button>
 
-                      <button
-                        onClick={() => copyToClipboard(`${window.location.origin}/exam/${ex.slug || ex.id}`)}
-                        className="text-xs text-gray-500 hover:underline"
-                      >
-                        Copy Link
-                      </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-700 mt-2">
-                  <div className="text-xs text-gray-500">
-                    <span className="mr-2">Schedule: {ex.scheduleDate ? new Date(ex.scheduleDate).toLocaleString() : "—"}</span>
-                    <span>Valid Time: {ex.validTime || "—"}</span>
-                  </div>
-                </div>
+              
               </div>
             </article>
           );

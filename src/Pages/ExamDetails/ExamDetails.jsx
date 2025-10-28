@@ -148,9 +148,9 @@ const ExamDetails = () => {
                                 {exam.validTime && (
                                     <li>Valid time: {exam.validTime}</li>
                                 )}
-                                {scheduleDate && (
+                                {/* {scheduleDate && (
                                     <li>Scheduled at: {scheduleDate.toLocaleString()}</li>
-                                )}
+                                )} */}
                             </ul>
                         </div>
 
@@ -173,10 +173,7 @@ const ExamDetails = () => {
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={handleStart}
-                                    disabled={!isPublished || isScheduledInFuture}
-                                    className={`px-6 py-3 cursor-pointer rounded-lg text-white font-medium shadow-sm transition ${(!isPublished || isScheduledInFuture)
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-[#7a0000] hover:bg-red-700"
+                                    className={`px-6 py-3 cursor-pointer rounded-lg text-white font-medium shadow-sm transition  bg-[#7a0000] hover:bg-red-700
                                         }`}
                                 >
                                     Start Exam
@@ -184,15 +181,15 @@ const ExamDetails = () => {
 
                                 <button
                                     onClick={() => navigate(-1)}
-                                    className="px-4 py-3 rounded-lg   text-gray-700 hover:bg-gray-50"
-                                >
+                                    className="px-4 py-3 rounded-lg cursor-pointer   text-gray-700 hover:bg-gray-50"
+                                > 
                                     Back
                                 </button>
                             </div>
                         </div>
                         <div className="mt-6 text-sm text-gray-600">
                             {typeof exam.price !== "undefined" && (
-                                <p className="text-xl text-green-500 font-medium"><span className="font-medium">Price:</span> {exam.price === 0 ? "Free" : `${exam.price}  ৳`}</p>
+                                <p className="text-xl text-green-500 font-medium"><span className="font-medium">Price:</span> {exam.price === "" ? "Free" : `${exam.price}  ৳`}</p>
                             )}
                         </div>
                     </div>

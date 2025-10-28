@@ -5,6 +5,7 @@ const UniversitySmallCard = ({
   selectedId = null, 
   onSelect = () => {} 
 }) => {
+  console.log(universities)
   // universities = [{ id, title, img, slug? }]
   return (
     <div className="max-w-6xl mx-auto md:flex justify-center md:justify-center items-center gap-5 md:flex-wrap my-10 grid grid-cols-2">

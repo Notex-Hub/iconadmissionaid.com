@@ -6,31 +6,64 @@ import { useGetAllLectureQuery } from "../../../../redux/Features/Api/Lecture/le
 
 const ITEMS_PER_PAGE = 6;
 
-function extractYouTubeId(input) {
+// Parse different video sources (YouTube, Google Drive, or raw URL)
+function parseVideoSource(input) {
   if (!input) return null;
-  if (/^[\w-]{11}$/.test(input)) return input;
+  const s = String(input).trim();
+
+  // Pure 11-char YouTube id
+  if (/^[\w-]{11}$/.test(s)) return { type: "youtube", id: s };
+
   try {
-    const u = new URL(input);
-    if (u.hostname.includes("youtu.be")) {
-      const p = u.pathname.replace("/", "");
-      if (/^[\w-]{11}$/.test(p)) return p;
-    }
-    if (u.hostname.includes("youtube.com")) {
+    const u = new URL(s);
+
+    // youtube short / full / embed
+    if (u.hostname.includes("youtu.be") || u.hostname.includes("youtube.com")) {
+      if (u.hostname.includes("youtu.be")) {
+        const p = u.pathname.replace(/^\//, "");
+        if (/^[\w-]{11}$/.test(p)) return { type: "youtube", id: p };
+      }
       const v = u.searchParams.get("v");
-      if (v && /^[\w-]{11}$/.test(v)) return v;
-      const parts = u.pathname.split("/");
+      if (v && /^[\w-]{11}$/.test(v)) return { type: "youtube", id: v };
+      const parts = u.pathname.split("/").filter(Boolean);
       const idx = parts.indexOf("embed");
-      if (idx >= 0 && parts[idx + 1] && /^[\w-]{11}$/.test(parts[idx + 1])) return parts[idx + 1];
+      if (idx >= 0 && parts[idx + 1] && /^[\w-]{11}$/.test(parts[idx + 1])) return { type: "youtube", id: parts[idx + 1] };
     }
-  // eslint-disable-next-line no-empty, no-unused-vars
-  } catch (e) {}
-  const m = String(input).match(/([\w-]{11})/);
-  return m ? m[1] : null;
+
+    // Google Drive file link: /file/d/<id>/view or /open?id=<id>
+    if (u.hostname.includes("drive.google.com") || u.hostname.includes("docs.google.com")) {
+      // /file/d/<id>/view
+      const m = u.pathname.match(/\/file\/d\/(.*?)\//);
+      if (m && m[1]) return { type: "drive", id: m[1] };
+      // open?id=<id>
+      const q = u.searchParams.get("id");
+      if (q) return { type: "drive", id: q };
+    }
+  } catch (e) {
+    // fall through to regex-based matching below
+  }
+
+  // Fallback: try to capture YouTube-ish id anywhere
+  const m = String(s).match(/([\w-]{11})/);
+  if (m) return { type: "youtube", id: m[1] };
+
+  // Try to extract drive id with regex as final fallback
+  const md = String(s).match(/drive\.google\.com\/file\/d\/(.*?)\//);
+  if (md && md[1]) return { type: "drive", id: md[1] };
+
+  return { type: "other", id: s };
 }
 
-function buildYouTubeEmbedUrl(videoId) {
-  if (!videoId) return null;
-  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1`;
+function buildEmbedUrl(parsed) {
+  if (!parsed) return null;
+  if (parsed.type === "youtube") {
+    return `https://www.youtube-nocookie.com/embed/${parsed.id}?rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1`;
+  }
+  if (parsed.type === "drive") {
+    // Google Drive preview embed
+    return `https://drive.google.com/file/d/${parsed.id}/preview`;
+  }
+  return null;
 }
 
 export default function LectureList({ moduleId = null, moduleIds = [] }) {
@@ -218,8 +251,8 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
               <div className="ll-player-inner">
                 {(function () {
                   const raw = activeLecture.videoId;
-                  const youtubeId = extractYouTubeId(raw);
-                  const playerUrl = youtubeId ? buildYouTubeEmbedUrl(youtubeId) : null;
+                  const parsed = parseVideoSource(raw);
+                  const playerUrl = buildEmbedUrl(parsed);
                   if (!playerUrl) {
                     return (
                       <div className="w-full h-40 flex flex-col items-center justify-center text-sm text-white bg-gray-700 p-4">
@@ -228,6 +261,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                       </div>
                     );
                   }
+
                   return (
                     <>
                       <iframe
@@ -236,11 +270,11 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                         src={playerUrl}
                         className="ll-iframe"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        sandbox="allow-scripts allow-same-origin"
+                        sandbox="allow-scripts allow-same-origin allow-presentation"
                       />
                       <div style={{ position: "absolute", bottom: 10, right: 10, zIndex: 40 }}>
                         <button
-                          onClick={() => copyToClipboard(`https://www.youtube.com/watch?v=${extractYouTubeId(activeLecture.videoId)}`)}
+                          onClick={() => copyToClipboard(String(activeLecture.videoId))}
                           className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-white text-gray-900 text-xs font-medium shadow"
                         >
                           Copy Link
@@ -263,7 +297,10 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {paginated.map((lec, idx) => {
-          const youtubeId = extractYouTubeId(lec.videoId);
+          const parsed = parseVideoSource(lec.videoId);
+          const youtubeId = parsed?.type === "youtube" ? parsed.id : null;
+          const isDrive = parsed?.type === "drive";
+
           return (
             <article key={lec.id || idx} className="bg-gray-50 rounded-lg p-3 flex gap-3 items-start">
               <div className="w-28 h-16 flex-shrink-0 rounded-md overflow-hidden bg-black/5">
@@ -273,6 +310,14 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                     alt={lec.title}
                     className="w-full h-full object-cover"
                   />
+                ) : isDrive ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-xs text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 21H4" />
+                    </svg>
+                    <div>Drive file</div>
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">No preview</div>
                 )}
@@ -281,7 +326,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <div className="font-medium text-gray-900 truncate">{lec.title}</div>
+                    <div className="font-medium text-gray-900 truncate w-96">{lec.title}</div>
                     <div className="text-xs text-gray-500 mt-1">
                       {lec.moduleTitle && <span className="mr-2">Module: {lec.moduleTitle}</span>}
                       {lec.duration !== undefined && <span>{lec.duration} mins</span>}
@@ -289,18 +334,11 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                    <div className="inline-flex items-center gap-2">
-                      {lec.isFree ? (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs">Free</span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs">Paid</span>
-                      )}
-                    </div>
-
                     <div className="flex flex-col items-center gap-2">
                       <button
                         onClick={() => {
-                          const playerUrl = youtubeId ? buildYouTubeEmbedUrl(youtubeId) : null;
+                          const parsedLocal = parseVideoSource(lec.videoId);
+                          const playerUrl = buildEmbedUrl(parsedLocal);
                           if (playerUrl) {
                             setActiveLecture(lec);
                           } else if (lec.videoId) {
@@ -310,26 +348,12 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                             alert("No video URL available.");
                           }
                         }}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
+                        className="inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
                       >
                         Play
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7-7 7M5 5v14" />
                         </svg>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          const youtubeUrl = youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : (lec.videoId || "");
-                          if (youtubeUrl) {
-                            copyToClipboard(youtubeUrl);
-                          } else {
-                            alert("No link available to copy.");
-                          }
-                        }}
-                        className="text-xs text-gray-500 hover:underline"
-                      >
-                        Copy Link
                       </button>
                     </div>
                   </div>

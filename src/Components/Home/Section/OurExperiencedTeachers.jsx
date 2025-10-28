@@ -63,7 +63,7 @@ const OurExperiencedTeachers = () => {
                     <h3 className="text-lg font-semibold mb-1">
                       {t?.name ?? "Unknown"}
                     </h3>
-                    <p className="text-sm">{t?.phone ?? "No phone"}</p>
+                    {/* <p className="text-sm">{t?.phone ?? "No phone"}</p> */}
                   </div>
                 </div>
               ))}

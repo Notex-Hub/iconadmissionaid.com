@@ -25,13 +25,13 @@ import UserOrdersTable from "../Components/Dashboard/UserOrdersTable/UserOrdersT
 import SettingsPage from "../Components/Dashboard/SettingsPage/SettingsPage";
 import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import ReferPage from "../Components/Dashboard/Refer/ReferPage";
-import ExamRun from "../Pages/ExamDetails/ExamRun";
 import ExamStartPage from "../Pages/StartExam/StartExam";
 import { GroupsPage } from "../Components/Home/AllGroups/AllGroups";
 import NsuResultsLanding from "../Pages/NsuResultsLanding/NsuResultsLanding";
 import ReferRewardsPage from "../Components/Dashboard/Rewards/Rewards";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import ForgotPasswordPage from "../Pages/ForgotPasswordPage/ForgotPasswordPage";
+import ExamRun from "../Pages/ExamDetails/ExamRun";
 
 export const router = createBrowserRouter([
   {
@@ -154,7 +154,7 @@ export const router = createBrowserRouter([
         path: "/exam/:slug/run",
         element: <ScrollToTop>
           <ExamRun/>
-        </ScrollToTop>
+          </ScrollToTop>
       }
       , {
         path: "/exam/:slug/result",
