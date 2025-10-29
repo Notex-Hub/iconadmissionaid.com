@@ -1,9 +1,18 @@
+/* eslint-disable no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
 
+const savedAuth = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("auth"));
+  } catch (e) {
+    return null;
+  }
+})();
+
 const initialState = {
-  isLoading: true,
-  userInfo: null,
-  token: null,
+  isLoading: false,
+  userInfo: savedAuth?.userInfo ?? null,
+  token: savedAuth?.token ?? localStorage.getItem("accessToken") ?? null,
 };
 
 export const authSlice = createSlice({
