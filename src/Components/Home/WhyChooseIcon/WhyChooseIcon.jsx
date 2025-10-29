@@ -8,7 +8,7 @@ const WhyChooseIcon = () => {
     <div className=' container mx-auto flex flex-col md:flex-col lg:flex-row justify-between my-10 md:gap-10 lg:gap-20 gap-5 items-center p-3 md:px-5 lg:p-5'>
       <div>
         <h1 className='md:text-6xl font-bold  text-5xl'>প্রাইভেট ইউনিভার্সিটি অ্যাডমিশন সম্পর্কে তথ্য জানতে....</h1>
-        <button className='bg-red-700 px-5 py-2 rounded-md text-white text-xl cursor-pointer mt-5'>সরাসরি কথা বলুন</button>
+        <button className='bg-gradient-to-r from-[#6A0000] via-[#B10000] to-[#FF0000]  px-5 py-2 rounded-md text-white text-xl cursor-pointer mt-5'>সরাসরি কথা বলুন</button>
       </div>
       <div className='flex md:gap-5 gap-3'>
         <div className='flex flex-col items-center justify-center bg-red-800 px-5 py-5 rounded md:w-60 gap-2'>

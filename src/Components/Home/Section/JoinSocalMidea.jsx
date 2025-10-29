@@ -101,7 +101,7 @@ export function GroupCard({ item }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Join ${item.title} (opens in new tab)`}
-            className="w-fit bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
+            className="w-fit bg-gradient-to-r from-[#6A0000] via-[#B10000] to-[#FF0000]  text-white font-semibold py-2 px-4 rounded-lg  transition-colors duration-300"
           >
             Join Now
           </a>
@@ -136,21 +136,11 @@ export function JoinSocialMedia() {
             Otherwise keep the <a> so it works on any setup. */}
         <Link
           to="/groups"
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-300 hover:border-gray-400 text-gray-800 font-semibold"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white bg-black font-semibold"
           aria-label="View all groups"
         >
           View all groups
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-          </svg>
+         
         </Link>
       </div>
     </section>

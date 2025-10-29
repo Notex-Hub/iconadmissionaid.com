@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import SectionText from "../../Ui/SectionText";
 import Button from "../../Ui/Button";
 import { useGetAllLectureQuery } from "../../../../redux/Features/Api/Lecture/lecture";
 
 // Helper function to post form data
 const postFreeTest = async ({ name: n, number: num, intersted: intr = "" }) => {
-  const payload = { name: n, number: num, intersted: intr, crmStatus:"Pending", status:"Processing" };
+  const payload = { name: n, number: num, intersted: intr, crmStatus: "Pending", status: "Processing" };
   const res = await fetch(
     "https://sandbox.iconadmissionaid.com/api/v1/free-test/create-free-test",
     {
@@ -20,6 +21,76 @@ const postFreeTest = async ({ name: n, number: num, intersted: intr = "" }) => {
     throw new Error(data?.message || `Free-test API error (${res.status})`);
   }
   return data;
+};
+
+/**
+ * Helpers to detect & transform video sources
+ */
+const isYouTubeUrl = (url) => {
+  try {
+    return /(?:youtube\.com|youtu\.be)/i.test(url);
+  } catch {
+    return false;
+  }
+};
+
+const extractYouTubeId = (input) => {
+  if (!input) return null;
+  // if input already looks like an id (no slashes, short)
+  if (/^[A-Za-z0-9_-]{10,}$/.test(input) && !input.includes("://") && !input.includes("/")) {
+    return input;
+  }
+
+  // try to parse URL
+  try {
+    const u = new URL(input);
+    // youtube.com/watch?v=ID
+    if (u.hostname.includes("youtube.com")) {
+      const v = u.searchParams.get("v");
+      if (v) return v;
+      // maybe /embed/ID or /v/ID
+      const pathMatch = u.pathname.match(/\/(embed|v)\/([A-Za-z0-9_-]+)/);
+      if (pathMatch) return pathMatch[2];
+    }
+    // youtu.be/ID
+    if (u.hostname.includes("youtu.be")) {
+      const p = u.pathname.split("/");
+      if (p[1]) return p[1];
+    }
+  } catch {
+    // not a URL, fallthrough
+  }
+
+  // last resort: regex search for youtube id-like pattern
+  const regex = /(?:v=|\/)([A-Za-z0-9_-]{10,})/;
+  const m = input.match(regex);
+  return m ? m[1] : null;
+};
+
+const isDriveUrl = (url) => {
+  try {
+    return /drive\.google\.com/i.test(url);
+  } catch {
+    return false;
+  }
+};
+
+const extractDriveFileId = (url) => {
+  if (!url) return null;
+  // common pattern: /file/d/FILE_ID/
+  const m = url.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
+  if (m) return m[1];
+  // sometimes sharing uses open?id=FILE_ID
+  const m2 = url.match(/[?&]id=([A-Za-z0-9_-]+)/);
+  if (m2) return m2[1];
+  return null;
+};
+
+const getDrivePreviewUrl = (urlOrId) => {
+  // if provided a full url, extract id
+  const fileId = extractDriveFileId(urlOrId) ?? ( /^[A-Za-z0-9_-]{20,}$/.test(urlOrId) ? urlOrId : null );
+  if (!fileId) return null;
+  return `https://drive.google.com/file/d/${fileId}/preview`;
 };
 
 // Modal form before video plays
@@ -97,10 +168,28 @@ const LectureAccessForm = ({ onSubmit, onClose }) => {
 
 const LecturePlayCard = ({ lecture, onClose }) => {
   if (!lecture) return null;
-  const youtubeEmbed = lecture.videoId && lecture.server?.toLowerCase() === "youtube";
-  const thumbnail = lecture.videoId
-    ? `https://img.youtube.com/vi/${lecture.videoId}/hqdefault.jpg`
-    : "/public/lecture/default.png";
+
+  const videoIdOrUrl = lecture.videoId;
+  const server = (lecture.server ?? "").toLowerCase();
+
+  // Decide source type
+  const youtubeId = extractYouTubeId(videoIdOrUrl);
+  const isYoutube = server === "youtube" || (typeof videoIdOrUrl === "string" && isYouTubeUrl(videoIdOrUrl)) || !!youtubeId;
+  const drivePreview = isDriveUrl(videoIdOrUrl) ? getDrivePreviewUrl(videoIdOrUrl) : (extractDriveFileId(videoIdOrUrl) ? getDrivePreviewUrl(videoIdOrUrl) : null);
+  const isDrive = !!drivePreview || server === "drive" || server === "google-drive";
+
+  // Prepare iframe src
+  let iframeSrc = null;
+  if (isYoutube && youtubeId) {
+    iframeSrc = `https://www.youtube.com/embed/${youtubeId}?rel=0&autoplay=1`;
+  } else if (isDrive && drivePreview) {
+    iframeSrc = `${drivePreview}?autoplay=1`; // Drive preview doesn't always respect autoplay, but include param
+  }
+
+  // Thumbnail fallback: for youtube we can use youtube thumb; for drive use a generic placeholder
+  const thumbnail = youtubeId
+    ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+    : lecture.thumbnail ?? "/public/lecture/default.png";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
@@ -118,11 +207,12 @@ const LecturePlayCard = ({ lecture, onClose }) => {
             Close
           </button>
         </div>
+
         <div className="bg-black relative" style={{ paddingTop: "56.25%" }}>
-          {youtubeEmbed ? (
+          {iframeSrc ? (
             <iframe
               title={lecture.title}
-              src={`https://www.youtube.com/embed/${lecture.videoId}?rel=0&autoplay=1`}
+              src={iframeSrc}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -134,6 +224,7 @@ const LecturePlayCard = ({ lecture, onClose }) => {
             </div>
           )}
         </div>
+
         <div className="p-4 flex items-center justify-between">
           <div className="text-sm text-gray-700">
             Duration: <span className="font-medium">{lecture.duration ?? "-"} min</span>
@@ -154,12 +245,25 @@ const OurFreeLectures = () => {
   const [showForm, setShowForm] = useState(false);
   const [pendingLecture, setPendingLecture] = useState(null);
 
+  // Get user info from Redux auth slice
+  const { userInfo } = useSelector((state) => state.auth);
+
   const handlePlayClick = (lecture) => {
+    // If user is logged in -> play immediately
+    if (userInfo) {
+      setActiveLecture(lecture);
+      setShowForm(false);
+      setPendingLecture(null);
+      return;
+    }
+
+    // If not logged in -> show form, and set pending lecture to play after submit
     setPendingLecture(lecture);
     setShowForm(true);
   };
 
   const handleFormSubmit = () => {
+    // When form is submitted, play the pending lecture
     setActiveLecture(pendingLecture);
     setPendingLecture(null);
     setShowForm(false);
@@ -184,20 +288,23 @@ const OurFreeLectures = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
               {freeLectures.map((lecture) => {
-                const thumb = lecture.videoId
-                  ? `https://img.youtube.com/vi/${lecture.videoId}/mqdefault.jpg`
-                  : "https://i.ibb.co.com/0jfFssL0/varsity-b-unit-and-gst-admission-course-2025-thumbnail.jpg";
+                // build thumbnail depending on video source
+                const videoIdOrUrl = lecture.videoId;
+                const youtubeId = extractYouTubeId(videoIdOrUrl);
+                const thumb = youtubeId
+                  ? `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`
+                  : lecture.thumbnail ?? "/public/lecture/default.png";
 
                 return (
                   <article
                     key={lecture._id}
-                    className="group bg-white rounded-2xl shadow-sm overflow-hidden h-80  hover:shadow-lg transition-shadow duration-200"
+                    className="group bg-white rounded-2xl shadow-sm overflow-hidden h-80 hover:shadow-lg transition-shadow duration-200"
                   >
                     <div className="relative">
                       <img
                         src={thumb}
                         alt={lecture.title}
-                        className="w-full h-80 "
+                        className="w-full h-80 object-cover"
                       />
                       <button
                         onClick={() => handlePlayClick(lecture)}
@@ -227,13 +334,15 @@ const OurFreeLectures = () => {
         </>
       )}
 
-      {showForm && (
+      {/* Show form only when showForm = true AND user not logged in */}
+      {showForm && !userInfo && (
         <LectureAccessForm
           onSubmit={handleFormSubmit}
           onClose={() => setShowForm(false)}
         />
       )}
 
+      {/* If userInfo exists or after form submit */}
       {activeLecture && (
         <LecturePlayCard lecture={activeLecture} onClose={() => setActiveLecture(null)} />
       )}

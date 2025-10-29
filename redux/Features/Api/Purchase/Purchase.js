@@ -11,6 +11,7 @@ export const purchaseApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Course", "Purchase"],
     }),
+    
 
      getAllPurchase: builder.query({
   query: ({ studentId, courseId, course_type }) => {

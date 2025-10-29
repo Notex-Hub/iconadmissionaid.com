@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 
 /* eslint-disable react/prop-types */
 export function CourseHeader({ course }) {
@@ -18,8 +17,8 @@ export function CourseHeader({ course }) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 border rounded cursor-pointer">শেয়ার</button>
-          <Link to={`/enroll/${course.slug || course.id}`} className="bg-[#16a34a] cursor-pointer text-white px-4 py-2 rounded font-semibold">কোর্সটি নিন</Link>
+          {/* <button className="px-4 py-2 border rounded cursor-pointer">শেয়ার</button> */}
+          {/* <Link to={`/enroll/${course.slug || course.id}`} className="bg-[#16a34a] cursor-pointer text-white px-4 py-2 rounded font-semibold">কোর্সটি নিন</Link> */}
         </div>
       </div>
     </div>

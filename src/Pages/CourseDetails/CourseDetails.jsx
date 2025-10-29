@@ -39,7 +39,6 @@ export default function CourseDetailsPage() {
   const course = useMemo(() => {
     if (!item) return null;
     const source = item.courseId && typeof item.courseId === "object" ? item.courseId : item;
-    console.log("source", source)
     return {
       id: source._id || item._id,
       courseId:source,

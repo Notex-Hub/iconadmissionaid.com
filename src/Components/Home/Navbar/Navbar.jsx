@@ -148,7 +148,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
     setMobileMenuOpen(false);
   };
 
-  const bgColor = "bg-red-600 shadow-md";
+  const bgColor = "bg-gradient-to-r from-[#6A0000] via-[#B10000] to-[#FF0000]  shadow-md";
   const textColor = "text-white";
 
   const logouthandel = async () => {
@@ -187,7 +187,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1/2 -translate-y-1/2 bg-red-600 text-white px-3 py-1.5 rounded-full shadow hover:bg-red-700"
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#6A0000] via-[#B10000] to-[#FF0000]  text-white px-3 py-1.5 rounded-full shadow hover:bg-red-700"
                 aria-label="Search"
               >
                 Search

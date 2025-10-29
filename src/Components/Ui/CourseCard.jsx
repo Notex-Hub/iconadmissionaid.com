@@ -41,7 +41,7 @@ const CourseCard = ({ course }) => {
         </div>
 
         <Link to={`/course/${course.slug}`}>
-          <button className="w-full cursor-pointer bg-[#5D0000] text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
+          <button className="w-full cursor-pointer bg-gradient-to-r from-[#6A0000] via-[#B10000] to-[#FF0000]  text-white font-semibold py-2 px-4 rounded-lg  transition-colors duration-300">
             বিস্তারিত দেখুন
           </button>
         </Link>
