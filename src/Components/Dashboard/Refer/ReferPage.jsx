@@ -72,7 +72,7 @@ export default function ReferPage() {
               <img
                 src={c.cover_photo}
                 alt={c.course_title}
-                className="w-full h-40 object-cover rounded-lg mb-3"
+                className="w-full   rounded-lg mb-3"
               />
 
               <h3 className="text-lg font-medium">{c.course_title}</h3>

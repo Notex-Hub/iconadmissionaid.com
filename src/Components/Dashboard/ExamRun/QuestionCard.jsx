@@ -1,15 +1,16 @@
 /* eslint-disable react/prop-types */
 /**
- * QuestionCard (updated)
+ * QuestionCard (text-only options)
  *
- * - removes leading numbering in the question HTML (like "1.", "<p>3.</p>", or an ol/li that only contains "8.")
- *   so you won't see duplicate numbers when the component also shows a badge.
+ * - Sends only the option TEXT via onChange (no A/B/C or numeric index)
+ * - Renders options without letter labels
+ * - Keeps your leading number cleanup for the question HTML
  *
  * Props:
  * - q: question object
- * - value: selected option label or option text
- * - onChange: (questionId, selectedOptionLabel) => void
- * - index: local index on the page (0-based)  <-- pass idx from pageQuestions.map(...)
+ * - value: selected option TEXT
+ * - onChange: (questionId, selectedOptionText) => void
+ * - index: local index on the page (0-based)
  * - globalIndex: absolute question number (optional)
  */
 export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
@@ -17,29 +18,17 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
   const imgSrc = q?.questionImg ?? "";
   const options = Array.isArray(q?.options) ? q.options : [];
 
-  // Remove leading plain numbering from HTML.
-  // Strategy:
-  // - Parse the HTML with DOMParser
-  // - If the first visible child node is a text node or an element whose textContent is just "N." (like "3." or "10.")
-  //   then remove that node so the displayed question doesn't include the leading number.
+  // Clean leading numbering from question HTML
   const cleanQuestionHtml = (() => {
     try {
       const parser = new DOMParser();
-      // ensure we wrap fragment into a container so we can inspect children
       const doc = parser.parseFromString(`<div id="qc-root">${rawHtml}</div>`, "text/html");
       const root = doc.getElementById("qc-root");
       if (!root) return rawHtml;
 
-      // Helper: check if a string is just a number + dot (with optional whitespace)
-      const isJustNumberDot = (str) => {
-        if (typeof str !== "string") return false;
-        return /^\s*\d+\.\s*$/i.test(str);
-      };
-
-      // Find first *visible* child node (skip empty text nodes)
+      const isJustNumberDot = (str) => typeof str === "string" && /^\s*\d+\.\s*$/i.test(str);
       const children = Array.from(root.childNodes);
 
-      // If first child is a text node with "3." remove it
       if (children.length > 0) {
         const first = children[0];
 
@@ -47,41 +36,25 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
           if (isJustNumberDot(first.textContent)) {
             root.removeChild(first);
           } else {
-            // text node might start with "3. " then rest of question text.
-            // remove the leading "N. " from the beginning of the text node
             const match = first.textContent.match(/^\s*(\d+\.)\s*/);
-            if (match) {
-              first.textContent = first.textContent.replace(/^\s*\d+\.\s*/, "");
-            }
+            if (match) first.textContent = first.textContent.replace(/^\s*\d+\.\s*/, "");
           }
         } else if (first.nodeType === Node.ELEMENT_NODE) {
-          // If first element (eg <p>, <li>, <ol>) contains only a number+dot, remove that element.
           const firstText = first.textContent ? first.textContent.trim() : "";
           if (isJustNumberDot(firstText)) {
             root.removeChild(first);
           } else {
-            // Sometimes markup is <ol start="8"><li><p>8.</p></li></ol>
-            // Try to see if first element contains a child that's just a number+dot and that child is the only content.
             const innerChildren = Array.from(first.childNodes);
             if (innerChildren.length === 1) {
               const inner = innerChildren[0];
-              if (inner.nodeType === Node.ELEMENT_NODE || inner.nodeType === Node.TEXT_NODE) {
-                const innerText = inner.textContent ? inner.textContent.trim() : "";
-                if (isJustNumberDot(innerText)) {
-                  // remove that inner node
-                  first.removeChild(inner);
-                  // If the first element becomes empty now, remove it too
-                  if (!first.textContent.trim()) {
-                    root.removeChild(first);
-                  }
-                }
+              const innerText = inner?.textContent ? inner.textContent.trim() : "";
+              if (isJustNumberDot(innerText)) {
+                first.removeChild(inner);
+                if (!first.textContent.trim()) root.removeChild(first);
               }
             } else {
-              // If first element has text that *starts* with "N. " then strip that prefix.
               const leadingMatch = first.textContent && first.textContent.match(/^\s*(\d+\.)\s*/);
               if (leadingMatch) {
-                // Remove only the leading number+dot text from the element's first text node
-                // Find the first text node descendant
                 const walker = doc.createTreeWalker(first, NodeFilter.SHOW_TEXT, null, false);
                 const txtNode = walker.nextNode();
                 if (txtNode && txtNode.nodeValue) {
@@ -93,12 +66,9 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
         }
       }
 
-      // Return inner HTML of our wrapper
       return root.innerHTML;
-    } catch (e) {
-      // fallback: try a simple regex-based removal for common cases
+    } catch {
       try {
-        // remove leading <p>NUMBER.</p> or leading NUMBER. at the start
         let s = rawHtml;
         s = s.replace(/^\s*<p[^>]*>\s*\d+\.\s*<\/p>\s*/i, "");
         s = s.replace(/^\s*\d+\.\s*/i, "");
@@ -109,28 +79,21 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
     }
   })();
 
-  const handleSelect = (label) => {
-    if (typeof onChange === "function") onChange(q._id, label);
+  // send TEXT only
+  const handleSelect = (optText) => {
+    if (typeof onChange === "function") onChange(q._id, optText);
   };
 
-  // Generate labels A, B, C... based on options length
-  const optionLabels = options.map((_, i) => String.fromCharCode(65 + i)); // ["A","B",...]
-
-  // Helper to determine if an option is selected.
-  const isSelected = (optText, label) => {
+  // is this option selected? compare with TEXT
+  const isSelected = (optText) => {
     if (value == null) return false;
     try {
-      const v = String(value).trim();
-      if (!v) return false;
-      if (v.toLowerCase() === String(label).toLowerCase()) return true;
-      if (v.toLowerCase() === String(optText).trim().toLowerCase()) return true;
-      return false;
+      return String(value).trim() === String(optText).trim();
     } catch {
       return false;
     }
   };
 
-  // Determine displayed serial number: prefer page-local index (index + 1).
   const displayIndex = Number.isInteger(index) ? index + 1 : globalIndex ?? 1;
 
   return (
@@ -147,13 +110,13 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
         </div>
 
         <div className="flex-1">
-          {/* Cleaned Question HTML (dangerouslySetInnerHTML) */}
+          {/* Question HTML */}
           <div
             className="prose max-w-none text-gray-800 mb-3"
             dangerouslySetInnerHTML={{ __html: cleanQuestionHtml }}
           />
 
-          {/* Optional question image */}
+          {/* Optional image */}
           {imgSrc && (
             <div className="mb-3">
               <img
@@ -165,16 +128,15 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
             </div>
           )}
 
-          {/* Options */}
+          {/* Options (TEXT only) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             {options.length === 0 && (
               <div className="text-sm text-gray-500 italic">No options available</div>
             )}
 
             {options.map((optText, i) => {
-              const label = optionLabels[i] ?? String.fromCharCode(65 + i);
               const optionId = `${q._id}-opt-${i}`;
-              const selected = isSelected(optText, label);
+              const selected = isSelected(optText);
 
               return (
                 <label
@@ -188,18 +150,17 @@ export const QuestionCard = ({ q, value, onChange, index, globalIndex }) => {
                     id={optionId}
                     type="radio"
                     name={`q-${q._id}`}
-                    value={label}
+                    value={optText}           
                     checked={selected}
-                    onChange={() => handleSelect(label)}
+                    onChange={() => handleSelect(optText)}  
                     className="form-radio h-4 w-4 text-green-600 mt-1"
                     aria-checked={selected}
                     aria-labelledby={`${optionId}-label`}
                   />
 
                   <div className="flex-1">
-                    <div id={`${optionId}-label`} className="flex items-start gap-2">
-                      <span className="font-semibold">{label}.</span>
-                      <div className="text-gray-700 mt-0.5">{optText}</div>
+                    <div id={`${optionId}-label`} className="text-gray-700 mt-0.5">
+                      {optText}
                     </div>
                   </div>
                 </label>

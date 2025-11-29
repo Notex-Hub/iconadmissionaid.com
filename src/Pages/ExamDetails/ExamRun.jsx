@@ -27,18 +27,14 @@ const ExamRun = () => {
     return exams.find((e) => e?.slug && String(e.slug).trim().toLowerCase() === s) ?? null;
   }, [exams, slug]);
 
-  console.log("exam", examMeta)
-
   const { data: mcqData, isLoading, isError } = useGetAllMcqQuery();
   const mcqs = mcqData?.data ?? [];
-  console.log("")
+
   const filtered = useMemo(() => {
     if (!slug) return [];
     const s = String(slug).trim().toLowerCase();
     return mcqs.filter((m) => m?.examId?.slug && String(m.examId.slug).trim().toLowerCase() === s);
   }, [mcqs, slug]);
-
-  console.log("filtered mcq", filtered)
 
   const [submitMcqAttempt, { isLoading: submitting }] = useMcqAttempMutation();
   const [page, setPage] = useState(1);
@@ -51,8 +47,7 @@ const ExamRun = () => {
   const startIndex = (page - 1) * QUESTIONS_PER_PAGE;
   const pageQuestions = filtered.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);
 
-  // answers
-  // answers: { [questionId]: selectedOptionString }
+  // answers: { [questionId]: selectedValue }  (value can be text, number index, or letter A/B/...)
   const [answers, setAnswers] = useState({});
   const handleAnswer = (qid, opt) => setAnswers((prev) => ({ ...prev, [qid]: opt }));
 
@@ -79,38 +74,47 @@ const ExamRun = () => {
     }
   }, [secondsLeft]);
 
+  // Helpers to map selected value -> actual option TEXT
+  const toOptionText = (q, selectedValue) => {
+    if (!q || !Array.isArray(q.options)) return String(selectedValue ?? "");
+
+    const val = selectedValue;
+
+    // Case 1: numeric like 1/2/3/4 (1-based)
+    if (!isNaN(Number(val))) {
+      const idx = Number(val) - 1;
+      if (idx >= 0 && idx < q.options.length) return String(q.options[idx]);
+      return String(val);
+    }
+
+    // Case 2: single letter A/B/C/D -> map to 0-based
+    if (typeof val === "string" && /^[A-Za-z]$/.test(val.trim())) {
+      const idx = val.trim().toUpperCase().charCodeAt(0) - 65; // A=0
+      if (idx >= 0 && idx < q.options.length) return String(q.options[idx]);
+      return String(val);
+    }
+
+    // Case 3: already text -> return as is
+    return String(val);
+  };
+
   // Build payload and call mcqAttemp endpoint
   const handleSubmit = async () => {
-    // ensure exam present
     if (!examMeta) {
       toast.error("এক্সাম পাওয়া যায়নি।");
       return;
     }
 
-    // require studentId
     const studentId = userInfo?._id ?? userInfo?.id;
     if (!studentId) {
-      // send to start/register flow (with redirect to this page)
       navigate(`/exam/${slug}/start`, { state: { redirectTo: `/exam/${slug}/run` } });
       return;
     }
 
     const answerArray = Object.entries(answers).map(([questionId, selectedValue]) => {
       const q = mcqs.find((m) => String(m._id) === String(questionId));
-      let selectedAnswer = "";
-      if (q && Array.isArray(q.options)) {
-        const index = q.options.findIndex((o) => String(o) === String(selectedValue));
-        if (index >= 0) {
-          selectedAnswer = String(index + 1);
-        } else if (!isNaN(Number(selectedValue))) {
-          selectedAnswer = String(selectedValue);
-        } else {
-          selectedAnswer = String(selectedValue);
-        }
-      } else {
-        selectedAnswer = String(selectedValue);
-      }
-
+      // 👉 We always send the ACTUAL OPTION TEXT now
+      const selectedAnswer = toOptionText(q, selectedValue);
       return { questionId, selectedAnswer };
     });
 
@@ -118,6 +122,7 @@ const ExamRun = () => {
       const confirmEmpty = window.confirm("তুমি কোনো প্রশ্ন নির্বাচন করোনি। তবুও সাবমিট করবে?");
       if (!confirmEmpty) return;
     }
+
     const payload = {
       answer: answerArray,
       studentId,
@@ -126,13 +131,18 @@ const ExamRun = () => {
     try {
       const res = await submitMcqAttempt(payload).unwrap();
       toast.success(res?.message ?? "উত্তর সফলভাবে সাবমিট হয়েছে।");
-      navigate(`/exam/${slug}/result`, { state: { serverResponse: res } });
+      navigate(`/exam/${slug}/result`, {
+        state: {
+          serverResponse: res
+        }
+      });
     } catch (err) {
       console.error("mcqAttemp submit error:", err);
       const msg = err?.data?.message || err?.error || "সাবমিশনে সমস্যা হয়েছে, পরে চেষ্টা করুন।";
       toast.error(msg);
     }
   };
+
   const handleBack = () => navigate(-1);
 
   if (isLoading) {

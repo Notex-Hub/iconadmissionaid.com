@@ -3,10 +3,12 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useGetAllExamQuery } from "../../../../redux/Features/Api/Exam/Exam";
+import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 6;
 
 export default function ExamList({ moduleId = null, moduleIds = [], onStartExam }) {
+  const navigate = useNavigate();
   const { userInfo } = useSelector((s) => s.auth || {});
   const { data: resp, isLoading, isError } = useGetAllExamQuery();
   const examsRaw = resp?.data ?? [];
@@ -118,6 +120,28 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
     }
   }
 
+  function normType(type) {
+    const t = (type || "").toString().trim().toLowerCase();
+    if (!t) return "";
+    return t.replace(/\s+/g, " ");
+  }
+
+  function routeForExam(ex) {
+    const slug = ex.slug || ex.id;
+    const t = normType(ex.examType);
+    if (t === "cq") return `/exam/${slug}/cq`;
+    if (t === "fill in the gaps") return `/exam/${slug}/fill-gaps`;
+    return `/exam/${slug}/run`;
+  }
+
+  async function handleStart(ex) {
+    if (typeof onStartExam === "function") {
+      const ret = await onStartExam(ex);
+      if (ret === false) return;
+    }
+    navigate(routeForExam(ex), { state: { examMeta: ex } });
+  }
+
   return (
     <section className="bg-white rounded-2xl p-3 sm:p-6">
       <style>{`
@@ -214,16 +238,14 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                  
-
                     <div className="flex flex-col items-center gap-2">
                       <button
                         onClick={() => {
                           if (typeof onStartExam === "function") {
-                            onStartExam(ex);
-                          } else {
-                            setActiveExam(ex);
+                            const res = onStartExam(ex);
+                            if (res === false) return;
                           }
+                          handleStart(ex);
                         }}
                         className="inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm"
                       >
@@ -232,12 +254,9 @@ export default function ExamList({ moduleId = null, moduleIds = [], onStartExam 
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7-7 7M5 5v14" />
                         </svg>
                       </button>
-
                     </div>
                   </div>
                 </div>
-
-              
               </div>
             </article>
           );
