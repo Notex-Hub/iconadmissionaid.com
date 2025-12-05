@@ -45,6 +45,12 @@ export const apiSlice = createApi({
   tagTypes: [
     "User",
     "University",
+    "ModelTest",
+    "ModelTestMcq",
+    "ModelTestCQ",
+    "ModelTestGaps",
+    "ModelTestPassege",
+    "Subject",
     "Auth",
     "Purchase",
     "Exam",

@@ -32,6 +32,9 @@ import ReferRewardsPage from "../Components/Dashboard/Rewards/Rewards";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import ForgotPasswordPage from "../Pages/ForgotPasswordPage/ForgotPasswordPage";
 import ExamRun from "../Pages/ExamDetails/ExamRun";
+import StartExam from "../Pages/ExamDetails/StartExam";
+import ExamRunner from "../Pages/ExamDetails/ExamRunner";
+import NextStep from "../Pages/ExamDetails/NextStep";
 
 export const router = createBrowserRouter([
   {
@@ -166,6 +169,24 @@ export const router = createBrowserRouter([
         path: "/exam/:slug/result/:attemptId",
         element: <ScrollToTop>
           <ExamResult/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/start/:slug",
+        element: <ScrollToTop>
+          <StartExam/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/run/:modelSlug/:subjectId/:sectionName",
+        element: <ScrollToTop>
+          <ExamRunner/>
+        </ScrollToTop>
+      }
+      , {
+        path: "/exam/next/:modelSlug/:subjectId/:sectionName",
+        element: <ScrollToTop>
+          <NextStep/>
         </ScrollToTop>
       }
     ],

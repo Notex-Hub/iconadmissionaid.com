@@ -1,0 +1,44 @@
+
+
+{
+    "status": true,
+    "statusCode": 200,
+    "message": "All Subjects fetched successfully",
+    "data": [
+        {
+            "_id": "691caa68a45069160f33d24c",
+            "modelTest": {
+                "_id": "691b5c12bf606a8e4d510d4e",
+                "title": "EEE",
+                "university": "NSU",
+                "departments": [
+                    "EEE",
+                    "CST"
+                ],
+                "sectionsOrderForEnglish": [
+                    "MCQ",
+                    "FillInTheGaps",
+                    "CQ",
+                    "SA"
+                ],
+                "sectionsOrderForSubject": [
+                    "English",
+                    "Math",
+                    "Physics",
+                    "Chemistry"
+                ],
+                "image": "https://res.cloudinary.com/dpy7b0pzi/image/upload/v1763400705/image-1763400703466-743403899.png",
+                "isDeleted": false,
+                "createdAt": "2025-11-17T23:32:02.154Z",
+                "updatedAt": "2025-11-18T12:25:06.805Z",
+                "slug": "eee-3013",
+                "__v": 0
+            },
+            "title": "Bangla",
+            "isDeleted": false,
+            "createdAt": "2025-11-18T23:18:32.996Z",
+            "updatedAt": "2025-11-18T23:25:48.765Z",
+            "slug": "dxfbdfh-9433"
+        }
+    ]
+}
