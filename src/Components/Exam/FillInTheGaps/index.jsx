@@ -1,79 +1,63 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { useGetAllModelTestFillintheGapsQuery } from "../../../../redux/Features/Api/modeltestmcq/modeltestmcq";
 
-const ExamFillInTheGaps = ({ subject,onNext }) => {
+const ExamFillInTheGaps = ({ subject, onNext }) => {
   const { data } = useGetAllModelTestFillintheGapsQuery();
-
-  const filteredFillIntheGap = data?.data.filter(
+  const filteredQuestions = data?.data.filter(
     (q) => q?.subjectId?.modelTest === subject?.modelTest?._id
   );
-  // eslint-disable-next-line no-unused-vars
-  const [userAnswers, setUserAnswers] = useState({});
 
-  const handleChange = (qId, index, value) => {
+  const [userAnswers, setUserAnswers] = useState({});
+  const handleChange = (qId, value) => {
     setUserAnswers((prev) => ({
       ...prev,
-      [qId]: {
-        ...prev[qId],
-        [index]: value,
-      },
+      [qId]: value,
     }));
   };
 
+
+ 
+
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">{subject?.title} - Fill in The Gaps</h2>
+      <h2 className="text-xl font-semibold mb-6">
+        {subject?.title} – Fill in the Gaps
+      </h2>
 
-      {filteredFillIntheGap?.length === 0 && (
+      {filteredQuestions?.length === 0 && (
         <p className="text-gray-500">No fill-in-the-gaps questions found.</p>
       )}
 
-      {filteredFillIntheGap?.map((item, index) => {
-        const parts = item.question.split("___");
+      {filteredQuestions?.map((item, index) => {
+        // First gap only
+        const questionText = item.question.split("___")[0];
 
         return (
           <div
             key={item._id}
-            className="bg-white shadow rounded p-4 mb-4 border border-gray-200"
+            className="bg-white shadow-md border border-gray-200 rounded-xl p-5 mb-6"
           >
-            <h3 className="font-medium text-lg mb-2">
-              {index + 1}. Fill the blanks
+            <h3 className="font-semibold text-lg mb-3">
+              {index + 1}. {questionText} ___
             </h3>
 
-            <div className="ml-2">
-              {parts.map((part, i) => (
-                <span key={i}>
-                  {part}
+            <input
+              type="text"
+              placeholder="Write your answer"
+              onChange={(e) => handleChange(item._id, e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700"
+            />
 
-                  {i < parts.length - 1 && (
-                    <input
-                      type="text"
-                      className="border px-2 py-1 mx-2 rounded w-40"
-                      placeholder="answer"
-                      onChange={(e) =>
-                        handleChange(item._id, i, e.target.value)
-                      }
-                    />
-                  )}
-                </span>
-              ))}
-            </div>
-
-            <div className="text-gray-500 mt-2 text-sm">
-              Total Blanks: {item.answers.length}
-            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Correct answer count in backend: {item.answers.length}
+            </p>
           </div>
         );
       })}
- <div className="w-full flex justify-end items-center">
-          <button
-        onClick={onNext}
-        className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
-      >
-        Next
-      </button>
-     </div>
+
+  
     </div>
   );
 };
