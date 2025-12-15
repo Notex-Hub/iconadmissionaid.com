@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
+import { useGetAllPurchaseQuery } from "../../../redux/Features/Api/Purchase/Purchase";
 
 /* eslint-disable react/prop-types */
 const CourseCard = ({ course }) => {
+ const { data: purchaseData } =
+  useGetAllPurchaseQuery({
+    courseId: course?._id,
+  });
+
+  console.log("purchaseData", purchaseData)
+
   const hasOffer = course.offerPrice && course.offerPrice > 0;
   const coursePrice = course.isFree ? "Free" : `BDT ${course.price || 0} TK`;
   const offerPrice = hasOffer ? `BDT ${course.offerPrice} TK` : null;
@@ -36,7 +44,7 @@ const CourseCard = ({ course }) => {
             </p>
           </div>
           <p className="text-[#1C1C1C] text-sm sm:text-base">
-            কোর্সটি করেছে: ১২৫২ জন
+            কোর্সটি করেছে: {purchaseData?.data?.length} জন
           </p>
         </div>
 

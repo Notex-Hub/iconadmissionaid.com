@@ -7,11 +7,16 @@ import ExamMCQ from "../../Components/Exam/MCQ";
 import ExamCQ from "../../Components/Exam/CQ";
 import Footer from "../../Layout/Footer";
 import Navbar from "../../Components/Home/Navbar/Navbar";
+import ExamResultContainer from "./Result";
 
 const StartExam = () => {
   const { slug } = useParams();
   const { data: subjects } = useGetAllSubjectQuery();
-
+  
+  const [selectedMCQAnswers, setSelectedMCQAnswers] = useState([]);
+  const [selectedOptionsSA, setSelectedOptionsSA] = useState([]); 
+  const [userAnswersCQ, setUserAnswersCQ] = useState([]);
+  const [fillInTheGapsUserAnswers, setFillInTheGapsUserAnswers] = useState([]);
   const [subjectIndex, setSubjectIndex] = useState(0);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -48,31 +53,19 @@ const StartExam = () => {
 
   if (showResult) {
     return (
-      <div className="min-h-screen flex justify-center items-center p-6 bg-gray-100">
-        <div className="bg-white p-8 rounded shadow max-w-md text-center">
-          <h2 className="text-2xl font-bold mb-4">Exam Completed!</h2>
-          <p className="mb-6">Your result is ready to view.</p>
-
-          <button
-            onClick={() => {
-              setShowResult(false);
-              setSubjectIndex(0);
-              setSectionIndex(0);
-            }}
-            className="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-          >
-            Restart Exam
-          </button>
-        </div>
-      </div>
+      <ExamResultContainer 
+      selectedMCQAnswers={selectedMCQAnswers}
+      selectedOptionsSA={selectedOptionsSA}
+      fillInTheGapsUserAnswers={fillInTheGapsUserAnswers}
+      cQAnswers={userAnswersCQ}
+      />
     );
   }
+
 
   return (
     <>
       <Navbar />
-
-      {/* Fixed Exam Header */}
       <div className="fixed top-0 left-0 right-0 bg-red-700 text-white py-4 shadow z-10">
         <div className="max-w-5xl mx-auto px-4 flex justify-between">
           <h2 className="text-lg font-semibold">
@@ -85,13 +78,13 @@ const StartExam = () => {
       <div className="min-h-screen p-6 flex justify-center pt-28 bg-gray-50">
         <div className="w-full max-w-3xl bg-white shadow-md rounded-xl p-6">
 
-          {/* Section Title */}
+       
           <div className="mb-6 pb-4 border-b">
             <h2 className="text-2xl font-bold text-gray-800">
               {currentSubject.title} – {currentSection}
             </h2>
 
-            {/* Section Steps */}
+         
             <div className="flex gap-2 mt-3">
               {sectionsToShow.map((sec, idx) => (
                 <span
@@ -108,24 +101,35 @@ const StartExam = () => {
             </div>
           </div>
 
-          {/* Render Current Section Component */}
           {sectionsToShow.map((sec, index) =>
             index === sectionIndex ? (
               <div key={sec}>
-                {sec === "MCQ" && <ExamMCQ subject={currentSubject} onNext={goToNext} />}
+                {sec === "MCQ" && <ExamMCQ 
+                subject={currentSubject} 
+                selectedMCQAnswers={selectedMCQAnswers}
+                setSelectedMCQAnswers={setSelectedMCQAnswers}
+                />}
                 {sec === "FillInTheGaps" && (
-                  <ExamFillInTheGaps subject={currentSubject} onNext={goToNext} />
+                  <ExamFillInTheGaps subject={currentSubject} onNext={goToNext}
+                  userAnswers={fillInTheGapsUserAnswers}
+                  setUserAnswers={setFillInTheGapsUserAnswers}
+                  />
                 )}
-                {sec === "CQ" && <ExamCQ subject={currentSubject} onNext={goToNext} />}
-                {sec === "SA" && <ExamSA subject={currentSubject} onNext={goToNext} />}
+                {sec === "CQ" && <ExamCQ subject={currentSubject} onNext={goToNext}
+                userAnswers={userAnswersCQ}
+                setUserAnswers={setUserAnswersCQ}
+                />}
+                {sec === "SA" && <ExamSA subject={currentSubject} onNext={goToNext}
+                  selectedOptions={selectedOptionsSA}
+                  setSelectedOptions={setSelectedOptionsSA}
+                />}
               </div>
             ) : null
           )}
 
-          {/* Navigation Buttons */}
           <div className="mt-10 flex justify-between">
 
-            {/* Previous Btn */}
+        
             <button
               disabled={subjectIndex === 0 && sectionIndex === 0}
               onClick={() => {
@@ -138,7 +142,6 @@ const StartExam = () => {
               Previous
             </button>
 
-            {/* Next / Submit Btn */}
             {isLastSection ? (
               <button
                 onClick={() => setShowResult(true)}

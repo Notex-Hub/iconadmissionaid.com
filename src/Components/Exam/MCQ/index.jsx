@@ -1,80 +1,121 @@
 /* eslint-disable react/prop-types */
 import { useGetAllModelMcqTestQuery } from "../../../../redux/Features/Api/modeltestmcq/modeltestmcq";
 
-
-// eslint-disable-next-line no-unused-vars
-const ExamMCQ = ({ subject, onNext }) => {
+const ExamMCQ = ({ subject,selectedMCQAnswers, setSelectedMCQAnswers }) => {
     const { data } = useGetAllModelMcqTestQuery();
+
     const filteredExam = data?.data.filter(
-        (q) => q?.subjectId?.modelTest === subject?.modelTest?._id
+        (q) =>
+            q?.subjectId?.modelTest === subject?.modelTest?._id &&
+            q?.subjectId?.slug === subject?.slug
     );
 
+
+ const handleSelect = (questionId, options, correctAnswer, option, index) => {
+    setSelectedMCQAnswers((prev) => {
+        const exists = prev.find(
+            (ans) => ans.questionId === questionId
+        );
+        if (exists) {
+            return prev.map((ans) =>
+                ans.questionId === questionId
+                    ? {
+                          ...ans,
+                          selectedOption: option,
+                          selectedIndex: index,
+                      }
+                    : ans
+            );
+        }
+        return [
+            ...prev,
+            {
+                questionId,
+                title: subject.title,
+                slug: subject.slug,
+                options,
+                correctAnswer,
+                selectedOption: option,
+                selectedIndex: index,
+            },
+        ];
+    });
+};
+
     return (
-        <>
-            <div className="p-4 max-w-3xl mx-auto">
+        <div className="p-4 max-w-3xl mx-auto">
+           <h2 className="text-xl font-semibold mb-6 text-center">
+  {filteredExam?.length > 0 ? (
+    <span>Questions {filteredExam.length}</span>
+  ) : (
+    <span className="text-red-500">
+      কোনো প্রশ্ন নেই, Next ক্লিক করে পরবর্তী প্রশ্নে যান
+    </span>
+  )}
+</h2>
 
-                <h2 className="text-xl font-semibold mb-6">
-                    Questions ({filteredExam?.length || 0}/40 answers)
-                </h2>
 
-                {filteredExam?.map((item, index) => (
-                    <div
-                        key={item._id}
-                        className="bg-white  rounded-lg border border-gray-200 shadow-sm p-5 mb-6"
-                    >
+            {filteredExam?.map((item, index) => (
+                <div
+                    key={item._id}
+                    className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 mb-6"
+                >
+                    {/* Question */}
+                    <p className="text-gray-800 font-medium mb-4">
+                        {index + 1}.{" "}
+                        <span
+                            dangerouslySetInnerHTML={{ __html: item.question }}
+                        />
+                    </p>
 
-                        {/* Question text */}
-                        <p className="text-gray-800 font-medium mb-4">
-                            {index + 1}.{" "}
-                            <span dangerouslySetInnerHTML={{ __html: item.question }} />
-                        </p>
+                    {/* Question image */}
+                    {item.questionImg && (
+                        <img
+                            src={item.questionImg}
+                            alt="question"
+                            className="w-full max-h-[350px] object-contain rounded-md border mb-4"
+                        />
+                    )}
 
-                        {/* Question image */}
-                        {item.questionImg && (
-                            <img
-                                src={item.questionImg}
-                                alt="question"
-                                className="w-full max-h-[350px] object-contain rounded-md border mb-4"
-                            />
-                        )}
+                    {/* Options */}
+                    <div className="space-y-3">
+                        {item.options.map((opt, i) => {
+                            const letters = ["a", "b", "c", "d"];
 
-                        {/* Options */}
-                        <div className="space-y-3">
-                            {item.options.map((opt, i) => {
-                                const letters = ["a", "b", "c", "d"];
+                            return (
+                                <label
+                                    key={i}
+                                    className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-gray-400"
+                                >
+                                 <input
+                                    type="radio"
+                                    name={`q-${item._id}`}
+                                    checked={
+                                        selectedMCQAnswers.find(
+                                            (ans) => ans.questionId === item._id
+                                        )?.selectedIndex === i
+                                    }
+                                    onChange={() =>
+                                        handleSelect(
+                                            item._id,
+                                            item.options,
+                                            item.correctAnswer,
+                                            letters[i],
+                                            i
+                                        )
+                                    }
+                                />
 
-                                return (
-                                    <label
-                                        key={i}
-                                        htmlFor={`${item._id}-${i}`}
-                                        className="flex items-center gap-3 p-3 border border-gray-200 rounded-md cursor-pointer hover:border-gray-400 transition-all"
-                                    >
-                                        <input
-                                            id={`${item._id}-${i}`}
-                                            type="radio"
-                                            name={`q-${index}`}
-                                            className="h-4 w-4 text-red-600"
-                                        />
-                                        <span className="text-gray-700">
-                                            {letters[i]}. {opt}
-                                        </span>
-                                    </label>
-                                );
-                            })}
-                        </div>
+                                    <span>
+                                        {letters[i]}. {opt}
+                                    </span>
+                                </label>
+                            );
+                        })}
                     </div>
-                ))}
-
-                {/* Submit Button */}
-                {/* <button
-        onClick={onNext}
-        className="mt-6 w-full bg-red-700 text-white py-4 rounded-md font-semibold text-lg hover:bg-red-800 transition"
-      >
-        Submit english Section →
-      </button> */}
-            </div>
-        </>
-
+                </div>
+            ))}
+        </div>
     );
 };
 

@@ -1,24 +1,37 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from "react";
 import { useGetAllModelTestFillintheGapsQuery } from "../../../../redux/Features/Api/modeltestmcq/modeltestmcq";
 
-const ExamFillInTheGaps = ({ subject, onNext }) => {
+const ExamFillInTheGaps = ({ subject,userAnswers,setUserAnswers }) => {
   const { data } = useGetAllModelTestFillintheGapsQuery();
+
   const filteredQuestions = data?.data.filter(
-    (q) => q?.subjectId?.modelTest === subject?.modelTest?._id
+    (q) =>
+      q?.subjectId?.modelTest === subject?.modelTest?._id &&
+      q?.subjectId?.slug === subject?.slug
   );
 
-  const [userAnswers, setUserAnswers] = useState({});
   const handleChange = (qId, value) => {
-    setUserAnswers((prev) => ({
-      ...prev,
-      [qId]: value,
-    }));
+    const findQuestion = filteredQuestions.find((item) => item._id === qId);
+    const saveData = {
+      qId: qId,
+      mark: findQuestion?.mark || 0,
+      isCorrect: findQuestion?.answers?.includes(value),
+      userAnswer: value
+    };
+
+    setUserAnswers((prev) => {
+      const existingIndex = prev.findIndex((item) => item.qId === qId);
+
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex] = saveData;
+        return updated;
+      } else {
+        return [...prev, saveData];
+      }
+    });
   };
-
-
- 
 
   return (
     <div className="p-4">
@@ -26,12 +39,7 @@ const ExamFillInTheGaps = ({ subject, onNext }) => {
         {subject?.title} – Fill in the Gaps
       </h2>
 
-      {filteredQuestions?.length === 0 && (
-        <p className="text-gray-500">No fill-in-the-gaps questions found.</p>
-      )}
-
       {filteredQuestions?.map((item, index) => {
-        // First gap only
         const questionText = item.question.split("___")[0];
 
         return (
@@ -49,15 +57,10 @@ const ExamFillInTheGaps = ({ subject, onNext }) => {
               onChange={(e) => handleChange(item._id, e.target.value)}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700"
             />
-
-            <p className="text-xs text-gray-500 mt-2">
-              Correct answer count in backend: {item.answers.length}
-            </p>
           </div>
         );
       })}
 
-  
     </div>
   );
 };

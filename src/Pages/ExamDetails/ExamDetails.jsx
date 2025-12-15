@@ -20,7 +20,7 @@ const ExamDetails = () => {
     console.log(subjectList)
 
     const sectionsOrderForSubject = modelTest?.sectionsOrderForSubject || [];
-    const sectionsOrderForEnglish = modelTest?.sectionsOrderForEnglish || [];
+    // const sectionsOrderForEnglish = modelTest?.sectionsOrderForEnglish || [];
 
 
     return (
@@ -32,7 +32,7 @@ const ExamDetails = () => {
                     <img
                         src={modelTest?.image}
                         alt={modelTest?.title}
-                        className="w-full h-60 object-cover rounded-xl"
+                        className=" rounded-xl"
                     />
 
                     <h2 className="text-3xl font-bold mt-4">{modelTest?.title}</h2>

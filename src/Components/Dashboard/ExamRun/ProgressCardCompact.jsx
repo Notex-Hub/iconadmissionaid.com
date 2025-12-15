@@ -16,8 +16,12 @@ const SmallCheckIcon = () => (
   </svg>
 );
 
-const ProgressCardCompact = ({ subject = "English", percent = 45, correct = 25, total = 40, onView = () => {} }) => {
-  const progressPct = Math.max(0, Math.min(100, percent));
+const ProgressCardCompact = ({ subject = "English", percent = 45, correct = 25, total = 40,viewDetails=true, onView = () => {} }) => {
+  // progressPct = Math.max(0, Math.min(100, percent));
+
+  const progressPct = (correct/total)*100
+
+
   return (
     <div className="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow-sm p-3">
       <div className="flex items-center justify-between gap-3">
@@ -54,14 +58,16 @@ const ProgressCardCompact = ({ subject = "English", percent = 45, correct = 25, 
             <div className="text-sm text-green-700 font-medium">Correct Answers: {correct}</div>
           </div>
         </div>
-
-        <button
+              {
+                viewDetails &&  <button
           onClick={onView}
           className="text-sm text-green-600 cursor-pointer hover:underline flex items-center gap-2"
         >
          
           View Question Details
         </button>
+              }
+       
       </div>
     </div>
   );
