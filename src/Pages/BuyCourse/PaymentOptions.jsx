@@ -33,7 +33,7 @@ export default function PaymentOptions({ value = "bkash", onChange = () => {} })
           </div>
         </label>
       </div>
-
+{/* 
       {method === "bkash" && (
         <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
           <div>Send ৳ to Bkash Number: <strong>01XXXXXXXXX</strong></div>
@@ -46,7 +46,7 @@ export default function PaymentOptions({ value = "bkash", onChange = () => {} })
           <div>Send ৳ to Nagad Number: <strong>01YYYYYYYYY</strong></div>
           <div className="mt-2">Use reference: <strong>OrderID after placing order</strong></div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
