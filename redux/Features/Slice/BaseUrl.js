@@ -80,6 +80,7 @@ export const apiSlice = createApi({
     "Certificate",
     "Segment",
     "Subscription",
+    "Banner"
   ],
   endpoints: () => ({}),
 });

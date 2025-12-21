@@ -70,7 +70,7 @@ const FreeTest = () => {
 
       <div className="container mx-auto px-4">
         <div className="text-center my-12 md:my-16">
-          <SectionText title="মডেল টেস্ট" />
+          <SectionText title="বিশ্ববিদ্যালয়ের ভিত্তিক মডেল টেস্ট" />
           <p className="mt-3 text-lg md:text-xl font-medium text-gray-700 max-w-2xl mx-auto">
             বিশ্ববিদ্যালয়ের স্টাইল অনুযায়ী মডেল টেস্ট সমূহ।
           </p>
