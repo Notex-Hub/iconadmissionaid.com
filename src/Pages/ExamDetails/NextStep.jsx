@@ -26,7 +26,7 @@ const NextStep = () => {
   const subjectIndex = orderedSubjects?.indexOf(currentSubject);
 
   const englishOrder = modelTest?.sectionsOrderForEnglish;
-  const sections = currentSubject?.title === "English" ? englishOrder : ["MCQ"];
+  const sections = currentSubject?.title.toLowerCase() === "English".toLowerCase() ? englishOrder : ["MCQ"];
 
   const currentSectionIndex = sections?.indexOf(sectionName);
 

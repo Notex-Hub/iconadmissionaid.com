@@ -32,7 +32,7 @@ const StartExam = () => {
 
   const englishSections = ["MCQ", "FillInTheGaps", "CQ", "SA"];
   const defaultSections = ["MCQ"];
-  const sectionsToShow = currentSubject.title === "English" ? englishSections : defaultSections;
+  const sectionsToShow = currentSubject.title.toLowerCase() === "English".toLowerCase() ? englishSections : defaultSections;
   const currentSection = sectionsToShow[sectionIndex];
 
   // প্রগ্রেস লজিক: প্রথম সেকশনে ০% দেখাবে
