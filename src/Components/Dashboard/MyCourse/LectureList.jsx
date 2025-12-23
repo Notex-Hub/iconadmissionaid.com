@@ -3,72 +3,18 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useGetAllLectureQuery } from "../../../../redux/Features/Api/Lecture/lecture";
+import { buildEmbedUrl } from "./components/buildEmbedUrl";
+import { parseVideoSource } from "./components/parseVideoSource";
 
 const ITEMS_PER_PAGE = 6;
 
-// Parse different video sources (YouTube, Google Drive, or raw URL)
-function parseVideoSource(input) {
-  if (!input) return null;
-  const s = String(input).trim();
 
-  // Pure 11-char YouTube id
-  if (/^[\w-]{11}$/.test(s)) return { type: "youtube", id: s };
 
-  try {
-    const u = new URL(s);
-
-    // youtube short / full / embed
-    if (u.hostname.includes("youtu.be") || u.hostname.includes("youtube.com")) {
-      if (u.hostname.includes("youtu.be")) {
-        const p = u.pathname.replace(/^\//, "");
-        if (/^[\w-]{11}$/.test(p)) return { type: "youtube", id: p };
-      }
-      const v = u.searchParams.get("v");
-      if (v && /^[\w-]{11}$/.test(v)) return { type: "youtube", id: v };
-      const parts = u.pathname.split("/").filter(Boolean);
-      const idx = parts.indexOf("embed");
-      if (idx >= 0 && parts[idx + 1] && /^[\w-]{11}$/.test(parts[idx + 1])) return { type: "youtube", id: parts[idx + 1] };
-    }
-
-    // Google Drive file link: /file/d/<id>/view or /open?id=<id>
-    if (u.hostname.includes("drive.google.com") || u.hostname.includes("docs.google.com")) {
-      // /file/d/<id>/view
-      const m = u.pathname.match(/\/file\/d\/(.*?)\//);
-      if (m && m[1]) return { type: "drive", id: m[1] };
-      // open?id=<id>
-      const q = u.searchParams.get("id");
-      if (q) return { type: "drive", id: q };
-    }
-  } catch (e) {
-    // fall through to regex-based matching below
-  }
-
-  // Fallback: try to capture YouTube-ish id anywhere
-  const m = String(s).match(/([\w-]{11})/);
-  if (m) return { type: "youtube", id: m[1] };
-
-  // Try to extract drive id with regex as final fallback
-  const md = String(s).match(/drive\.google\.com\/file\/d\/(.*?)\//);
-  if (md && md[1]) return { type: "drive", id: md[1] };
-
-  return { type: "other", id: s };
-}
-
-function buildEmbedUrl(parsed) {
-  if (!parsed) return null;
-  if (parsed.type === "youtube") {
-    return `https://www.youtube-nocookie.com/embed/${parsed.id}?rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1`;
-  }
-  if (parsed.type === "drive") {
-    // Google Drive preview embed
-    return `https://drive.google.com/file/d/${parsed.id}/preview`;
-  }
-  return null;
-}
 
 export default function LectureList({ moduleId = null, moduleIds = [] }) {
   const { userInfo } = useSelector((s) => s.auth || {});
   const { data: resp, isLoading, isError } = useGetAllLectureQuery();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const lecturesRaw = resp?.data ?? [];
 
   const normalizedModuleId = useMemo(() => (moduleId ? String(moduleId) : null), [moduleId]);
@@ -123,6 +69,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
 
   useEffect(() => {
     setPage(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [normalizedModuleId, normalizedModuleIds.join(",")]);
 
   useEffect(() => {
@@ -168,6 +115,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   function openFullscreen() {
     const el = playerContainerRef.current;
     if (!el) return;
@@ -250,46 +198,44 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
 
               <div className="ll-player-inner">
                 {(function () {
-                  const raw = activeLecture.videoId;
-                  const parsed = parseVideoSource(raw);
+                  const parsed = parseVideoSource(activeLecture.videoId);
                   const playerUrl = buildEmbedUrl(parsed);
+
                   if (!playerUrl) {
                     return (
-                      <div className="w-full h-40 flex flex-col items-center justify-center text-sm text-white bg-gray-700 p-4">
-                        <div>No embeddable player for this lecture.</div>
-                        <div className="mt-3 text-xs text-gray-200">Use the Play button to open original source in a new tab if available (not automatic).</div>
+                      <div className="w-full h-40 flex items-center justify-center text-white bg-gray-700">
+                        No embeddable player
                       </div>
                     );
                   }
 
-                  return (
-                    <>
+                  /* 🟢 Bunny player (NO sandbox) */
+                  if (parsed.type === "bunny") {
+                    return (
                       <iframe
-                        ref={iframeRef}
                         title={activeLecture.title}
                         src={playerUrl}
                         className="ll-iframe"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        sandbox="allow-scripts allow-same-origin allow-presentation"
+                        allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+                        allowFullScreen
                       />
-                      <div style={{ position: "absolute", bottom: 10, right: 10, zIndex: 40 }}>
-                        <button
-                          onClick={() => copyToClipboard(String(activeLecture.videoId))}
-                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-white text-gray-900 text-xs font-medium shadow"
-                        >
-                          Copy Link
-                        </button>
-                        <button
-                          onClick={openFullscreen}
-                          className="ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded bg-white text-gray-900 text-xs font-medium shadow"
-                        >
-                          Fullscreen
-                        </button>
-                      </div>
-                    </>
+                    );
+                  }
+
+                  /* 🟢 YouTube + Drive */
+                  return (
+                    <iframe
+                      ref={iframeRef}
+                      title={activeLecture.title}
+                      src={playerUrl}
+                      className="ll-iframe"
+                      allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+                      sandbox="allow-scripts allow-same-origin allow-presentation"
+                    />
                   );
                 })()}
               </div>
+
             </div>
           </div>
         )}

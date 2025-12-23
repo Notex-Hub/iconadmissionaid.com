@@ -176,15 +176,7 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
             <div className="flex items-center gap-2">
               {activeNote.file && (
                 <>
-                  <a
-                    href={activeNote.file}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border text-sm shadow hover:bg-gray-50"
-                  >
-                    Open in new tab
-                  </a>
-
+                
                   <a
                     href={activeNote.file}
                     download
@@ -193,12 +185,7 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
                     Download
                   </a>
 
-                  <button
-                    onClick={() => copyToClipboard(activeNote.file)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border text-sm shadow hover:bg-gray-50"
-                  >
-                    Copy Link
-                  </button>
+               
                 </>
               )}
             </div>
