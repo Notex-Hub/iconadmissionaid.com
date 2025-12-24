@@ -53,12 +53,9 @@ export default function SignUpModal({ open, onClose }) {
 
     try {
       setLoading(true);
-      // Send initial create request to trigger SMS with password/OTP
-      // The backend is expected to accept { name, phone } to start the flow.
       await createStudent({ name: name.trim(), phone: phone.trim() }).unwrap();
       setStep(2);
     } catch (err) {
-      // err may be a FetchBaseQueryError or plain Error depending on RTK Query setup
       setError(
         err?.data?.message ||
           err?.message ||
@@ -80,20 +77,17 @@ export default function SignUpModal({ open, onClose }) {
 
     try {
       setLoading(true);
-      // Finalize creation by including the password/OTP. Backend should handle create/verify.
       const res = await loginStudent({
         phone: phone.trim(),
         password: password.trim(),
       }).unwrap();
-
-      const token = res?.data?.data?.accessToken;
-      const user = res?.data?.data?.user;
-
+      const token = res?.data?.accessToken;
+      const user = res?.data?.user;
+      console.log("login res", token, user);
       if (!token || !user) {
         throw new Error("Please enter a valid user credentials.");
       }
       dispatch(userLoggedIn({ user, token }));
-      // success -> close modal (or you could redirect / show success message)
       onClose();
     } catch (err) {
       setError(

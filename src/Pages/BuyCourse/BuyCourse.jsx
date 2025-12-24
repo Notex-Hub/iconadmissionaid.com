@@ -79,7 +79,7 @@ export default function BuyCourse() {
         discount: 0,
         charge: 0,
         totalAmount: isFreeCourse ? 0 : payable,
-        studentId: userInfo?._id || undefined, // Guest হলে undefined যাবে, ব্যাকএন্ড ফোন দিয়ে ইউজার হ্যান্ডেল করবে
+        studentId: userInfo?._id || undefined,
         name: buyer.name.trim(),
         phone: buyer.phone.trim(),
         navigate: "/dashboard/my-courses",
@@ -106,10 +106,9 @@ export default function BuyCourse() {
           throw new Error(result?.message || "এনরোলমেন্ট সম্পন্ন করা সম্ভব হয়নি।");
         }
 
-        toast.success("অভিনন্দন! আপনি সফলভাবে ফ্রি কোর্সে এনরোল করেছেন।");
-        // লগইন থাকলে ড্যাশবোর্ডে, না থাকলে লগইন পেজে
+        toast.success("অভিনন্দন! আপনি সফলভাবে ফ্রি কোর্সে এনরোল করেছেন। দয়া করে আপনার ফোন নম্বরে লগইন করুন।");
         setTimeout(() => {
-          window.location.href = userInfo ? "/dashboard/my-courses" : "/login";
+          window.location.href = userInfo ? "/dashboard/my-courses" : "/";
         }, 1500);
         return;
       }
