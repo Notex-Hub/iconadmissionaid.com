@@ -48,7 +48,8 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
           id: n._id,
           title: n.title,
           description: n.description || "",
-          file: n.noteFile || "",
+          // CHANGED: Ensure files is always an array
+          files: Array.isArray(n.noteFile) ? n.noteFile : n.noteFile ? [n.noteFile] : [],
           moduleTitle: module?.moduleTitle || "",
           moduleSlug: module?.slug || "",
           createdAt: n.createdAt,
@@ -58,6 +59,8 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
   }, [notesRaw, normalizedModuleId, normalizedModuleIds]);
 
   const [activeNote, setActiveNote] = useState(null);
+  // NEW: Track which specific file index from the array is being viewed
+  const [selectedFileIdx, setSelectedFileIdx] = useState(0); 
   const [page, setPage] = useState(1);
   const containerRef = useRef(null);
 
@@ -69,11 +72,13 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
     if (activeNote && containerRef.current) {
       containerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+    // Reset file index to 0 whenever a new note is opened
+    setSelectedFileIdx(0);
   }, [activeNote]);
 
   if (isLoading) {
     return (
-      <div className="w-full">
+      <div className="w-full p-4">
         <div className="animate-pulse space-y-3">
           <div className="h-6 bg-gray-200 rounded w-1/3" />
           <div className="h-40 bg-gray-200 rounded" />
@@ -82,200 +87,151 @@ export default function NoteList({ moduleId = null, moduleIds = [] }) {
     );
   }
 
-  if (isError) {
-    return <div className="text-sm text-red-600">কিছু সমস্যা হয়েছে — পরে চেক করো।</div>;
-  }
-
-  if (!normalizedModuleId && !normalizedModuleIds.length) {
-    return <div className="text-sm text-gray-500">Module not selected.</div>;
-  }
-
-  if (!filtered.length) {
-    return <div className="text-sm text-gray-500">No notes found for the selected module(s).</div>;
-  }
+  if (isError) return <div className="text-sm text-red-600">Something went wrong.</div>;
+  if (!normalizedModuleId && !normalizedModuleIds.length) return <div className="text-sm text-gray-500">Module not selected.</div>;
+  if (!filtered.length) return <div className="text-sm text-gray-500">No notes found.</div>;
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
   const start = (page - 1) * ITEMS_PER_PAGE;
   const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  function copyToClipboard(text) {
-    try {
-      navigator.clipboard?.writeText(text);
-      alert("Link copied to clipboard.");
-    } catch {
-      prompt("Copy this link:", text);
-    }
-  }
+  const copyToClipboard = (text) => {
+    navigator.clipboard?.writeText(text);
+    alert("Link copied!");
+  };
 
   return (
     <section className="bg-white rounded-2xl p-3 sm:p-6">
       <style>{`
-        .nl-marquee { display:inline-block; white-space:nowrap; animation: nl-move 12s linear infinite; }
-        @keyframes nl-move { 0% { transform: translateX(-5%); } 50% { transform: translateX(105%); } 100% { transform: translateX(-5%); } }
-        .nl-preview { width:100%; height:420px; border-radius:8px; border:1px solid #e5e7eb; overflow:hidden; background:#f8fafc; }
-        @media (max-width:640px) { .nl-preview { height:260px; } }
+        .nl-preview { width:100%; height:500px; border-radius:8px; border:1px solid #e5e7eb; background:#f8fafc; }
+        @media (max-width:640px) { .nl-preview { height:300px; } }
       `}</style>
 
+      {/* Header & Pagination Controls */}
       <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Notes</h3>
-          <div className="text-xs text-gray-500 mt-1">{total} items</div>
+          <h3 className="text-lg font-semibold text-gray-900">Course Notes</h3>
+          <div className="text-xs text-gray-500 mt-1">{total} items total</div>
         </div>
-
         <div className="flex items-center gap-2">
-          <div className="text-sm text-gray-500">Page</div>
-          <div className="inline-flex items-center gap-1">
-            <button
-              onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
-              className={`px-2 py-1 rounded ${page === 1 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white border hover:bg-gray-50"}`}
-            >
-              Prev
-            </button>
-            <div className="px-3 py-1 rounded bg-white border text-sm">{page} / {totalPages}</div>
-            <button
-              onClick={() => setPage(Math.min(totalPages, page + 1))}
-              disabled={page === totalPages}
-              className={`px-2 py-1 rounded ${page === totalPages ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white border hover:bg-gray-50"}`}
-            >
-              Next
-            </button>
-          </div>
+          <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 border rounded disabled:opacity-50">Prev</button>
+          <span className="text-sm">{page} / {totalPages}</span>
+          <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">Next</button>
         </div>
       </div>
 
+      {/* ACTIVE NOTE PREVIEW */}
       <div ref={containerRef}>
         {activeNote && (
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3 gap-2">
-              <div className="flex items-center gap-3">
-                <div className="text-sm font-semibold text-gray-900">{activeNote.title}</div>
-                <div className="text-xs text-gray-500">{activeNote.moduleTitle || ""}</div>
+          <div className="mb-8 p-4 border-2 border-blue-100 rounded-xl bg-blue-50/30">
+            <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
+              <div>
+                <h4 className="font-bold text-gray-900">{activeNote.title}</h4>
+                <p className="text-xs text-gray-500">{activeNote.moduleTitle}</p>
               </div>
-
-              <div className="flex items-center gap-2">
-                <div className="text-xs text-gray-500 mr-2">{activeNote.createdAt ? new Date(activeNote.createdAt).toLocaleDateString() : ""}</div>
-                <button onClick={() => setActiveNote(null)} className="px-3 py-1 rounded bg-red-500 text-white shadow text-sm">Close</button>
-              </div>
+              <button onClick={() => setActiveNote(null)} className="px-4 py-1.5 rounded-lg bg-red-500 text-white text-sm">Close Preview</button>
             </div>
 
-            <div className="nl-preview mb-2">
-              {activeNote.file ? (
-                <iframe
-                  title={activeNote.title}
-                  src={activeNote.file}
-                  className="w-full h-full"
-                  style={{ border: 0 }}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-sm text-gray-500">No preview available</div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {activeNote.file && (
-                <>
-                
-                  <a
-                    href={activeNote.file}
-                    download
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white text-sm shadow hover:bg-green-700"
+            {/* FILE SELECTOR TABS (If multiple files exist) */}
+            {activeNote.files.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {activeNote.files.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedFileIdx(i)}
+                    className={`px-3 py-1 text-xs rounded-full border ${selectedFileIdx === i ? "bg-blue-600 text-white" : "bg-white text-gray-600"}`}
                   >
-                    Download
-                  </a>
-
-               
-                </>
-              )}
-            </div>
-
-            {activeNote.description && (
-              <div className="mt-3 text-sm text-gray-700 whitespace-pre-line">
-                {String(activeNote.description).replace(/<[^>]*>?/gm, "")}
+                    Part {i + 1}
+                  </button>
+                ))}
               </div>
             )}
+
+            <div className="nl-preview mb-4">
+              {activeNote.files[selectedFileIdx] ? (
+                <iframe
+                  title={activeNote.title}
+                  src={activeNote.files[selectedFileIdx]}
+                  className="w-full h-full rounded-md"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">No file found</div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+               <a
+                href={activeNote.files[selectedFileIdx]}
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+              >
+                Download This Part
+              </a>
+            </div>
           </div>
         )}
       </div>
 
+      {/* NOTE GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {paginated.map((note, idx) => (
-          <article key={note.id || idx} className="bg-gray-50 rounded-lg p-3 flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="font-medium text-gray-900 truncate">{note.title}</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {note.moduleTitle && <span className="mr-2">Module: {note.moduleTitle}</span>}
-                  {note.createdAt && <span>{new Date(note.createdAt).toLocaleDateString()}</span>}
-                </div>
+        {paginated.map((note) => (
+          <article key={note.id} className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+              <div className="font-semibold text-gray-900 line-clamp-1">{note.title}</div>
+              <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-1">
+                {note.files.length} {note.files.length > 1 ? "Files" : "File"} • {new Date(note.createdAt).toLocaleDateString()}
               </div>
-
-              <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setActiveNote(note)}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
-                  >
-                    View
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-
-                  {note.file ? (
-                    <a
-                      href={note.file}
-                      download
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
-                    >
-                      Download
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => alert("No file available for download.")}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 text-sm"
-                    >
-                      No file
-                    </button>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => copyToClipboard(note.file || window.location.href)}
-                  className="text-xs text-gray-500 hover:underline"
-                >
-                  Copy Link
-                </button>
-              </div>
+              <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                {note.description.replace(/<[^>]*>?/gm, "")}
+              </p>
             </div>
 
-            {note.description && (
-              <p className="text-sm text-gray-700 mt-2 line-clamp-3">{String(note.description).replace(/<[^>]*>?/gm, "")}</p>
-            )}
+            <div className="mt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveNote(note)}
+                  className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+                >
+                  View Notes
+                </button>
+                
+                {/* Simple Download (Downloads the first file by default from the card) */}
+                <a
+                  href={note.files[0]}
+                  download
+                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700"
+                  title="Download first file"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </a>
+              </div>
+              
+              <button
+                onClick={() => copyToClipboard(note.files[0])}
+                className="text-center text-[11px] text-gray-400 hover:text-blue-600"
+              >
+                Copy main link
+              </button>
+            </div>
           </article>
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-2">
-        {Array.from({ length: totalPages }).map((_, i) => {
-          const n = i + 1;
-          return (
-            <button
-              key={n}
-              onClick={() => setPage(n)}
-              className={`px-3 py-1 rounded-md ${n === page ? "bg-green-600 text-white" : "bg-white border hover:bg-gray-50"}`}
-            >
-              {n}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-4">
-        <div className="nl-marquee text-xs text-gray-500">
-          {userInfo?.name ? `User: ${userInfo.name} • ${userInfo._id || ""}` : `Guest`}
-        </div>
+      {/* Numerical Pagination */}
+      <div className="mt-8 flex justify-center gap-2">
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm border ${page === i + 1 ? "bg-green-600 text-white border-green-600" : "bg-white hover:bg-gray-50"}`}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
     </section>
   );

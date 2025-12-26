@@ -196,7 +196,7 @@ export default function Navbar({ onToggleSidebar } = {}) {
           </form>
 
           <div className="hidden lg:flex items-center gap-6">
-            {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Fee Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }].map(({ name, path }) => (
+            {[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: "Books", path: "/books" }, { name: "Free Class", path: "/free-class" }, { name: "Free Test", path: "/free-test" }].map(({ name, path }) => (
               <Link key={name} to={path} className={`${textColor} hover:text-gray-200 font-medium transition-colors`}>
                 {name}
               </Link>
