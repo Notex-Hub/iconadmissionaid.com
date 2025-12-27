@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useGetAllExamQuery } from "../../../../redux/Features/Api/Exam/Exam";
 import { useNavigate } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 export default function ExamList({ moduleId = null, moduleIds = [], onStartExam }) {
   const navigate = useNavigate();

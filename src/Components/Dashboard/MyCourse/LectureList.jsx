@@ -6,15 +6,11 @@ import { useGetAllLectureQuery } from "../../../../redux/Features/Api/Lecture/le
 import { buildEmbedUrl } from "./components/buildEmbedUrl";
 import { parseVideoSource } from "./components/parseVideoSource";
 
-const ITEMS_PER_PAGE = 6;
-
-
-
+const ITEMS_PER_PAGE = 10;
 
 export default function LectureList({ moduleId = null, moduleIds = [] }) {
   const { userInfo } = useSelector((s) => s.auth || {});
   const { data: resp, isLoading, isError } = useGetAllLectureQuery();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const lecturesRaw = resp?.data ?? [];
 
   const normalizedModuleId = useMemo(() => (moduleId ? String(moduleId) : null), [moduleId]);
@@ -69,7 +65,6 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
 
   useEffect(() => {
     setPage(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [normalizedModuleId, normalizedModuleIds.join(",")]);
 
   useEffect(() => {
@@ -90,7 +85,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
   }
 
   if (isError) {
-    return <div className="text-sm text-red-600">কিছু সমস্যা হয়েছে — পরে চেক করো।</div>;
+    return <div className="text-sm text-red-600">কিছু সমস্যা হয়েছে — পরে চেক করো।</div>;
   }
 
   if (!normalizedModuleId && !normalizedModuleIds.length) {
@@ -113,15 +108,6 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
     } catch {
       prompt("Copy this link:", text);
     }
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  function openFullscreen() {
-    const el = playerContainerRef.current;
-    if (!el) return;
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }
 
   return (
@@ -180,6 +166,7 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
             </div>
 
             <div className="ll-player">
+              {/* Marquee and info overlays */}
               <div style={{ position: "absolute", top: 8, left: 8, zIndex: 30 }}>
                 <div className="text-xs text-white/90 bg-black/40 px-2 py-1 rounded">{activeLecture.moduleTitle || "Module"}</div>
               </div>
@@ -209,33 +196,33 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
                     );
                   }
 
-                  /* 🟢 Bunny player (NO sandbox) */
+                  /* 🟢 Bunny player: allow fullscreen added */
                   if (parsed.type === "bunny") {
                     return (
                       <iframe
                         title={activeLecture.title}
                         src={playerUrl}
                         className="ll-iframe"
-                        allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+                        allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
                         allowFullScreen
                       />
                     );
                   }
 
-                  /* 🟢 YouTube + Drive */
+                  /* 🟢 YouTube + Drive: sandbox permission allow-fullscreen added */
                   return (
                     <iframe
                       ref={iframeRef}
                       title={activeLecture.title}
                       src={playerUrl}
                       className="ll-iframe"
-                      allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
-                      sandbox="allow-scripts allow-same-origin allow-presentation"
+                      allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
+                      sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-fullscreen"
+                      allowFullScreen
                     />
                   );
                 })()}
               </div>
-
             </div>
           </div>
         )}
@@ -272,36 +259,34 @@ export default function LectureList({ moduleId = null, moduleIds = [] }) {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <div className="font-medium text-gray-900 truncate w-96">{lec.title}</div>
+                    <div className="font-medium text-gray-900 truncate">{lec.title}</div>
                     <div className="text-xs text-gray-500 mt-1">
                       {lec.moduleTitle && <span className="mr-2">Module: {lec.moduleTitle}</span>}
                       {lec.duration !== undefined && <span>{lec.duration} mins</span>}
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex flex-col items-center gap-2">
-                      <button
-                        onClick={() => {
-                          const parsedLocal = parseVideoSource(lec.videoId);
-                          const playerUrl = buildEmbedUrl(parsedLocal);
-                          if (playerUrl) {
-                            setActiveLecture(lec);
-                          } else if (lec.videoId) {
-                            copyToClipboard(lec.videoId);
-                            alert("No embeddable player. Link copied to clipboard.");
-                          } else {
-                            alert("No video URL available.");
-                          }
-                        }}
-                        className="inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
-                      >
-                        Play
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7-7 7M5 5v14" />
-                        </svg>
-                      </button>
-                    </div>
+                  <div className="flex flex-col items-end">
+                    <button
+                      onClick={() => {
+                        const parsedLocal = parseVideoSource(lec.videoId);
+                        const playerUrl = buildEmbedUrl(parsedLocal);
+                        if (playerUrl) {
+                          setActiveLecture(lec);
+                        } else if (lec.videoId) {
+                          copyToClipboard(lec.videoId);
+                          alert("No embeddable player. Link copied to clipboard.");
+                        } else {
+                          alert("No video URL available.");
+                        }
+                      }}
+                      className="inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
+                    >
+                      Play
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7-7 7M5 5v14" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
 

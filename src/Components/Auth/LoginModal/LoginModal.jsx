@@ -5,13 +5,7 @@ import { userLoggedIn } from "../../../../redux/Features/Api/Auth/AuthSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-/**
- * LoginModal - বাংলা মেসেজ সহ
- *
- * প্রত্যাশা:
- * - useLoginMutation -> RTK Query mutation hook (trigger returns a promise with .unwrap())
- * - userLoggedIn -> redux slice action
- */
+
 export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
   const [userLogin] = useLoginMutation();
   const dispatch = useDispatch();
@@ -19,7 +13,7 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null); // { type: 'error'|'success'|'info', text: string }
+  const [message, setMessage] = useState(null);
   const dialogRef = useRef(null);
   const msgTimeoutRef = useRef(null);
 
@@ -33,7 +27,6 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
         clearTimeout(msgTimeoutRef.current);
         msgTimeoutRef.current = null;
       }
-      // small timeout so dialog is mounted before querying
       setTimeout(() => dialogRef.current?.querySelector("input")?.focus(), 60);
     }
   }, [open]);
@@ -66,40 +59,28 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
   };
 
   const parseErrorMessage = (err) => {
-    // 여러 ধরনে error আসতে পারে: FetchBaseQueryError, Error, SerializedError, plain object/string
-    // চেষ্টা করবো ব্যাকএন্ডের ব্যবহারিক জায়গা (err.data.message, err.data, err.message, err)
     try {
       if (!err) return "লগিন হয়নি — সঠিক তথ্য দিন।";
 
-      // RTK Query fetchBaseQuery error shape: { status, data, error }
       if (typeof err === "object") {
-        // backend structured message
         if (err.data) {
-          // data could be string or object
           const d = err.data;
           if (typeof d === "string" && d.trim()) return d;
           if (d?.message) return d.message;
           if (d?.error) return d.error;
-          // sometimes validation errors: { errors: { field: ['msg'] } }
           if (d?.errors) return JSON.stringify(d.errors);
         }
 
-        // serialized Error with message
         if (err.message) return err.message;
 
-        // sometimes error payload in err.data?.message or err.data?.errorMessage etc
         const possible =
           err?.data?.message || err?.data?.error || err?.data?.errorMessage;
         if (possible) return String(possible);
-
-        // fallback to stringified object (avoid giant dumps)
         const s = JSON.stringify(err);
         if (s && s !== "{}") return s;
       }
 
-      // if it's a primitive string
       if (typeof err === "string" && err.trim()) return err;
-
       return "লগিন হয়নি — সঠিক তথ্য দিন।";
       // eslint-disable-next-line no-unused-vars
     } catch (e) {
@@ -121,7 +102,6 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
       return;
     }
 
-    // If caller did NOT pass an onLogin function, keep the local behavior:
     if (typeof onLogin !== "function") {
       setLoading(true);
       setTimeout(() => {
@@ -132,39 +112,24 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignUp }) {
       return;
     }
 
-    // Otherwise, use RTK Query mutation (with unwrap) and robust error handling
     try {
       setLoading(true);
       showMessage("info", "প্রবেশ করা হচ্ছে...", true, 10000);
-
-      // unwrap() will throw on rejected response so we jump to catch
       const result = await userLogin({ phone: p, password }).unwrap();
-
-      // Depending on backend, token/user may be nested differently.
-      // Common patterns:
-      // 1) result = { data: { accessToken, user } }
-      // 2) result = { accessToken, user }
-      // 3) result = { token: '...', user: { ... } }
       const token =
         result?.data?.accessToken ?? result?.accessToken ?? result?.token;
       const user =
         result?.data?.user ?? result?.user ?? result?.data ?? undefined;
 
       if (!token || !user) {
-        // If not found, throw a descriptive Error so catch handles it uniformly
         throw new Error("সার্ভার থেকে প্রত্যাশিত তথ্য পাওয়া যায়নি।");
       }
-
-      // dispatch login to redux
       dispatch(userLoggedIn({ user, token }));
-
       showMessage("success", "লগইন সফল।");
       setTimeout(() => onClose?.(), 600);
     } catch (err) {
       const msg = parseErrorMessage(err);
       showMessage("error", msg);
-      // 개발 중이면 콘সোলে বিস্তারিত দেখা কাজে লাগতে পারে
-      // console.error("Login error raw:", err);
     } finally {
       setLoading(false);
     }

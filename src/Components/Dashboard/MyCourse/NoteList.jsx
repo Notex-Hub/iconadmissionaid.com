@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useGetAllNoteQuery } from "../../../../redux/Features/Api/note/Note";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 export default function NoteList({ moduleId = null, moduleIds = [] }) {
   const { userInfo } = useSelector((s) => s.auth || {});

@@ -1,25 +1,33 @@
+/* eslint-disable no-empty */
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Home/Navbar/Navbar";
 import Footer from "../../Layout/Footer";
-
+import { useLoginMutation } from "../../../redux/Features/Api/Auth/AuthApi";
+import { userLoggedIn } from "../../../redux/Features/Api/Auth/AuthSlice";
 
 export default function ForgotPasswordPage() {
   const [phone, setPhone] = useState("");
+  const [newPassword, setNewPassword] = useState(""); // নতুন পাসওয়ার্ডের জন্য স্টেট
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1); // ১ মানে ফোন নম্বর, ২ মানে পাসওয়ার্ড ইনপুট
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [userLogin] = useLoginMutation();
 
   const normalizePhone = (v = "") => v.replace(/[^\d+]/g, "");
   const isValidPhone = (v = "") => /^\+?\d{8,15}$/.test(normalizePhone(v));
 
-  const resetFields = () => {
-    setPhone("");
-  };
-
+  // ধাপ ১: রিসেট রিকোয়েস্ট (SMS পাঠানো)
   async function handleForgotPassword(e) {
     e?.preventDefault?.();
 
     if (!phone || !isValidPhone(phone)) {
-      toast.error("সঠিক ফোন নম্বর দিন (country code optional)।");
+      toast.error("সঠিক ফোন নম্বর দিন।");
       return;
     }
 
@@ -35,25 +43,46 @@ export default function ForgotPasswordPage() {
       );
 
       let data = null;
-      try {
-        data = await res.json();
-      // eslint-disable-next-line no-unused-vars
-      } catch (err) {
-        // ignore JSON parse error
-      }
+      try { data = await res.json(); } catch (err) { }
 
       if (!res.ok) {
-        const msg = data?.message || data?.error || "SMS পাঠানো যায়নি!";
-        toast.error(String(msg));
+        toast.error(data?.message || "SMS পাঠানো যায়নি!");
       } else {
-        const successMsg =
-          data?.message || "SMS পাঠানো হয়েছে! নতুন পাসওয়ার্ডটি SMS এ দেখুন।";
-        toast.success(String(successMsg));
-        resetFields();
+        toast.success(data?.message || "SMS পাঠানো হয়েছে!");
+        setStep(2); // সফল হলে ২য় ধাপে নিয়ে যাবে
       }
-    // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      toast.error("Network error! অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন।");
+      toast.error("Network error! ইন্টারনেট সংযোগ পরীক্ষা করুন।");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ধাপ ২: নতুন পাসওয়ার্ড দিয়ে লগইন
+  async function handleLoginWithNewPassword(e) {
+    e?.preventDefault?.();
+    if (!newPassword || newPassword.length < 4) {
+      toast.error("SMS-এ পাওয়া সঠিক পাসওয়ার্ডটি দিন।");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await userLogin({ 
+        phone: normalizePhone(phone), 
+        password: newPassword 
+      }).unwrap();
+
+      const token = result?.data?.accessToken ?? result?.accessToken ?? result?.token;
+      const user = result?.data?.user ?? result?.user ?? result?.data;
+
+      if (token && user) {
+        dispatch(userLoggedIn({ user, token }));
+        toast.success("লগইন সফল হয়েছে!");
+        navigate("/"); // হোম পেজে নিয়ে যাবে
+      }
+    } catch (err) {
+      toast.error("লগইন করা যায়নি। সঠিক পাসওয়ার্ড দিন।");
     } finally {
       setLoading(false);
     }
@@ -61,104 +90,85 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-    <Navbar/>
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center px-4 ">
-      {/* Toast container */}
-
-      <main className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-white shadow-2xl">
-        <header className="mb-6">
-          <h1 className="text-2xl font-extrabold">পাসওয়ার্ড রিসেট</h1>
-          <p className="mt-1 text-sm text-gray-200">
-            তোমার ফোন নম্বর লিখে নতুন পাসওয়ার্ড SMS এ পেয়ে যাবে।
-          </p>
-        </header>
-
-        <form onSubmit={handleForgotPassword} className="space-y-5" aria-live="polite">
-          <div>
-            <label className="block text-sm text-gray-200 mb-2" htmlFor="phone">
-              ফোন নম্বর
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+8801XXXXXXXXX"
-              className="w-full px-4 py-3 rounded-xl bg-white/6 border border-white/8 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/20"
-              aria-invalid={phone && !isValidPhone(phone) ? "true" : "false"}
-              aria-describedby="phoneHelp"
-            />
-            <p id="phoneHelp" className="mt-2 text-xs text-gray-300">
-              Country code optional — উদাহরণ: <span className="font-medium">+8801XXXXXXXXX</span>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center px-4">
+        <main className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 text-white shadow-2xl">
+          
+          <header className="mb-6">
+            <h1 className="text-2xl font-extrabold">
+              {step === 1 ? "পাসওয়ার্ড রিসেট" : "লগইন করুন"}
+            </h1>
+            <p className="mt-1 text-sm text-gray-300">
+              {step === 1 
+                ? "ফোন নম্বর লিখে নতুন পাসওয়ার্ড SMS এ পেয়ে যাবে।" 
+                : "আপনার ফোনে পাঠানো পাসওয়ার্ডটি নিচে লিখে প্রবেশ করুন।"}
             </p>
+          </header>
+
+          {step === 1 ? (
+            /* STEP 1: ফোন নম্বর ইনপুট */
+            <form onSubmit={handleForgotPassword} className="space-y-5">
+              <div>
+                <label className="block text-sm text-gray-200 mb-2">ফোন নম্বর</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+8801XXXXXXXXX"
+                  className="w-full px-4 py-3 rounded-xl bg-white/6 border border-white/8 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-500 font-semibold hover:scale-[1.01] transition disabled:opacity-60 cursor-pointer"
+                >
+                  {loading ? "পাঠানো হচ্ছে..." : "Next (SMS পাঠান)"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* STEP 2: পাসওয়ার্ড ইনপুট ও লগইন */
+            <form onSubmit={handleLoginWithNewPassword} className="space-y-5">
+              <div>
+                <label className="block text-sm text-gray-200 mb-2">SMS পাসওয়ার্ড</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="পাসওয়ার্ড দিন"
+                  className="w-full px-4 py-3 rounded-xl bg-white/6 border border-white/8 text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-green-500 font-semibold hover:scale-[1.01] transition disabled:opacity-60 cursor-pointer"
+                >
+                  {loading ? "লগইন হচ্ছে..." : "Login"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="text-sm text-gray-400 hover:text-white underline"
+                >
+                  ফোন নম্বর ভুল? আবার লিখুন
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="text-center text-xs text-gray-400 mt-8 border-t border-white/10 pt-4">
+            <p>সহযোগিতার জন্য আমাদের সাপোর্টে যোগাযোগ করুন।</p>
           </div>
-
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-gradient-to-r from-red-600 to-red-500 font-semibold text-white hover:scale-[1.01] transition disabled:opacity-60 cursor-pointer"
-            >
-              {loading ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8z"
-                    />
-                  </svg>
-                  পাঠানো হচ্ছে...
-                </>
-              ) : (
-                "SMS পাঠাও"
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setPhone("")}
-              className="px-4 cursor-pointer py-3 rounded-xl bg-white/6 border border-white/10 text-white"
-            >
-              Reset
-            </button>
-          </div>
-
-          <div className="text-center text-sm text-gray-300 pt-1">
-            <p>
-              যদি SMS না আসে, ২-৩ মিনিট অপেক্ষা করে আবার চেষ্টা করো। সমস্যার সমাধানের
-              জন্য আমাদের সাপোর্টে যোগাযোগ করো।
-            </p>
-          </div>
-        </form>
-
-        <footer className="mt-6 text-center text-sm text-gray-400">
-          <p>
-            স্মরণ করুন: নিরাপত্তার কারণে নতুন পাসওয়ার্ড SMS-এ পাঠানো হতে পারে — পরে লগইন করে
-            অবশ্যই পাসওয়ার্ড বদলে নেবো।
-          </p>
-        </footer>
-      </main>
-    </div>
-    <Footer/>
+        </main>
+      </div>
+      <Footer />
     </>
-    
   );
 }
