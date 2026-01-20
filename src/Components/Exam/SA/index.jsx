@@ -52,6 +52,13 @@ const ExamSA = ({ subject, selectedOptions, setSelectedOptions }) => {
 
   const letters = ["A", "B", "C", "D"];
 
+    const stripHtml = (html) => {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+};
+
+
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-6 mb-10">
       
@@ -68,7 +75,7 @@ const ExamSA = ({ subject, selectedOptions, setSelectedOptions }) => {
           </div>
           <div className="p-8 md:p-10 max-h-[65vh] overflow-y-auto leading-relaxed text-gray-700 font-serif text-xl selection:bg-red-100 custom-scrollbar">
              <div className="first-letter:text-5xl first-letter:font-bold first-letter:text-[#8B0000] first-letter:mr-3 first-letter:float-left">
-                {passage.passage}
+                {stripHtml(passage.passage)}
              </div>
           </div>
           <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center gap-2">
@@ -96,7 +103,7 @@ const ExamSA = ({ subject, selectedOptions, setSelectedOptions }) => {
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-900 leading-tight mb-10">
-                   {questions[index]?.question}
+                  {stripHtml(questions[index]?.question)}
                 </h3>
 
                 <div className="grid gap-4">

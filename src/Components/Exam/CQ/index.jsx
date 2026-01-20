@@ -33,6 +33,13 @@ const ExamCQ = ({ subject, userAnswers, setUserAnswers }) => {
     </div>
   );
 
+  const stripHtml = (html) => {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+};
+
+
   return (
     <div className="mx-auto px-2 pb-10">
   
@@ -66,9 +73,10 @@ const ExamCQ = ({ subject, userAnswers, setUserAnswers }) => {
 
                 <div className="p-8 md:p-10">
                   {/* The Question */}
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-800 leading-snug mb-8 group-hover:text-black transition-colors">
-                    {item.question}
-                  </h3>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 leading-snug mb-8 group-hover:text-black transition-colors">
+  {stripHtml(item.question)}
+</h3>
+
 
                   {/* Writing Area */}
                   <div className="relative">
