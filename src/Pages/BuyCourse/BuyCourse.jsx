@@ -55,11 +55,18 @@ export default function BuyCourse() {
   }
 
   // Price Calculation
-  const rawPrice = course?.offerPrice ?? course?.price ?? 0;
+const rawPrice =
+  course?.offerPrice && course.offerPrice > 0
+    ? course.offerPrice
+    : course?.price ?? 0;
+  console.log(rawPrice)
+  console.log(course?.offerPrice)
   const payable =
     course?.offerPrice && Number(course.offerPrice) > 0
       ? Number(course.offerPrice)
       : Number(course?.price ?? 0);
+
+      console.log("payable", payable)
 
   const isFreeCourse = Number(rawPrice) === 0;
 

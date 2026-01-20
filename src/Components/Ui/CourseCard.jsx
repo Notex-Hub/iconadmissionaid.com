@@ -3,10 +3,10 @@ import { useGetAllPurchaseQuery } from "../../../redux/Features/Api/Purchase/Pur
 
 /* eslint-disable react/prop-types */
 const CourseCard = ({ course }) => {
- const { data: purchaseData } =
-  useGetAllPurchaseQuery({
-    courseId: course?._id,
-  });
+  const { data: purchaseData } =
+    useGetAllPurchaseQuery({
+      courseId: course?._id,
+    });
 
   console.log("purchaseData", purchaseData)
 
@@ -16,7 +16,7 @@ const CourseCard = ({ course }) => {
 
   return (
     <div className="rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 px-2">
-      
+
       {/* Image wrapper with 1:1 aspect ratio */}
       <div className="relative w-full aspect-square bg-gray-100 overflow-hidden">
         <img
@@ -34,11 +34,15 @@ const CourseCard = ({ course }) => {
 
         <div className="flex items-center flex-row md:flex-col justify-between gap-2 mb-4">
           <div>
-            {hasOffer && (
-              <p className="text-[#D91A19] font-bold text-sm line-through">
-                {coursePrice}
-              </p>
-            )}
+            {coursePrice ? (
+              hasOffer ? (
+                <p className="text-[#D91A19] font-bold text-sm line-through">
+                  {coursePrice}
+                </p>
+              ) : null
+            ) : null}
+
+
             <p className="text-[#008000] text-xl">
               {offerPrice || coursePrice}
             </p>
