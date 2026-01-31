@@ -90,7 +90,8 @@ function ModelTestFormContent() {
   const uploadImageMutation = useUploadImage();
 
   // ===== Fetch courses for in-course model tests =====
-  const { data: coursesData } = useCourseList(1000, 1); // Fetch up to 1000 courses
+  const { data: coursesData, isLoading: isLoadingCourses } = useCourseList(1000, 1); // Fetch up to 1000 courses
+  const courses = coursesData?.data || [];
 
   // ===== Fetch all model tests for manual find =====
   const { data: allModelTests } = useQuery({
@@ -388,11 +389,14 @@ function ModelTestFormContent() {
                 value={courseId}
                 onChange={(e) => setCourseId(e.target.value)}
                 className="mt-1 block w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
+                disabled={isLoadingCourses}
               >
-                <option value="">-- Select a Course --</option>
-                {coursesData?.data?.map((course: any) => (
+                <option value="">
+                  {isLoadingCourses ? "Loading courses..." : "-- Select a Course --"}
+                </option>
+                {courses.map((course: any) => (
                   <option key={course._id} value={course._id}>
-                    {course.title}
+                    {course.course_title}
                   </option>
                 ))}
               </select>
