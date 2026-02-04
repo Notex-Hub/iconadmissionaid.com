@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axiosInstance from "@/utils/axios";
-import moment from "moment";
+import { formatDate } from "@/utils/dateUtils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -51,6 +51,11 @@ const AllEnrollment = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -114,26 +119,26 @@ const AllEnrollment = () => {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="size-10 rounded-full overflow-hidden bg-gray-100">
-                            {enrollment.studentId.profile_picture ? (
+                            {enrollment?.studentId?.profile_picture ? (
                               <img
                                 src={enrollment.studentId.profile_picture}
-                                alt={enrollment.studentId.name}
+                                alt={enrollment?.studentId?.name || "Student"}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600">
-                                {enrollment.studentId.name
-                                  .charAt(0)
-                                  .toUpperCase()}
+                                {enrollment?.studentId?.name
+                                  ?.charAt(0)
+                                  .toUpperCase() || "?"}
                               </div>
                             )}
                           </div>
                           <div>
                             <p className="font-medium text-gray-900 dark:text-white">
-                              {enrollment.studentId.name}
+                              {enrollment?.studentId?.name || "N/A"}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {enrollment.studentId.phone}
+                              {enrollment?.studentId?.phone || "N/A"}
                             </p>
                           </div>
                         </div>
@@ -192,8 +197,8 @@ const AllEnrollment = () => {
                           {enrollment.status}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        {moment(enrollment.createdAt).format("MMM D, YYYY")}
+                      <TableCell suppressHydrationWarning>
+                        {formatDate(enrollment.createdAt, "MMM D, YYYY", mounted)}
                       </TableCell>
                     </TableRow>
                   ))}

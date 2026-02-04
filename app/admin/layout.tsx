@@ -1024,11 +1024,8 @@ export default function Layout({
       </div>
       {/* <!-- End Main Content --> */}
       <Script src="/assets/js/vendor/jquery.min.js"></Script>
-
-      {/* <Script src="/assets/js/vendor/apexcharts.min.js"></Script> */}
       <Script src="/assets/js/vendor/flowbite.min.js"></Script>
       <Script src="/assets/js/vendor/smooth-scrollbar/smooth-scrollbar.min.js"></Script>
-      <Script src="/assets/js/pages/dashboard-admin-lms.js"></Script>
       <Script src="/assets/js/component/app-menu-bar.js"></Script>
       <Script src="/assets/js/switcher.js"></Script>
       <Script src="/assets/js/layout.js"></Script>
